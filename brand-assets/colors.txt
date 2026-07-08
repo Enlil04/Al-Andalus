@@ -1,0 +1,8 @@
+#0B223D blue
+#D4574E  pink
+#C1962D  yellow
+#DDE4EC light cyan
+
+fonts 
+Poppins
+cairo

@@ -1,0 +1,36 @@
+export const contactInfo = {
+  shortcode: "7366",
+  phone: "+964 771 000 6000",
+  phoneHref: "tel:+9647710006000",
+  email: "info@alandalus-iq.com",
+  branches: [
+    {
+      id: "baghdad",
+      label: "Headquarters",
+      area: "Al-Arasat Street, Baghdad, Iraq",
+      mapEmbedUrl: "https://maps.google.com/maps?q=Al-Andalus+International+Insurance+Baghdad,+Iraq&hl=en&z=15&ie=UTF8&iwloc=&output=embed",
+      mapLinkUrl: "https://www.google.com/maps/search/?api=1&query=Al-Andalus+International+Insurance+Baghdad,+Iraq"
+    },
+    {
+      id: "basrah",
+      label: "Basrah Branch",
+      area: "Al-Ashar Commercial District, Basrah, Iraq",
+      mapEmbedUrl: "https://maps.google.com/maps?q=Al-Andalus+International+Insurance+Basrah,+Iraq&hl=en&z=15&ie=UTF8&iwloc=&output=embed",
+      mapLinkUrl: "https://www.google.com/maps/search/?api=1&query=Al-Andalus+International+Insurance+Basrah,+Iraq"
+    },
+    {
+      id: "erbil",
+      label: "Erbil Branch",
+      area: "Gulan Street, Erbil, Iraq",
+      mapEmbedUrl: "https://maps.google.com/maps?q=Al-Andalus+International+Insurance+Erbil,+Iraq&hl=en&z=15&ie=UTF8&iwloc=&output=embed",
+      mapLinkUrl: "https://www.google.com/maps/search/?api=1&query=Al-Andalus+International+Insurance+Erbil,+Iraq"
+    },
+    {
+      id: "mansour",
+      label: "Mansour Branch",
+      area: "Mansour District, Baghdad, Iraq",
+      mapEmbedUrl: "https://maps.google.com/maps?q=Al-Andalus+International+Insurance+Mansour,+Baghdad,+Iraq&hl=en&z=15&ie=UTF8&iwloc=&output=embed",
+      mapLinkUrl: "https://www.google.com/maps/search/?api=1&query=Al-Andalus+International+Insurance+Mansour,+Baghdad,+Iraq"
+    },
+  ],
+} as const;

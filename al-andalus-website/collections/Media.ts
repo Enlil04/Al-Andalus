@@ -1,0 +1,51 @@
+import { CollectionConfig } from "payload";
+
+export const Media: CollectionConfig = {
+  slug: "media",
+  access: {
+    read: () => true,
+  },
+  upload: {
+    mimeTypes: ["image/*", "video/*", "application/pdf"],
+    staticDir: "public/media",
+    imageSizes: [
+      {
+        name: "thumbnail",
+        width: 400,
+        height: 300,
+        position: "centre",
+      },
+      {
+        name: "card",
+        width: 768,
+        height: 512,
+        position: "centre",
+      },
+      {
+        name: "hero",
+        width: 1920,
+        height: undefined,
+        position: "centre",
+      },
+    ],
+  },
+  admin: {
+    useAsTitle: "alt",
+    description: "الصور والفيديوهات (Images & Videos)",
+    group: {
+      en: "Media",
+      ar: "الوسائط",
+    },
+  },
+  fields: [
+    {
+      name: "alt",
+      type: "text",
+      required: true,
+      label: {
+        en: "Alt Text",
+        ar: "النص البديل",
+      },
+    },
+  ],
+};

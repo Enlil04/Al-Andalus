@@ -1,0 +1,113 @@
+/* Al-Andalus Insurance — Admin Panel Branding (Light Theme) */
+
+/* ═══════ Brand Tokens ═══════ */
+$navy: #0b223d;
+$navy-light: #1a3a5c;
+$gold: #c1962d;
+$gold-hover: #d4a83f;
+$pink: #d4574e;
+$white: #ffffff;
+$off-white: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-400: #94a3b8;
+$gray-600: #475569;
+
+/* ═══════ Global Theme Overrides ═══════ */
+:root {
+  --theme-success-500: #{$navy};
+  --theme-success-600: #{$navy};
+}
+
+[data-theme="light"] {
+  /* Background surfaces */
+  --theme-bg: #{$white};
+  --theme-elevation-0: #{$white};
+  --theme-elevation-50: #{$off-white};
+  --theme-elevation-100: #{$gray-100};
+  --theme-elevation-150: #{$gray-200};
+  --theme-text: #{$navy};
+
+  /* ═══ Sidebar / Nav ═══ */
+  .nav {
+    background: #{$white};
+    border-right-color: #{$gray-200};
+
+    &__link-indicator {
+      background: #{$gold};
+    }
+  }
+
+  .nav__link {
+    color: #{$gray-600};
+
+    &:hover,
+    &--active {
+      color: #{$navy};
+    }
+  }
+
+  .nav-group__label {
+    color: #{$gray-400};
+  }
+
+  /* ═══ App header ═══ */
+  .app-header {
+    background: #{$white};
+    border-bottom-color: #{$gray-200};
+  }
+
+  /* ═══ Primary buttons ═══ */
+  .btn--style-primary {
+    --bg-color: #{$navy};
+    --hover-bg: #{$navy-light};
+    --color: #{$white};
+  }
+
+  .btn--style-secondary {
+    --bg-color: transparent;
+    --hover-bg: #{$gray-100};
+    --color: #{$navy};
+    --border-color: #{$gray-200};
+  }
+
+  /* ═══ Table rows ═══ */
+  .row-1:hover .cell-link,
+  .cell-link:hover {
+    background: #{$off-white};
+  }
+
+  /* ═══ Pill / Badge accents ═══ */
+  .pill--style-light-contrast {
+    background: color-mix(in srgb, #{$gold} 15%, #{$white});
+    color: #{$navy};
+  }
+
+  /* ═══ Links ═══ */
+  a:not(.btn):not(.nav__link):not(.cell-link) {
+    &:hover {
+      color: #{$gold};
+    }
+  }
+}
+
+/* ═══════ Dashboard Specific ═══════ */
+.dashboard {
+  background: #{$off-white};
+
+  .collections__label {
+    color: #{$navy};
+    font-weight: 600;
+  }
+}
+
+/* ═══════ Login / Auth page ═══════ */
+.login {
+  background: #{$off-white};
+}
+
+.login__brand {
+  img {
+    max-width: 200px;
+  }
+}

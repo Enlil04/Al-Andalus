@@ -1,0 +1,287 @@
+.culture-section {
+  background-color: var(--brand-yellow);
+  color: var(--white);
+  padding: 8rem 2rem;
+  overflow: hidden;
+  position: relative;
+  font-family: var(--font-en);
+}
+
+.culture-container {
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+  position: relative;
+  padding-bottom: 6rem;
+}
+
+.culture-header {
+  margin-bottom: 6rem;
+  position: relative;
+  z-index: 10;
+}
+
+.culture-label {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+}
+
+.culture-headline {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* Diagram Structure */
+.culture-diagram-wrapper {
+  position: relative;
+  width: 100%;
+  height: 800px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -150px; /* Pull up to overlap with text a bit */
+}
+
+.culture-diagram {
+  position: relative;
+  width: 600px;
+  height: 600px;
+}
+
+/* Concentric Circles */
+.circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+}
+
+.circle-1 {
+  width: 400px;
+  height: 400px;
+}
+.circle-2 {
+  width: 550px;
+  height: 550px;
+}
+.circle-3 {
+  width: 700px;
+  height: 700px;
+}
+.circle-4 {
+  width: 850px;
+  height: 850px;
+}
+
+/* Core Element */
+.diagram-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 350px;
+  z-index: 2;
+}
+
+.core-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 2.5rem;
+}
+
+.core-item {
+  margin-bottom: 2rem;
+}
+
+.core-item-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.core-item-dot {
+  margin-bottom: 0.5rem;
+}
+
+.core-dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background-color: var(--white);
+  border-radius: 50%;
+}
+
+.core-item-desc {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+
+/* Orbit Nodes */
+.orbit-node {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  transform: translate(-30px, -30px);
+  z-index: 3;
+}
+
+.orbit-node > div {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.node-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  width: max-content;
+}
+
+.node-left .node-content {
+  position: absolute;
+  right: 0;
+  top: 0;
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.node-right .node-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+  flex-direction: row;
+  text-align: left;
+}
+
+.node-point {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.node-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--white);
+  border-radius: 50%;
+}
+
+.node-text h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.node-text {
+  max-width: 250px;
+}
+
+.node-text p {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  white-space: normal;
+}
+
+/* Positioning the nodes */
+/* Retail (left): middle-left on circle-2 (radius = 275px) */
+.node-initiative {
+  top: 50.0%;
+  left: 4.17%;
+}
+
+/* Banking (bottom): bottom-center on circle-2 (radius = 275px) */
+.node-freedom {
+  top: 95.83%;
+  left: 50.0%;
+}
+
+/* Healthcare (right): middle-right on circle-2 (radius = 275px) */
+.node-integrity {
+  top: 50.0%;
+  left: 95.83%;
+}
+
+/* Construction & Engineering (top): top-center on circle-2 (radius = 275px) */
+.node-construction {
+  top: 4.17%;
+  left: 50.0%;
+}
+
+/* Trade & Logistics (bottom-right): bottom-right on circle-2 (radius = 275px) */
+.node-trade {
+  top: 82.4%;
+  left: 82.4%;
+}
+
+.node-point-large {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Footer */
+.culture-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.culture-footer__btn {
+  pointer-events: auto;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .culture-diagram-wrapper {
+    margin-top: 50px;
+    height: auto;
+    padding-bottom: 100px;
+  }
+  
+  .culture-diagram {
+    transform: scale(0.7);
+  }
+}
+
+@media (max-width: 768px) {
+  .culture-diagram {
+    transform: scale(0.5);
+  }
+  
+  .node-text p {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 480px) {
+  .culture-diagram {
+    transform: scale(0.4);
+  }
+}

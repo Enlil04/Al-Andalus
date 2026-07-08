@@ -1,0 +1,69 @@
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import Loader from "../../components/Loader";
+import SmoothScroll from "../../components/SmoothScroll";
+import GSAPAnimations from "../../components/GSAPAnimations";
+import PageBanner from "../../components/PageBanner";
+import ScrollReveal from "../../components/ScrollReveal";
+import AnimatedHeadline from "../../components/AnimatedHeadline";
+import JobsDescriptionList from "../../components/JobsDescriptionList";
+import ContactCta from "../../components/ContactCta";
+import { siteCopy } from "@/lib/copy/en";
+
+const challengeImage = "/al-and images/Misty Urban Development.png";
+
+const { jobsPage } = siteCopy;
+
+export const metadata = {
+  title: siteCopy.meta.jobs.title,
+  description: siteCopy.meta.jobs.description,
+};
+
+export default function JobsPage() {
+  return (
+    <>
+      <Loader />
+      <SmoothScroll>
+        <GSAPAnimations />
+        <Header />
+
+        <PageBanner title={jobsPage.banner.title} subtitle={jobsPage.banner.subtitle} />
+
+        {/* ═══════════════ 1. MESSAGE ═══════════════ */}
+        <section className="jobs-challenge jobs-section" id="message">
+          <div className="about-grid">
+            <div className="jobs-challenge__top about-grid__span-all">
+              <div className="jobs-challenge__left about-grid__cols-1-6">
+                <ScrollReveal>
+                  <span className="jobs-section__label">{jobsPage.message.label}</span>
+                </ScrollReveal>
+                <AnimatedHeadline
+                  title={jobsPage.message.headline}
+                  className="jobs-challenge__headline"
+                />
+              </div>
+
+              <div className="jobs-challenge__right about-grid__cols-7-12">
+                <ScrollReveal delay={1}>
+                  <div
+                    className="jobs-challenge__image"
+                    style={{ backgroundImage: `url("${challengeImage}")` }}
+                    role="img"
+                    aria-label="Urban development representing growth across Iraq"
+                  />
+                </ScrollReveal>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════ 2. DEPARTMENTS ═══════════════ */}
+        <JobsDescriptionList />
+
+        <ContactCta />
+
+        <Footer />
+      </SmoothScroll>
+    </>
+  );
+}

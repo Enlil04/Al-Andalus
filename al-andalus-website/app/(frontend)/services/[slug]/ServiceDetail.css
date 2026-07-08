@@ -1,0 +1,109 @@
+/* Service Detail Layout and Styling */
+
+.service-detail__intro {
+  padding: clamp(4rem, 8vw, 8rem) 0;
+}
+
+.service-detail__headline {
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  line-height: 1.15;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  font-family: var(--font-en);
+}
+
+.service-detail__desc {
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--gray-600, #4b5563);
+  margin-bottom: 2.5rem;
+}
+
+.service-detail__image {
+  width: 100%;
+  height: clamp(300px, 50vh, 500px);
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.service-benefits {
+  background-color: var(--light-100, #f8fafc);
+  padding: clamp(4rem, 8vw, 8rem) 0;
+  border-top: 1px solid rgba(10, 10, 10, 0.04);
+  border-bottom: 1px solid rgba(10, 10, 10, 0.04);
+}
+
+.service-benefits__headline {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  margin-top: 1rem;
+  margin-bottom: 4rem;
+}
+
+.service-benefits__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+  margin-top: 2rem;
+}
+
+.benefit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: var(--space-6);
+  background: var(--white, #ffffff);
+  border-radius: 8px;
+  border: 1px solid rgba(10, 10, 10, 0.04);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  height: 100%;
+}
+
+.benefit-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(11, 34, 61, 0.06);
+  border-color: var(--brand-pink, #D4574E);
+}
+
+.benefit-card__num {
+  font-size: 1.25rem;
+  font-family: var(--font-en);
+  font-weight: 600;
+  color: var(--brand-pink, #D4574E);
+}
+
+.benefit-card__title {
+  font-size: 1.25rem;
+  font-family: var(--font-en);
+  font-weight: 600;
+  color: var(--navy-900, #0B223D);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.benefit-card__desc {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--gray-500, #6b7280);
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .service-benefits__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 768px) {
+  .service-benefits__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  
+  .service-detail__image {
+    margin-top: 2rem;
+    height: 300px;
+  }
+}
