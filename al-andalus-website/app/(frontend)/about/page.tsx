@@ -36,11 +36,13 @@ export default async function AboutPage() {
     fetchSiteSettings(payload),
   ]);
 
-  const leadership = aboutContent.leadership ?? {
-    name: aboutPage.leadership.ceo.signoff,
-    role: aboutPage.leadership.ceo.role,
-    bioParagraphs: aboutPage.leadership.ceo.paragraphs,
-    photoUrl: null,
+  const leadership = {
+    ...(aboutContent.leadership ?? {
+      name: aboutPage.leadership.ceo.signoff,
+      role: aboutPage.leadership.ceo.role,
+      bioParagraphs: aboutPage.leadership.ceo.paragraphs,
+    }),
+    photoUrl: aboutContent.leadership?.photoUrl || "/al-and images/ChatGPT Image Jul 9, 2026, 05_09_09 PM.png",
   };
 
   return (

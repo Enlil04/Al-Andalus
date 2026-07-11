@@ -48,7 +48,15 @@ export default async function Home() {
 
         {/* ═══════════════ HERO SECTION ═══════════════ */}
         <section className="hero" id="hero">
-          <div className="hero__media" />
+          <div className="hero__media">
+            <video
+              src="/al-and%20images/magnific_a-cinematic-slowmotion-sh_y6Lq5THPW9.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          </div>
 
           <div className="hero__bottom">
             <AnimatedHeadline
@@ -82,7 +90,15 @@ export default async function Home() {
 
             <div className="intro__right">
               <ScrollReveal delay={2}>
-                <div className="intro__image" aria-hidden="true" />
+                <Image
+                  src="/al-and images/close-up-glass-water-pen.jpg"
+                  alt="Al Andalus"
+                  width={300}
+                  height={188}
+                  className="intro__image"
+                  style={{ objectFit: "cover" }}
+                  priority
+                />
               </ScrollReveal>
             </div>
           </div>
@@ -96,9 +112,13 @@ export default async function Home() {
                 className="story__image story__image--large"
                 aria-hidden="true"
               />
-              <div
+              <Image
+                src="/al-and images/WhatsApp Image 2026-05-18 at 1.33.44 PM.jpeg"
+                alt="Story small image"
+                width={300}
+                height={280}
                 className="story__image story__image--small"
-                aria-hidden="true"
+                style={{ objectFit: "cover" }}
               />
             </div>
 
