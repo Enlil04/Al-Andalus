@@ -142,6 +142,7 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URI || "file:./database.db",
     },
+    push: true,
   }),
 
   secret: process.env.PAYLOAD_SECRET || "default-secret-change-me",
