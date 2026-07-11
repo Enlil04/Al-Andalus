@@ -6,6 +6,17 @@ import path from 'path';
 const seed = async () => {
   const payload = await getPayload({ config: configPromise });
 
+  payload.logger.info('Checking if database is already initialized...');
+  const existingProducts = await payload.find({
+    collection: 'products',
+    limit: 1,
+  });
+
+  if (existingProducts.docs.length > 0) {
+    payload.logger.info('Database already seeded. Skipping.');
+    process.exit(0);
+  }
+
   payload.logger.info('Seeding database...');
 
   // Ensure we have some media to use

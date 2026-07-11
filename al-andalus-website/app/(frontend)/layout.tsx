@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { cairo, poppins } from "@/lib/fonts";
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Al-Andalus Insurance International | شركة الأندلس للتأمين الدولي",
   description:
