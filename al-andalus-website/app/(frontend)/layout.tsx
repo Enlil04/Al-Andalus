@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Al-Andalus Insurance International | شركة الأندلس للتأمين الدولي",
   description:
-    "Al-Andalus International Insurance — licensed general insurer in Iraq since 2015. Motor, health, cargo, engineering, and comprehensive coverage across Baghdad, Basrah, Erbil, and Mansour.",
+    "Al-Andalus International Insurance — licensed general insurer in Iraq since 2015. Motor, health, cargo, engineering, and comprehensive coverage across Baghdad, Basrah, and Erbil.",
   icons: {
     icon: "/logo.svg",
     apple: "/logo.svg",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Al-Andalus International Insurance",
     description:
-      "Licensed general insurance in Iraq. Four branches, 21 billion IQD authorized capital.",
+      "Licensed general insurance in Iraq. Three branches, 21 billion IQD authorized capital.",
     type: "website",
     locale: "en_US",
     alternateLocale: "ar_IQ",

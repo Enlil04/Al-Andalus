@@ -2,7 +2,6 @@ export const contactInfo = {
   shortcode: "7366",
   phone: "+964 771 000 6000",
   phoneHref: "tel:+9647710006000",
-  email: "info@alandalus-iq.com",
   branches: [
     {
       id: "baghdad",
@@ -24,13 +23,6 @@ export const contactInfo = {
       area: "Gulan Street, Erbil, Iraq",
       mapEmbedUrl: "https://maps.google.com/maps?q=Al-Andalus+International+Insurance+Erbil,+Iraq&hl=en&z=15&ie=UTF8&iwloc=&output=embed",
       mapLinkUrl: "https://www.google.com/maps/search/?api=1&query=Al-Andalus+International+Insurance+Erbil,+Iraq"
-    },
-    {
-      id: "mansour",
-      label: "Mansour Branch",
-      area: "Mansour District, Baghdad, Iraq",
-      mapEmbedUrl: "https://maps.google.com/maps?q=Al-Andalus+International+Insurance+Mansour,+Baghdad,+Iraq&hl=en&z=15&ie=UTF8&iwloc=&output=embed",
-      mapLinkUrl: "https://www.google.com/maps/search/?api=1&query=Al-Andalus+International+Insurance+Mansour,+Baghdad,+Iraq"
     },
   ],
 } as const;

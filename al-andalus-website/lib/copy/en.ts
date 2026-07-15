@@ -3,12 +3,12 @@ export const siteCopy = {
     home: {
       title: "Al-Andalus International Insurance | General Insurance in Iraq",
       description:
-        "Licensed general insurance company in Iraq since 2015. Motor, health, fire, cargo, engineering, and liability coverage across Baghdad, Basrah, Erbil, and Mansour. Call 7366.",
+        "Licensed general insurance company in Iraq since 2015. Motor, health, fire, cargo, engineering, and liability coverage across Baghdad, Basrah, and Erbil. Call 7366.",
     },
     about: {
       title: "About Us | Al-Andalus International Insurance",
       description:
-        "Founded in 2015, licensed by Iraq's Ministry of Finance. 21 billion IQD capital, four branches, 16 insurance services. Meet our leadership and learn how we operate.",
+        "Founded in 2015, licensed by Iraq's Ministry of Finance. 21 billion IQD capital, three branches, 16 insurance services. Meet our leadership and learn how we operate.",
     },
     services: {
       title: "Services | Al-Andalus International Insurance",
@@ -18,7 +18,7 @@ export const siteCopy = {
     contact: {
       title: "Contact Us | Al-Andalus International Insurance",
       description:
-        "Call 7366 or +964 771 000 6000. Email info@alandalus-iq.com. Branches in Baghdad, Basrah, Erbil, and Mansour.",
+        "Call 7366 or +964 771 000 6000. Branches in Baghdad, Basrah, and Erbil.",
     },
     faq: {
       title: "FAQ | Al-Andalus International Insurance",
@@ -28,12 +28,12 @@ export const siteCopy = {
     jobs: {
       title: "Jobs | Al-Andalus International Insurance",
       description:
-        "Careers at Al-Andalus International Insurance. Join our technical and administrative teams across Baghdad, Basrah, Erbil, and Mansour.",
+        "Careers at Al-Andalus International Insurance. Join our technical and administrative teams across Baghdad, Basrah, and Erbil.",
     },
     requestQuote: {
       title: "Request a Quote | Al-Andalus International Insurance",
       description:
-        "Call 7366 or +964 771 000 6000. Email info@alandalus-iq.com. Request motor, health, fire, or commercial insurance from Al-Andalus.",
+        "Call 7366 or +964 771 000 6000. Request motor, health, fire, or commercial insurance from Al-Andalus.",
     },
     blogs: {
       title: "Blogs | Al-Andalus International Insurance",
@@ -55,7 +55,7 @@ export const siteCopy = {
 
   story: {
     paragraphs: [
-      "Since 2015, Al-Andalus has focused on insurance solutions that keep pace with economic and social change in Iraq. We invested in qualified people — and built a reputation in the market by doing the work properly. Our team spans four branches: Baghdad, Basrah, Erbil, and Mansour.",
+      "Since 2015, Al-Andalus has focused on insurance solutions that keep pace with economic and social change in Iraq. We invested in qualified people — and built a reputation in the market by doing the work properly. Our team spans three branches: Baghdad, Basrah, and Erbil.",
       "Demand for insurance grows with rising incomes, sharper risk awareness, and more varied needs — from individuals to large institutions. A company at this level is not a luxury in Iraq's economy. It is part of how stability gets built.",
     ],
     cta: "READ MORE",
@@ -65,7 +65,7 @@ export const siteCopy = {
     label: "( ABOUT )",
     headline: "HERE FOR\nTHE LONG\nRUN",
     text:
-      "Founded 13 September 2015. Licensed general insurer.\nTwenty-one billion dinars in approved capital.\nFour branches. One team — technical and administrative specialists working across Iraq.\nInsurance that matches how this country actually operates.",
+      "Founded 13 September 2015. Licensed general insurer.\nTwenty-one billion dinars in approved capital.\nThree branches. One team — technical and administrative specialists working across Iraq.\nInsurance that matches how this country actually operates.",
   },
 
   whyUs: {
@@ -86,7 +86,7 @@ export const siteCopy = {
         "Al-Andalus International Insurance Company is a private joint-stock insurer established in Baghdad on 13 September 2015 under Certificate of Incorporation No. M. Sh./01-88775, in accordance with the Iraqi Companies Act No. 21 of 1997.",
         "The company holds a license to practice general insurance business from the Insurance Diwan of the Iraqi Ministry of Finance (License No. 38/2018, dated 31 July 2018), operating under the Insurance Business Regulation Law No. 10 of 2005. Approved capital stands at 21 billion Iraqi dinars.",
         "We provide general insurance services for individuals, businesses, and organizations operating in Iraq. Our portfolio covers property, liability, transport, construction, healthcare, marine, and personal lines — giving clients a single insurer for multiple risk categories.",
-        "Responsibilities are handled by an integrated team across four branches — Baghdad, Basrah, Erbil, and Mansour — with technical and administrative staff at each location.",
+        "Responsibilities are handled by an integrated team across three branches — Baghdad, Basrah, and Erbil — with technical and administrative staff at each location.",
       ],
     },
     vision: {
@@ -103,9 +103,10 @@ export const siteCopy = {
       ceo: {
         title: "CEO Message",
         paragraphs: [
-          "Since founding, Al-Andalus has focused on building a complete insurance experience for individuals and companies — investing in staff, strengthening digital infrastructure, and applying structured risk management practices.",
-          "Our success would not have been possible without the trust placed in us by our clients and the dedication of our team across Baghdad, Basrah, Erbil, and Mansour.",
-          "We continue to develop our services and expand our reach across Iraq — supporting the national economy and promoting insurance awareness within Iraqi society.",
+          "As the Chief Executive Officer of Al-Andalus International Insurance Company, I am honored to express my pride in the remarkable journey our company has undertaken since its establishment—a journey founded on innovation, discipline, and a clear vision for the future of the insurance industry in Iraq.",
+          "From day one, we have been committed to delivering a comprehensive insurance experience that meets the aspirations of individuals and businesses alike, through investing in human capital, strengthening our digital infrastructure, and adopting global best practices in risk management and customer service.",
+          "Our success would not have been possible without the trust placed in us by our clients, the continuous support of our partners, and the dedication and commitment demonstrated by our team.",
+          "We will continue to develop our products and expand the scope of our services, striving to remain at the forefront of companies that contribute to supporting the national economy and promoting insurance awareness within Iraqi society. Together, we are building a more secure and stable future."
         ],
         signoff: "George Jan Farah",
         role: "Chief Executive Officer",
@@ -113,8 +114,12 @@ export const siteCopy = {
       md: {
         title: "Managing Director Message",
         paragraphs: [
-          "Our commitment at Al-Andalus remains clear: quality, sound governance, and service that responds to what clients actually need.",
-          "Insurance is not merely a contract. It is a responsibility to protect individuals and institutions and support the stability of the communities they serve. We continue to invest in modern technology, transparency, and operations that keep pace with market change.",
+          "In a world that is evolving at an unprecedented pace, our commitment at Al-Andalus Insurance Company remains unwavering and steadfast: to be the first choice and the trusted pillar for our clients in the insurance sector.",
+          "Our vision is built upon clear foundations of quality, innovation, and sound governance, enabling us to make a meaningful difference and strengthen our position as one of the leading players in the Iraqi market.",
+          "We have developed a comprehensive strategy focused on enhancing efficiency, improving services, and building long-term partnerships, driven by our belief that insurance is not merely a contract or a product; it is a responsibility and a socio-economic mission aimed at protecting individuals and institutions while promoting sustainability within society.",
+          "The trust of our clients is our most valuable asset, and our team is the source of our strength and competitive advantage.",
+          "With this in mind, we continue to invest in modern technology, enhance transparency, and expand our operations in line with evolving market dynamics and future challenges.",
+          "I am confident that we are moving steadily toward a bright future filled with opportunities, and we will remain committed to our mission of being more than just an insurance company—we strive to be a trusted partner in protection, growth, and prosperity for everyone who places their trust in us."
         ],
         signoff: "Ali Qasim Thabit",
         role: "Managing Director",
@@ -124,7 +129,7 @@ export const siteCopy = {
       {
         label: "Head office location",
         value:
-          "Baghdad, Iraq — Branches: Basrah, Erbil, Mansour, and Headquarters in Baghdad",
+          "Baghdad, Iraq — Branches: Basrah, Erbil, and Headquarters in Baghdad",
       },
       { label: "Establishment", value: "13 September 2015" },
       { label: "Capital", value: "21 billion Iraqi dinars" },
@@ -184,9 +189,9 @@ export const siteCopy = {
     },
     {
       id: "branches",
-      title: "FOUR BRANCHES",
+      title: "THREE BRANCHES",
       items: [
-        "Baghdad (headquarters), Basrah, Erbil, and Mansour",
+        "Baghdad (headquarters), Basrah, and Erbil",
         "Technical and administrative staff at each location",
         "Insurance is local — when you need to speak to someone, there is a branch within reach",
       ],
@@ -211,7 +216,7 @@ export const siteCopy = {
       paragraphs: [
         "Al-Andalus offers a range of general insurance services for individuals, businesses, and institutions across Iraq — from motor and health to cargo, engineering, and liability.",
         "Three services — Bankers Blanket, Loan Protection, and Cyber Insurance — are currently under development. All others listed below are available.",
-        "Our service mix reflects the sectors that drive Iraq's economy — construction, trade, banking, healthcare, logistics, and retail — with disciplined underwriting and branches in Baghdad, Basrah, Erbil, and Mansour.",
+        "Our service mix reflects the sectors that drive Iraq's economy — construction, trade, banking, healthcare, logistics, and retail — with disciplined underwriting and branches in Baghdad, Basrah, and Erbil.",
       ],
     },
     industries: {
@@ -250,7 +255,7 @@ export const siteCopy = {
         {
           num: "01",
           title: "Tell us what you need",
-          desc: "Call 7366, email info@alandalus-iq.com, message us on WhatsApp, or visit any branch.",
+          desc: "Call 7366, message us on WhatsApp, or visit any branch.",
         },
         {
           num: "02",
@@ -284,7 +289,7 @@ export const siteCopy = {
       bodyTitle: "Investing in people\nwho serve our clients",
       paragraphs: [
         "Since its founding, Al-Andalus has invested strategically in qualified human resources — building the technical and administrative capacity needed to underwrite policies, handle claims, and serve clients across Iraq.",
-        "Responsibilities are distributed across an integrated team spanning four branches: Baghdad, Basrah, Erbil, and Mansour. Each location includes specialists in underwriting, claims, sales, and corporate operations.",
+        "Responsibilities are distributed across an integrated team spanning three branches: Baghdad, Basrah, and Erbil. Each location includes specialists in underwriting, claims, sales, and corporate operations.",
         "If you want to work in general insurance with a licensed insurer operating across multiple branches, we want to hear from you.",
       ],
     },
@@ -312,8 +317,7 @@ export const siteCopy = {
       "Talk to us about your coverage.",
       "Whether you need a motor policy, health coverage for your team, or commercial insurance for a new project — start with a conversation.",
       "Shortcode 7366 · +964 771 000 6000",
-      "info@alandalus-iq.com",
-      "Baghdad · Basrah · Erbil · Mansour",
+      "Baghdad · Basrah · Erbil",
     ],
     cta: "GO TO FORM",
   },
@@ -322,7 +326,7 @@ export const siteCopy = {
     label: "LICENSED GENERAL INSURANCE · IRAQ",
     title: "Al-Andalus International Insurance.",
     description:
-      "Licensed general insurance provider in Iraq since 2015. Motor, health, fire, cargo, engineering, liability, and more. Branches in Baghdad, Basrah, Erbil, and Mansour.",
+      "Licensed general insurance provider in Iraq since 2015. Motor, health, fire, cargo, engineering, liability, and more. Branches in Baghdad, Basrah, and Erbil.",
     copyright: "AL-ANDALUS INTERNATIONAL INSURANCE COMPANY",
     links: {
       services: [
@@ -339,8 +343,8 @@ export const siteCopy = {
         { label: "JOBS", href: "/jobs" },
       ],
       contact: [
+        { label: "CONTACT US", href: "/contact" },
         { label: "REQUEST QUOTE", href: "/request-quote" },
-        { label: "EMAIL US", href: "mailto:info@alandalus-iq.com" },
         { label: "CALL US", href: "tel:+9647710006000" },
         { label: "WHATSAPP", href: "https://wa.me/9647710006000" },
       ],
@@ -392,7 +396,7 @@ export const siteCopy = {
       {
         question: "Where are your branches?",
         answer:
-          "We operate from four locations: Baghdad (main headquarters), Basrah, Erbil, and Mansour.",
+          "We operate from three locations: Baghdad (main headquarters), Basrah, and Erbil.",
       },
       {
         question: "Which services are still under development?",
@@ -437,7 +441,7 @@ export const siteCopy = {
       label: "( Visit us )",
       headline: "Find us across Iraq",
       intro:
-        "Four branches nationwide — Baghdad, Basrah, Erbil, and Mansour. Reach us by phone, email, WhatsApp, or visit our headquarters in Baghdad.",
+        "Three branches nationwide — Baghdad, Basrah, and Erbil. Reach us by phone, email, WhatsApp, or visit our headquarters in Baghdad.",
       generalInquiries: "General inquiries",
       branches: "Branches",
       mapLink: "Open in Google Maps",
@@ -449,6 +453,34 @@ export const siteCopy = {
     section: {
       label: "( News )",
       title: "Latest Updates",
+    },
+  },
+  contactPage: {
+    banner: {
+      title: "CONTACT US",
+      subtitle: "Get in touch",
+    },
+    form: {
+      label: "Contact",
+      headline: "SEND US A\nMESSAGE",
+      intro: "Complete the form below to send us a direct message. Our team will follow up as soon as possible.",
+      legend: "Your Message",
+      fields: {
+        name: "Full Name",
+        nameHelp: "Enter your first and last name",
+        email: "Email Address",
+        emailHelp: "We will use this to contact you",
+        phone: "Phone Number",
+        phoneHelp: "Provide a number for call or WhatsApp",
+        subject: "Subject",
+        subjectHelp: "What is your message regarding?",
+        message: "Message",
+        messageHelp: "Detail your inquiry or request here",
+      },
+      submit: "Send Message",
+      submitting: "Sending...",
+      success: "Thank you — your message has been sent successfully.",
+      error: "Something went wrong. Please try again.",
     },
   },
 } as const;

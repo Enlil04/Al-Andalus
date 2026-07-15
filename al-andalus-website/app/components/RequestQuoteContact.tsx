@@ -47,12 +47,6 @@ export default function RequestQuoteContact() {
                   {contactInfo.phone}
                 </a>
               </li>
-              <li>
-                <span className="quote-contact__list-key">Email</span>
-                <a href={`mailto:${contactInfo.email}`} className="quote-contact__list-value quote-contact__link">
-                  {contactInfo.email}
-                </a>
-              </li>
             </ul>
           </div>
 

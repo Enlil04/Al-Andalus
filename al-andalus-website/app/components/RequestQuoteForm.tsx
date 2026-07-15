@@ -296,7 +296,6 @@ export default function RequestQuoteForm() {
                     <option value="Baghdad">Baghdad — Headquarters</option>
                     <option value="Basrah">Basrah</option>
                     <option value="Erbil">Erbil</option>
-                    <option value="Mansour">Mansour</option>
                   </select>
                   <span className="request-quote__help-text">Choose the physical office that will process your request and issue the policy</span>
                 </div>

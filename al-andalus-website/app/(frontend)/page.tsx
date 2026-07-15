@@ -131,8 +131,7 @@ export default async function Home() {
                   We invested in qualified people — and built a reputation in
                   the market by doing the work properly.
                   <br />
-                  Our team spans four branches: Baghdad, Basrah, Erbil, and
-                  Mansour.
+                  Our team spans three branches: Baghdad, Basrah, and Erbil.
                 </p>
               </ScrollReveal>
               <ScrollReveal delay={1}>

@@ -30,6 +30,8 @@ export default async function StatsWidget({ req }: WidgetServerProps) {
     partners,
     jobApplications,
     openJobs,
+    contactMessages,
+    unreadMessages,
   ] = await Promise.all([
     payload.count({ collection: "insurance-requests" }),
     payload.count({
@@ -51,6 +53,11 @@ export default async function StatsWidget({ req }: WidgetServerProps) {
       collection: "jobs",
       where: { status: { equals: "open" } },
     }),
+    payload.count({ collection: "contact-messages" }),
+    payload.count({
+      collection: "contact-messages",
+      where: { isRead: { equals: false } },
+    }),
   ]);
 
   const stats: StatCard[] = [
@@ -71,6 +78,24 @@ export default async function StatsWidget({ req }: WidgetServerProps) {
         path: "/collections/insurance-requests",
       }),
       alert: newRequests.totalDocs > 0,
+    },
+    {
+      label: "Total Contact Messages",
+      value: contactMessages.totalDocs,
+      href: formatAdminURL({
+        adminRoute,
+        path: "/collections/contact-messages",
+      }),
+      alert: unreadMessages.totalDocs > 0,
+    },
+    {
+      label: "Unread Messages",
+      value: unreadMessages.totalDocs,
+      href: formatAdminURL({
+        adminRoute,
+        path: "/collections/contact-messages",
+      }),
+      alert: unreadMessages.totalDocs > 0,
     },
     {
       label: "Website Visitors",

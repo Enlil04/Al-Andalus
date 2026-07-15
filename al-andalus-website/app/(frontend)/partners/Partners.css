@@ -25,7 +25,7 @@
 .partners-page__container {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 0 var(--gutter);
+  padding: 0 clamp(1.5rem, var(--gutter, 1.5rem), 4rem);
 }
 
 .partners-page__grid {

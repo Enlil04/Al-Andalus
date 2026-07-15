@@ -52,7 +52,7 @@ export type AboutPageContent = {
   heroImageUrl: string | null;
   missionParagraphs: readonly string[];
   visionParagraphs: readonly string[];
-  leadership: LeadershipEntry | null;
+  leadership: readonly LeadershipEntry[];
   historyEvents: readonly { year: string; event: string }[];
 };
 
@@ -179,17 +179,33 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
         }))
       : [...fallback.history];
 
-  const cmsLeader = about.leadership?.[0];
-  const leadership: LeadershipEntry | null = cmsLeader
-    ? {
-        name: cmsLeader.name,
-        role: (cmsLeader.role as string) ?? fallback.leadership.ceo.role,
-        bioParagraphs: cmsLeader.bio
-          ? splitParagraphs(cmsLeader.bio as string)
-          : [...fallback.leadership.ceo.paragraphs],
-        photoUrl: getMediaUrl(cmsLeader.photo),
-      }
-    : null;
+  const cmsLeaders = about.leadership;
+  const leadership: readonly LeadershipEntry[] = (cmsLeaders && cmsLeaders.length > 0)
+    ? (cmsLeaders as any[]).map((cmsLeader: any, index: number) => {
+        const fallbackLeader = index === 0 ? fallback.leadership.ceo : fallback.leadership.md;
+        return {
+          name: cmsLeader.name,
+          role: (cmsLeader.role as string) ?? fallbackLeader.role,
+          bioParagraphs: cmsLeader.bio
+            ? splitParagraphs(cmsLeader.bio as string)
+            : [...fallbackLeader.paragraphs],
+          photoUrl: getMediaUrl(cmsLeader.photo),
+        };
+      })
+    : [
+        {
+          name: fallback.leadership.ceo.signoff,
+          role: fallback.leadership.ceo.role,
+          bioParagraphs: fallback.leadership.ceo.paragraphs,
+          photoUrl: "/al-and images/ChatGPT Image Jul 9, 2026, 05_09_09 PM.png",
+        },
+        {
+          name: fallback.leadership.md.signoff,
+          role: fallback.leadership.md.role,
+          bioParagraphs: fallback.leadership.md.paragraphs,
+          photoUrl: "/al-and images/Modern Office Interior.png",
+        },
+      ];
 
   return {
     bannerTitle: about.heroTitle ?? fallback.banner.title,

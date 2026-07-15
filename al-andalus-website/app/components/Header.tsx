@@ -78,7 +78,7 @@ export default function Header() {
           EN
         </button>
 
-        <Link href="/request-quote" className="header__pill header__pill--contact">
+        <Link href="/contact" className="header__pill header__pill--contact">
           Contact Us
         </Link>
 
@@ -93,6 +93,68 @@ export default function Header() {
           <span></span>
         </button>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {menuOpen && (
+        <div className="header__mobile-menu">
+          <nav className="header__mobile-nav">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="header__mobile-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="header__mobile-dropdown-title">Quotes</div>
+            <Link
+              href="/request-quote?type=travel"
+              className="header__mobile-link header__mobile-link--sub"
+              onClick={() => setMenuOpen(false)}
+            >
+              Travel Insurance
+            </Link>
+            <Link
+              href="/request-quote?type=motor"
+              className="header__mobile-link header__mobile-link--sub"
+              onClick={() => setMenuOpen(false)}
+            >
+              Motor Insurance
+            </Link>
+            <Link
+              href="/request-quote?type=health"
+              className="header__mobile-link header__mobile-link--sub"
+              onClick={() => setMenuOpen(false)}
+            >
+              Health Insurance
+            </Link>
+            <Link
+              href="/request-quote?type=fire"
+              className="header__mobile-link header__mobile-link--sub"
+              onClick={() => setMenuOpen(false)}
+            >
+              Fire Insurance
+            </Link>
+            <Link
+              href="/request-quote?type=engineering"
+              className="header__mobile-link header__mobile-link--sub"
+              onClick={() => setMenuOpen(false)}
+            >
+              Engineering Insurance
+            </Link>
+
+            <Link
+              href="/contact"
+              className="btn btn--primary header__mobile-contact-btn"
+              onClick={() => setMenuOpen(false)}
+            >
+              Contact Us
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

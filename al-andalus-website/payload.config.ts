@@ -17,6 +17,7 @@ import { ContactMessages } from "./collections/ContactMessages";
 import { InsuranceRequests } from "./collections/InsuranceRequests";
 import { Jobs } from "./collections/Jobs";
 import { JobApplications } from "./collections/JobApplications";
+import { Proposals } from "./collections/Proposals";
 
 // Globals
 import { SiteSettings } from "./globals/SiteSettings";
@@ -110,6 +111,7 @@ export default buildConfig({
     Jobs,
     JobApplications,
     ContactMessages,
+    Proposals,
   ],
 
   globals: [SiteSettings, Homepage, AboutPage],

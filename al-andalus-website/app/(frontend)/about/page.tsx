@@ -36,14 +36,7 @@ export default async function AboutPage() {
     fetchSiteSettings(payload),
   ]);
 
-  const leadership = {
-    ...(aboutContent.leadership ?? {
-      name: aboutPage.leadership.ceo.signoff,
-      role: aboutPage.leadership.ceo.role,
-      bioParagraphs: aboutPage.leadership.ceo.paragraphs,
-    }),
-    photoUrl: aboutContent.leadership?.photoUrl || "/al-and images/ChatGPT Image Jul 9, 2026, 05_09_09 PM.png",
-  };
+
 
   return (
     <>
@@ -127,51 +120,65 @@ export default async function AboutPage() {
         {/* ═══════════════ 4. WHY CHOOSE US ═══════════════ */}
         <FourDivisionsSection />
 
-        {/* ═══════════════ CEO MESSAGE ═══════════════ */}
-        <section className="about-message" id="leadership">
-          <div className="about-message__stage">
-            <div
-              className="about-message__hero"
-              role="img"
-              aria-label={`${leadership.name} portrait`}
-              style={
-                leadership.photoUrl
-                  ? {
-                      backgroundImage: `url("${leadership.photoUrl}")`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }
-                  : undefined
-              }
-            />
+        {/* ═══════════════ LEADERSHIP MESSAGES ═══════════════ */}
+        {aboutContent.leadership.map((leader, index) => {
+          const isMirrored = index % 2 !== 0;
+          const sectionId = index === 0 ? "leadership" : `leadership-${index}`;
+          const title = index === 0 
+            ? aboutPage.leadership.ceo.title 
+            : (index === 1 ? aboutPage.leadership.md.title : `${leader.role} Message`);
 
-            <div className="about-message__panel-wrap">
-              <div className="about-message__panel">
-                <ScrollReveal>
-                  <span className="about-message__label">
-                    {aboutPage.leadership.label}
-                  </span>
-                </ScrollReveal>
-                <AnimatedHeadline
-                  title={aboutPage.leadership.ceo.title}
-                  className="about-message__title"
+          return (
+            <section
+              className={`about-message${isMirrored ? " about-message--mirrored" : ""}`}
+              id={sectionId}
+              key={leader.name}
+            >
+              <div className="about-message__stage">
+                <div
+                  className="about-message__hero"
+                  role="img"
+                  aria-label={`${leader.name} portrait`}
+                  style={
+                    leader.photoUrl
+                      ? {
+                          backgroundImage: `url("${leader.photoUrl}")`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }
+                      : undefined
+                  }
                 />
-                <ScrollReveal delay={2}>
-                  <div className="about-message__text">
-                    {leadership.bioParagraphs.map((paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
-                    ))}
-                    <p className="about-message__signoff">
-                      <strong>{leadership.name}</strong>
-                      <br />
-                      {leadership.role}
-                    </p>
+
+                <div className="about-message__panel-wrap">
+                  <div className="about-message__panel">
+                    <ScrollReveal>
+                      <span className="about-message__label">
+                        {aboutPage.leadership.label}
+                      </span>
+                    </ScrollReveal>
+                    <AnimatedHeadline
+                      title={title}
+                      className="about-message__title"
+                    />
+                    <ScrollReveal delay={2}>
+                      <div className="about-message__text">
+                        {leader.bioParagraphs.map((paragraph) => (
+                          <p key={paragraph}>{paragraph}</p>
+                        ))}
+                        <p className="about-message__signoff">
+                          <strong>{leader.name}</strong>
+                          <br />
+                          {leader.role}
+                        </p>
+                      </div>
+                    </ScrollReveal>
                   </div>
-                </ScrollReveal>
+                </div>
               </div>
-            </div>
-          </div>
-        </section>
+            </section>
+          );
+        })}
 
         {/* ═══════════════ COMPANY SNAPSHOT ═══════════════ */}
         <section className="about-company" id="company">

@@ -13,7 +13,7 @@ export default function ContactCta({
   headline = siteCopy.contact.headline,
   lines = siteCopy.contact.lines,
   cta = siteCopy.contact.cta,
-  ctaLink = "/request-quote",
+  ctaLink = "/contact",
 }: ContactCtaProps) {
   return (
     <section className="contact-cta" id="contact">

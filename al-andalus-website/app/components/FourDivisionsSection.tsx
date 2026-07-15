@@ -6,6 +6,7 @@ import AnimatedHeadline from "./AnimatedHeadline";
 import { siteCopy } from "@/lib/copy/en";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { waitForPageReady } from "@/lib/pageReady";
 import "./FourDivisionsSection.css";
 
 const CIRCLE_POSITIONS = [
@@ -25,25 +26,31 @@ export default function FourDivisionsSection() {
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+    let ctx: gsap.Context | undefined;
 
-    const ctx = gsap.context(() => {
-      itemsRef.current.forEach((el, index) => {
-        if (!el) return;
+    const cleanupReady = waitForPageReady(() => {
+      ctx = gsap.context(() => {
+        itemsRef.current.forEach((el, index) => {
+          if (!el) return;
 
-        ScrollTrigger.create({
-          trigger: el,
-          start: "top 45%",
-          end: "bottom 55%",
-          onToggle: (self) => {
-            if (self.isActive) {
-              setActiveId(pillars[index].id);
-            }
-          },
+          ScrollTrigger.create({
+            trigger: el,
+            start: "top 45%",
+            end: "bottom 55%",
+            onToggle: (self) => {
+              if (self.isActive) {
+                setActiveId(pillars[index].id);
+              }
+            },
+          });
         });
-      });
-    }, containerRef);
+      }, containerRef);
+    });
 
-    return () => ctx.revert();
+    return () => {
+      cleanupReady();
+      ctx?.revert();
+    };
   }, []);
 
   return (

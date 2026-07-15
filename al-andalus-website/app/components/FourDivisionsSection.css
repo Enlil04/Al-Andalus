@@ -224,8 +224,27 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  .four-divisions__sticky {
+    padding: 3rem 1.5rem 1.5rem !important;
+  }
+
+  .four-divisions__content {
+    padding: 1.5rem !important;
+  }
+
+  .four-divisions__diagram-wrapper {
+    height: 300px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    margin: 1.5rem 0 !important;
+  }
+
   .four-divisions__diagram {
-    transform: scale(0.65);
+    transform: scale(0.68) !important;
+    transform-origin: center center !important;
+    flex-shrink: 0 !important;
   }
 }

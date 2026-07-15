@@ -27,6 +27,7 @@ import { default as default_StatsWidget } from '../../../components/dashboard/St
 import { default as default_RecentMessagesWidget } from '../../../components/dashboard/RecentMessagesWidget'
 import { default as default_RecentRequestsWidget } from '../../../components/dashboard/RecentRequestsWidget'
 import { InsuranceRequestsExport as InsuranceRequestsExport_InsuranceRequestsExport } from '../../../components/admin/InsuranceRequestsExport'
+import { default as default_ShareLinkField } from '../../../components/dashboard/ShareLinkField'
 
 export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -58,4 +59,5 @@ export const importMap = {
   "./components/dashboard/RecentMessagesWidget.tsx#default": default_RecentMessagesWidget,
   "./components/dashboard/RecentRequestsWidget.tsx#default": default_RecentRequestsWidget,
   "./components/admin/InsuranceRequestsExport.tsx#InsuranceRequestsExport": InsuranceRequestsExport_InsuranceRequestsExport,
+  "./components/dashboard/ShareLinkField.tsx#default": default_ShareLinkField,
 }

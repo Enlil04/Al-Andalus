@@ -271,17 +271,95 @@
 }
 
 @media (max-width: 768px) {
-  .culture-diagram {
-    transform: scale(0.5);
+  .culture-section {
+    padding: 4rem 1.5rem;
   }
-  
-  .node-text p {
-    white-space: normal;
-  }
-}
 
-@media (max-width: 480px) {
+  .culture-container {
+    padding-bottom: 4rem;
+  }
+
+  .culture-header {
+    margin-bottom: 3rem;
+  }
+
+  .culture-headline {
+    font-size: clamp(2rem, 7vw, 3rem);
+  }
+
+  .culture-diagram-wrapper {
+    height: auto;
+    margin-top: 0;
+    display: block;
+    padding-bottom: 3rem;
+  }
+
   .culture-diagram {
-    transform: scale(0.4);
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transform: none !important;
+  }
+
+  .culture-diagram .circle {
+    display: none !important;
+  }
+
+  .diagram-core {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .core-title {
+    font-size: 1.5rem !important;
+    margin-bottom: 0 !important;
+  }
+
+  .orbit-node {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .orbit-node .node-content {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    position: static !important;
+  }
+
+  .orbit-node .node-text {
+    max-width: none !important;
+  }
+
+  .orbit-node .node-text h4 {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .orbit-node .node-text p {
+    font-size: 0.85rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .node-point {
+    width: 40px !important;
+    height: 40px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .culture-footer {
+    position: static !important;
+    margin-top: 2rem !important;
+    display: flex !important;
+    justify-content: center !important;
   }
 }
