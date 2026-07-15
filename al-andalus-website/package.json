@@ -5,12 +5,9 @@
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0 -p 8080",
     "build": "next build",
-    "start": "next start --hostname 0.0.0.0 -p ${PORT:-8080}",
+    "start": "next start --hostname 0.0.0.0 -p 8080",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap"
-  },
-  "engines": {
-    "node": ">=20"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "^3.85.1",
