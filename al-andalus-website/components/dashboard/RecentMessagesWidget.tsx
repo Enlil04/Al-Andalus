@@ -2,6 +2,7 @@ import type { WidgetServerProps } from "payload";
 import { formatAdminURL } from "payload/shared";
 import React from "react";
 
+import { formatAdminDate } from "@/lib/cms/formatAdminDate";
 import "./widgets.scss";
 
 export default async function RecentMessagesWidget({ req }: WidgetServerProps) {
@@ -32,7 +33,9 @@ export default async function RecentMessagesWidget({ req }: WidgetServerProps) {
       </div>
 
       {docs.length === 0 ? (
-        <p className="recent-messages__empty">No unread messages. You&apos;re all caught up.</p>
+        <p className="recent-messages__empty">
+          No unread messages. You&apos;re all caught up.
+        </p>
       ) : (
         <ul className="recent-messages__list">
           {docs.map((message) => {
@@ -41,13 +44,7 @@ export default async function RecentMessagesWidget({ req }: WidgetServerProps) {
               path: `/collections/contact-messages/${message.id}`,
             });
 
-            const createdAt = message.createdAt
-              ? new Date(message.createdAt).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })
-              : "";
+            const createdAt = formatAdminDate(message.createdAt);
 
             return (
               <li key={message.id} className="recent-messages__item">

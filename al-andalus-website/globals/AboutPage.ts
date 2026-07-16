@@ -1,24 +1,93 @@
 import { GlobalConfig } from "payload";
 
+import { bilingualLabel } from "../lib/cms/labels";
+
+const languageTabs = (
+  englishFields: GlobalConfig["fields"],
+  arabicFields: GlobalConfig["fields"],
+) => ({
+  type: "tabs" as const,
+  tabs: [
+    {
+      label: { en: "English", ar: "الإنجليزية" },
+      fields: englishFields,
+    },
+    {
+      label: { en: "Arabic", ar: "العربية" },
+      fields: arabicFields,
+    },
+  ],
+});
+
 export const AboutPage: GlobalConfig = {
   slug: "about-page",
   admin: {
-    description: "محتوى صفحة من نحن (About Us Page)",
+    description: {
+      en: "About page content. Enter English and Arabic in the language tabs below.",
+      ar: "محتوى صفحة من نحن. أدخل الإنجليزية والعربية من تبويبات اللغة أدناه.",
+    },
     group: {
       en: "Website",
       ar: "الموقع",
     },
   },
   fields: [
-    {
-      name: "heroTitle",
-      type: "text",
-      localized: true,
-      label: {
-        en: "Page Title",
-        ar: "عنوان الصفحة",
-      },
-    },
+    languageTabs(
+      [
+        {
+          name: "heroTitleEn",
+          type: "text",
+          label: bilingualLabel("Page Title (English)", "عنوان الصفحة (إنجليزي)"),
+        },
+        {
+          name: "introEn",
+          type: "richText",
+          label: bilingualLabel("Introduction (English)", "المقدمة (إنجليزي)"),
+        },
+        {
+          name: "missionEn",
+          type: "richText",
+          label: bilingualLabel("Mission (English)", "الرسالة (إنجليزي)"),
+        },
+        {
+          name: "visionEn",
+          type: "richText",
+          label: bilingualLabel("Vision (English)", "الرؤية (إنجليزي)"),
+        },
+        {
+          name: "historyEn",
+          type: "richText",
+          label: bilingualLabel("Company History (English)", "تاريخ الشركة (إنجليزي)"),
+        },
+      ],
+      [
+        {
+          name: "heroTitleAr",
+          type: "text",
+          label: bilingualLabel("Page Title (Arabic)", "عنوان الصفحة (عربي)"),
+        },
+        {
+          name: "introAr",
+          type: "richText",
+          label: bilingualLabel("Introduction (Arabic)", "المقدمة (عربي)"),
+        },
+        {
+          name: "missionAr",
+          type: "richText",
+          label: bilingualLabel("Mission (Arabic)", "الرسالة (عربي)"),
+        },
+        {
+          name: "visionAr",
+          type: "richText",
+          label: bilingualLabel("Vision (Arabic)", "الرؤية (عربي)"),
+        },
+        {
+          name: "historyAr",
+          type: "richText",
+          label: bilingualLabel("Company History (Arabic)", "تاريخ الشركة (عربي)"),
+        },
+      ],
+    ),
     {
       name: "heroImage",
       type: "upload",
@@ -29,33 +98,6 @@ export const AboutPage: GlobalConfig = {
       },
     },
     {
-      name: "intro",
-      type: "richText",
-      localized: true,
-      label: {
-        en: "Introduction",
-        ar: "المقدمة",
-      },
-    },
-    {
-      name: "mission",
-      type: "richText",
-      localized: true,
-      label: {
-        en: "Mission",
-        ar: "الرسالة",
-      },
-    },
-    {
-      name: "vision",
-      type: "richText",
-      localized: true,
-      label: {
-        en: "Vision",
-        ar: "الرؤية",
-      },
-    },
-    {
       name: "values",
       type: "array",
       label: {
@@ -63,28 +105,33 @@ export const AboutPage: GlobalConfig = {
         ar: "القيم الأساسية",
       },
       fields: [
-        {
-          name: "title",
-          type: "text",
-          localized: true,
-          label: { en: "Value Title", ar: "عنوان القيمة" },
-        },
-        {
-          name: "description",
-          type: "textarea",
-          localized: true,
-          label: { en: "Description", ar: "الوصف" },
-        },
+        languageTabs(
+          [
+            {
+              name: "titleEn",
+              type: "text",
+              label: bilingualLabel("Value Title (English)", "عنوان القيمة (إنجليزي)"),
+            },
+            {
+              name: "descriptionEn",
+              type: "textarea",
+              label: bilingualLabel("Description (English)", "الوصف (إنجليزي)"),
+            },
+          ],
+          [
+            {
+              name: "titleAr",
+              type: "text",
+              label: bilingualLabel("Value Title (Arabic)", "عنوان القيمة (عربي)"),
+            },
+            {
+              name: "descriptionAr",
+              type: "textarea",
+              label: bilingualLabel("Description (Arabic)", "الوصف (عربي)"),
+            },
+          ],
+        ),
       ],
-    },
-    {
-      name: "history",
-      type: "richText",
-      localized: true,
-      label: {
-        en: "Company History",
-        ar: "تاريخ الشركة",
-      },
     },
     {
       name: "leadership",
@@ -94,29 +141,49 @@ export const AboutPage: GlobalConfig = {
         ar: "فريق القيادة",
       },
       fields: [
-        {
-          name: "name",
-          type: "text",
-          required: true,
-          label: { en: "Name", ar: "الاسم" },
-        },
-        {
-          name: "role",
-          type: "text",
-          localized: true,
-          label: { en: "Role", ar: "المنصب" },
-        },
+        languageTabs(
+          [
+            {
+              name: "nameEn",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Name (English)", "الاسم (إنجليزي)"),
+            },
+            {
+              name: "roleEn",
+              type: "text",
+              label: bilingualLabel("Role (English)", "المنصب (إنجليزي)"),
+            },
+            {
+              name: "bioEn",
+              type: "textarea",
+              label: bilingualLabel("Bio (English)", "نبذة (إنجليزي)"),
+            },
+          ],
+          [
+            {
+              name: "nameAr",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Name (Arabic)", "الاسم (عربي)"),
+            },
+            {
+              name: "roleAr",
+              type: "text",
+              label: bilingualLabel("Role (Arabic)", "المنصب (عربي)"),
+            },
+            {
+              name: "bioAr",
+              type: "textarea",
+              label: bilingualLabel("Bio (Arabic)", "نبذة (عربي)"),
+            },
+          ],
+        ),
         {
           name: "photo",
           type: "upload",
           relationTo: "media",
           label: { en: "Photo", ar: "الصورة" },
-        },
-        {
-          name: "bio",
-          type: "textarea",
-          localized: true,
-          label: { en: "Bio", ar: "نبذة" },
         },
       ],
     },

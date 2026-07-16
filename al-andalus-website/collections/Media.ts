@@ -1,5 +1,6 @@
 import { CollectionConfig } from "payload";
 import { isAdminOrEditor } from "../access/roles";
+import { bilingualFieldHint, bilingualLabel } from "../lib/cms/labels";
 
 export const Media: CollectionConfig = {
   slug: "media",
@@ -56,9 +57,10 @@ export const Media: CollectionConfig = {
       name: "alt",
       type: "text",
       required: true,
-      label: {
-        en: "Alt Text",
-        ar: "النص البديل",
+      localized: true,
+      label: bilingualLabel("Alt Text", "النص البديل"),
+      admin: {
+        description: bilingualFieldHint,
       },
     },
   ],

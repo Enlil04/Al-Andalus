@@ -1,10 +1,10 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getPayload } from "payload";
-import configPromise from "@/payload.config";
 import { getSiteCopy } from "@/lib/copy";
+import { getLocale } from "@/lib/locale";
+import { fetchJobBySlug } from "@/lib/cms/content";
+import FooterServer from "../../../components/FooterServer";
 import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
 import Loader from "../../../components/Loader";
 import SmoothScroll from "../../../components/SmoothScroll";
 import GSAPAnimations from "../../../components/GSAPAnimations";
@@ -13,7 +13,6 @@ import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
 import ContactCta from "../../../components/ContactCta";
 import Link from "next/link";
-import { getLocale } from "@/lib/locale";
 import "./JobDetail.css";
 
 interface PageProps {
@@ -190,16 +189,7 @@ export default async function JobDetailPage({ params }: PageProps) {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
 
-  // 1. Fetch from database first with correct locale
-  const payload = await getPayload({ config: configPromise });
-  const { docs } = await payload.find({
-    collection: "jobs",
-    locale,
-    where: {
-      slug: { equals: slug },
-    },
-  });
-  const dbJob = docs[0];
+  const dbJob = await fetchJobBySlug(slug);
 
   // 2. Lookup static configuration as fallback
   const staticJob = siteCopy.jobsPage.listings.jobs.find(
@@ -212,8 +202,11 @@ export default async function JobDetailPage({ params }: PageProps) {
   }
 
   // Bind values with fallback
-  const title = dbJob?.title || staticJob?.title || "";
-  const category = dbJob?.department || staticJob?.category || (locale === "ar" ? "العمليات" : "Operations");
+  const title = (dbJob?.title as string | undefined) || staticJob?.title || "";
+  const category =
+    (dbJob?.department as string | undefined) ||
+    staticJob?.category ||
+    (locale === "ar" ? "العمليات" : "Operations");
   
   let descriptionHTML: React.ReactNode = null;
   let requirementsHTML: React.ReactNode = null;
@@ -221,23 +214,24 @@ export default async function JobDetailPage({ params }: PageProps) {
   let employmentType = locale === "ar" ? "دوام كامل" : "Full-Time";
 
   if (dbJob) {
-    location = dbJob.location;
+    const employment = dbJob.employmentType as string;
+    location = dbJob.location as string;
     if (locale === "ar") {
       employmentType =
-        dbJob.employmentType === "full-time"
+        employment === "full-time"
           ? "دوام كامل"
-          : dbJob.employmentType === "part-time"
+          : employment === "part-time"
             ? "دوام جزئي"
-            : dbJob.employmentType === "contract"
+            : employment === "contract"
               ? "عقد"
               : "تدريب عملي";
     } else {
       employmentType =
-        dbJob.employmentType === "full-time"
+        employment === "full-time"
           ? "Full-Time"
-          : dbJob.employmentType === "part-time"
+          : employment === "part-time"
             ? "Part-Time"
-            : dbJob.employmentType === "contract"
+            : employment === "contract"
               ? "Contract"
               : "Internship";
     }
@@ -359,7 +353,7 @@ export default async function JobDetailPage({ params }: PageProps) {
 
         <ContactCta />
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

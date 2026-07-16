@@ -2,12 +2,20 @@ import { CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
 
+const bilingualHint = {
+  en: "Use the language switcher (English / العربية) at the top to enter both English and Arabic.",
+  ar: "استخدم مبدّل اللغة (English / العربية) أعلى الصفحة لإدخال المحتوى بالإنجليزية والعربية.",
+};
+
 export const BlogCategories: CollectionConfig = {
   slug: "blog-categories",
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "slug"],
-    description: "تصنيفات المدونة (Blog Categories)",
+    description: {
+      en: `Blog categories. ${bilingualHint.en}`,
+      ar: `تصنيفات المدونة. ${bilingualHint.ar}`,
+    },
     group: {
       en: "Blog",
       ar: "المدونة",

@@ -2,6 +2,7 @@ import type { WidgetServerProps } from "payload";
 import { formatAdminURL } from "payload/shared";
 import React from "react";
 
+import { formatAdminDate } from "@/lib/cms/formatAdminDate";
 import "./widgets.scss";
 
 export default async function RecentRequestsWidget({ req }: WidgetServerProps) {
@@ -45,13 +46,7 @@ export default async function RecentRequestsWidget({ req }: WidgetServerProps) {
                 ? (request.insuranceService as { title?: string }).title
                 : null;
 
-            const createdAt = request.createdAt
-              ? new Date(request.createdAt).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })
-              : "";
+            const createdAt = formatAdminDate(request.createdAt);
 
             return (
               <li key={request.id} className="recent-messages__item">

@@ -1,18 +1,26 @@
 import { CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
+import { bilingualLabel } from "../lib/cms/labels";
 
 export const News: CollectionConfig = {
   slug: "news",
+  labels: {
+    singular: bilingualLabel("News Article", "مقال"),
+    plural: bilingualLabel("News", "الأخبار"),
+  },
   admin: {
-    useAsTitle: "title",
-    defaultColumns: ["title", "category", "publishedDate", "status"],
-    description: "إدارة المدونة والأخبار (Blog Management)",
+    useAsTitle: "titleEn",
+    defaultColumns: ["titleEn", "titleAr", "category", "publishedDate", "status"],
+    description: {
+      en: "Blog & news articles. Enter English and Arabic in the language tabs below.",
+      ar: "إدارة المدونة والأخبار. أدخل الإنجليزية والعربية من تبويبات اللغة أدناه.",
+    },
     group: {
       en: "Blog",
       ar: "المدونة",
     },
-    listSearchableFields: ["title", "slug", "excerpt"],
+    listSearchableFields: ["titleEn", "titleAr", "slug", "excerptEn", "excerptAr"],
   },
   access: {
     read: isAdminOrEditor,
@@ -22,14 +30,57 @@ export const News: CollectionConfig = {
   },
   fields: [
     {
-      name: "title",
-      type: "text",
-      required: true,
-      localized: true,
-      label: {
-        en: "Article Title",
-        ar: "عنوان المقال",
-      },
+      type: "tabs",
+      tabs: [
+        {
+          label: { en: "English", ar: "الإنجليزية" },
+          fields: [
+            {
+              name: "titleEn",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Article Title (English)", "عنوان المقال (إنجليزي)"),
+            },
+            {
+              name: "contentEn",
+              type: "richText",
+              label: bilingualLabel("Content (English)", "المحتوى (إنجليزي)"),
+            },
+            {
+              name: "excerptEn",
+              type: "textarea",
+              label: bilingualLabel("Excerpt (English)", "مقتطف (إنجليزي)"),
+            },
+          ],
+        },
+        {
+          label: { en: "Arabic", ar: "العربية" },
+          fields: [
+            {
+              name: "titleAr",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Article Title (Arabic)", "عنوان المقال (عربي)"),
+            },
+            {
+              name: "contentAr",
+              type: "richText",
+              label: bilingualLabel("Content (Arabic)", "المحتوى (عربي)"),
+            },
+            {
+              name: "excerptAr",
+              type: "textarea",
+              label: bilingualLabel("Excerpt (Arabic)", "مقتطف (عربي)"),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "coverImage",
+      type: "upload",
+      relationTo: "media",
+      label: bilingualLabel("Cover Image", "صورة الغلاف"),
     },
     {
       name: "slug",
@@ -39,57 +90,39 @@ export const News: CollectionConfig = {
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "URL Slug",
-        ar: "رابط المقال",
-      },
-    },
-    {
-      name: "content",
-      type: "richText",
-      localized: true,
-      label: {
-        en: "Content",
-        ar: "المحتوى",
-      },
-    },
-    {
-      name: "excerpt",
-      type: "textarea",
-      localized: true,
-      label: {
-        en: "Excerpt",
-        ar: "مقتطف",
-      },
-    },
-    {
-      name: "coverImage",
-      type: "upload",
-      relationTo: "media",
-      label: {
-        en: "Cover Image",
-        ar: "صورة الغلاف",
-      },
+      label: bilingualLabel("URL Slug", "رابط المقال"),
     },
     {
       name: "category",
       type: "select",
       required: true,
       options: [
-        { label: { en: "Company News", ar: "أخبار الشركة" }, value: "company" },
-        { label: { en: "Motor Insurance", ar: "تأمين السيارات" }, value: "motor" },
-        { label: { en: "Health Insurance", ar: "التأمين الصحي" }, value: "health" },
-        { label: { en: "Travel Insurance", ar: "تأمين السفر" }, value: "travel" },
-        { label: { en: "Fire Insurance", ar: "تأمين الحريق" }, value: "fire" },
-        { label: { en: "General", ar: "عام" }, value: "general" },
+        {
+          label: bilingualLabel("Company News", "أخبار الشركة"),
+          value: "company",
+        },
+        {
+          label: bilingualLabel("Motor Insurance", "تأمين السيارات"),
+          value: "motor",
+        },
+        {
+          label: bilingualLabel("Health Insurance", "التأمين الصحي"),
+          value: "health",
+        },
+        {
+          label: bilingualLabel("Travel Insurance", "تأمين السفر"),
+          value: "travel",
+        },
+        {
+          label: bilingualLabel("Fire Insurance", "تأمين الحريق"),
+          value: "fire",
+        },
+        { label: bilingualLabel("General", "عام"), value: "general" },
       ],
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Category",
-        ar: "التصنيف",
-      },
+      label: bilingualLabel("Category", "التصنيف"),
     },
     {
       name: "publishedDate",
@@ -102,10 +135,7 @@ export const News: CollectionConfig = {
           displayFormat: "yyyy.MM.dd",
         },
       },
-      label: {
-        en: "Published Date",
-        ar: "تاريخ النشر",
-      },
+      label: bilingualLabel("Published Date", "تاريخ النشر"),
     },
     {
       name: "status",
@@ -113,16 +143,13 @@ export const News: CollectionConfig = {
       required: true,
       defaultValue: "draft",
       options: [
-        { label: { en: "Draft", ar: "مسودة" }, value: "draft" },
-        { label: { en: "Published", ar: "منشور" }, value: "published" },
+        { label: bilingualLabel("Draft", "مسودة"), value: "draft" },
+        { label: bilingualLabel("Published", "منشور"), value: "published" },
       ],
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Publish Status",
-        ar: "حالة النشر",
-      },
+      label: bilingualLabel("Publish Status", "حالة النشر"),
     },
   ],
 };

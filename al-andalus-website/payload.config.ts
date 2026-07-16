@@ -1,7 +1,10 @@
 import path from "path";
 import { buildConfig, type WidgetWidth } from "payload";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
+import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { en } from "@payloadcms/translations/languages/en";
+import { ar } from "@payloadcms/translations/languages/ar";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
 
@@ -26,6 +29,11 @@ import { AboutPage } from "./globals/AboutPage";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+
+const smtpHost = process.env.SMTP_HOST;
+const smtpFromAddress =
+  process.env.SMTP_FROM_ADDRESS || "info@alandalus-iq.com";
+const smtpFromName = process.env.SMTP_FROM_NAME || "Al-Andalus Insurance";
 
 export default buildConfig({
   admin: {
@@ -138,7 +146,34 @@ export default buildConfig({
     fallback: true,
   },
 
+  i18n: {
+    supportedLanguages: { en, ar },
+    fallbackLanguage: "en",
+  },
+
   editor: lexicalEditor(),
+
+  ...(smtpHost
+    ? {
+        email: nodemailerAdapter({
+          defaultFromAddress: smtpFromAddress,
+          defaultFromName: smtpFromName,
+          skipVerify: process.env.SMTP_SKIP_VERIFY !== "false",
+          transportOptions: {
+            host: smtpHost,
+            port: Number(process.env.SMTP_PORT || 587),
+            secure: process.env.SMTP_SECURE === "true",
+            auth:
+              process.env.SMTP_USER && process.env.SMTP_PASS
+                ? {
+                    user: process.env.SMTP_USER,
+                    pass: process.env.SMTP_PASS,
+                  }
+                : undefined,
+          },
+        }),
+      }
+    : {}),
 
   db: sqliteAdapter({
     client: {
@@ -146,9 +181,12 @@ export default buildConfig({
       authToken: process.env.DATABASE_AUTH_TOKEN || undefined,
     },
     // Avoid silent schema push in production unless explicitly enabled.
+    // Set PAYLOAD_DATABASE_PUSH=false to skip push when the DB schema is already current.
     push:
-      process.env.PAYLOAD_DATABASE_PUSH === "true" ||
-      process.env.NODE_ENV !== "production",
+      process.env.PAYLOAD_DATABASE_PUSH === "false"
+        ? false
+        : process.env.PAYLOAD_DATABASE_PUSH === "true" ||
+          process.env.NODE_ENV !== "production",
   }),
 
   secret: (() => {

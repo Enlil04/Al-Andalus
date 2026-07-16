@@ -1,5 +1,4 @@
 import Header from "../components/Header";
-import Footer from "../components/Footer";
 import Loader from "../components/Loader";
 import ScrollReveal from "../components/ScrollReveal";
 import SmoothScroll from "../components/SmoothScroll";
@@ -12,11 +11,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
-import { getFeaturedServices } from "@/lib/services";
-import { getFaqItems } from "@/lib/faq";
 import { getLocale } from "@/lib/locale";
 import { getSiteCopy } from "@/lib/copy";
-import { fetchHomepageContent } from "@/lib/cms/content";
+import {
+  fetchHomepageContent,
+  fetchFeaturedProducts,
+  fetchFaqs,
+  fetchPublishedNews,
+  fetchPartners,
+} from "@/lib/cms/content";
+import FooterServer from "../components/FooterServer";
+import HeroBackground from "../components/HeroBackground";
+
+function getPartnerLogoUrl(partner: Record<string, unknown>): string | null {
+  const logo = partner.logo;
+  if (!logo || typeof logo === "string" || typeof logo === "number") {
+    return null;
+  }
+  return (logo as { url?: string }).url ?? null;
+}
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -32,31 +45,22 @@ export default async function Home() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
 
-  const { docs: newsItems } = await payload.find({
-    collection: "news",
-    limit: 5,
-    sort: "-publishedDate",
-    locale,
-    where: {
-      status: { equals: "published" },
-    },
-  });
+  const [homepageContent, featuredServices, faqItems, newsItems, partners] =
+    await Promise.all([
+      fetchHomepageContent(payload),
+      fetchFeaturedProducts(payload),
+      fetchFaqs(payload),
+      fetchPublishedNews(payload, 5),
+      fetchPartners(payload, 8),
+    ]);
 
-  const homepageContent = await fetchHomepageContent(payload);
-  const { intro, story, aboutPreview, contactCta } = homepageContent;
-
-  const featuredServices = getFeaturedServices(locale);
-
-  const { docs: partners } = await payload.find({
-    collection: "partners",
-    limit: 8,
-    sort: "order",
-    locale,
-  });
+  const { hero, intro, story, aboutPreview, contactCta } = homepageContent;
 
   const firstRowPartners = partners.slice(0, 2);
   const secondRowPartners = partners.slice(2, 5);
   const thirdRowPartners = partners.slice(5, 8);
+
+  const defaultIntroImage = "/al-and images/close-up-glass-water-pen.jpg";
 
   const servicesHeadline = locale === "ar" ? "خدماتنا" : "OUR\nSERVICES";
   const viewAllServicesLabel = locale === "ar" ? "عرض جميع الخدمات" : "View all services";
@@ -79,31 +83,25 @@ export default async function Home() {
         <div className="hero-track" id="hero">
           <section className="hero">
             <div className="hero__media">
-              <video
-                src="/al-and%20images/e089f973-10d9-4cf2-b693-fa9f22764c76.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-              />
+              <HeroBackground />
             </div>
             <div className="hero__content">
               <div className="hero__titles">
                 <AnimatedHeadline
-                  title={siteCopy.hero.headline}
+                  title={hero.headline}
                   className="hero__title hero__title--left"
                   as="h1"
                   immediate
                   delay={2.2}
                 />
                 <AnimatedHeadline
-                  title={siteCopy.hero.headlineRight}
+                  title={hero.headlineRight}
                   className="hero__title hero__title--right"
                   as="h2"
                   deferAnimation
                 />
               </div>
-              <p className="hero__scroll">{siteCopy.hero.scrollLabel}</p>
+              <p className="hero__scroll">{hero.scrollLabel}</p>
             </div>
           </section>
         </div>
@@ -126,7 +124,7 @@ export default async function Home() {
             <div className="intro__right">
               <ScrollReveal delay={2}>
                 <Image
-                  src="/al-and images/close-up-glass-water-pen.jpg"
+                  src={intro.imageUrl ?? defaultIntroImage}
                   alt="Al Andalus"
                   width={300}
                   height={188}
@@ -330,17 +328,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <NewsList
-            items={newsItems.map((item) => ({
-              id: item.id,
-              title: item.title as string,
-              slug: item.slug as string,
-              publishedDate: item.publishedDate as string | null,
-              category: item.category as string | null,
-              excerpt: item.excerpt as string | null,
-              imageUrl: item.coverImage && typeof item.coverImage !== "string" ? item.coverImage.url : null,
-            }))}
-          />
+          <NewsList items={newsItems} />
 
           <div className="news__footer">
             <ScrollReveal delay={2}>
@@ -374,10 +362,7 @@ export default async function Home() {
               {partners.length > 0 ? (
                 <div className="partners-grid-section__row partners-grid-section__row--two">
                   {firstRowPartners.map((partner, i) => {
-                    const logoUrl =
-                      partner.logo && typeof partner.logo !== "string"
-                        ? partner.logo.url
-                        : null;
+                    const logoUrl = getPartnerLogoUrl(partner as Record<string, unknown>);
                     const variant =
                       (i + 1) % 4 === 2
                         ? "partner-grid-card--red"
@@ -386,7 +371,7 @@ export default async function Home() {
                           : "";
 
                     return (
-                      <ScrollReveal key={partner.id} delay={(i % 3) + 1}>
+                      <ScrollReveal key={String(partner.id)} delay={(i % 3) + 1}>
                         <div className={`partner-grid-card ${variant}`.trim()}>
                           <span className="partner-grid-card__num">
                             {String(i + 1).padStart(2, "0")}
@@ -423,10 +408,7 @@ export default async function Home() {
                 <div className="partners-grid-section__row partners-grid-section__row--three">
                   {secondRowPartners.map((partner, i) => {
                     const index = i + 2;
-                    const logoUrl =
-                      partner.logo && typeof partner.logo !== "string"
-                        ? partner.logo.url
-                        : null;
+                    const logoUrl = getPartnerLogoUrl(partner as Record<string, unknown>);
                     const variant =
                       (index + 1) % 4 === 2
                         ? "partner-grid-card--red"
@@ -435,7 +417,7 @@ export default async function Home() {
                           : "";
 
                     return (
-                      <ScrollReveal key={partner.id} delay={(i % 3) + 1}>
+                      <ScrollReveal key={String(partner.id)} delay={(i % 3) + 1}>
                         <div className={`partner-grid-card ${variant}`.trim()}>
                           <span className="partner-grid-card__num">
                             {String(index + 1).padStart(2, "0")}
@@ -466,10 +448,7 @@ export default async function Home() {
                 <div className="partners-grid-section__row partners-grid-section__row--three">
                   {thirdRowPartners.map((partner, i) => {
                     const index = i + 5;
-                    const logoUrl =
-                      partner.logo && typeof partner.logo !== "string"
-                        ? partner.logo.url
-                        : null;
+                    const logoUrl = getPartnerLogoUrl(partner as Record<string, unknown>);
                     const variant =
                       (index + 1) % 4 === 2
                         ? "partner-grid-card--red"
@@ -478,7 +457,7 @@ export default async function Home() {
                           : "";
 
                     return (
-                      <ScrollReveal key={partner.id} delay={(i % 3) + 1}>
+                      <ScrollReveal key={String(partner.id)} delay={(i % 3) + 1}>
                         <div className={`partner-grid-card ${variant}`.trim()}>
                           <span className="partner-grid-card__num">
                             {String(index + 1).padStart(2, "0")}
@@ -526,11 +505,16 @@ export default async function Home() {
         </section>
 
         {/* ═══════════════ FAQ ═══════════════ */}
-        <FAQ items={getFaqItems(locale)} />
+        <FAQ items={faqItems} />
 
-        <ContactCta />
+        <ContactCta
+          headline={contactCta.headline}
+          lines={contactCta.lines}
+          cta={contactCta.cta}
+          ctaLink={contactCta.ctaLink}
+        />
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

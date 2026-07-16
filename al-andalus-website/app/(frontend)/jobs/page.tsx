@@ -1,5 +1,4 @@
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
 import Loader from "../../components/Loader";
 import SmoothScroll from "../../components/SmoothScroll";
 import GSAPAnimations from "../../components/GSAPAnimations";
@@ -10,6 +9,8 @@ import JobsDescriptionList from "../../components/JobsDescriptionList";
 import ContactCta from "../../components/ContactCta";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
+import { fetchOpenJobs } from "@/lib/cms/content";
+import FooterServer from "../../components/FooterServer";
 
 const challengeImage = "/al-and images/Misty Urban Development.png";
 
@@ -26,6 +27,7 @@ export default async function JobsPage() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
   const { jobsPage } = siteCopy;
+  const jobs = await fetchOpenJobs();
 
   return (
     <>
@@ -69,11 +71,11 @@ export default async function JobsPage() {
         </section>
 
         {/* ═══════════════ 2. DEPARTMENTS ═══════════════ */}
-        <JobsDescriptionList />
+        <JobsDescriptionList jobs={jobs} />
 
         <ContactCta />
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

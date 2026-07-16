@@ -1,9 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getPayload } from "payload";
-import configPromise from "@/payload.config";
 import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+import FooterServer from "../../../components/FooterServer";
 import Loader from "../../../components/Loader";
 import SmoothScroll from "../../../components/SmoothScroll";
 import GSAPAnimations from "../../../components/GSAPAnimations";
@@ -13,6 +11,8 @@ import BlogPostHeading from "../../../components/BlogPostHeading";
 import ContactCta from "../../../components/ContactCta";
 import Link from "next/link";
 import { getLocale } from "@/lib/locale";
+import { fetchNewsBySlug } from "@/lib/cms/content";
+import { getMediaUrl } from "@/lib/cms/media";
 import "./BlogDetail.css";
 
 interface PageProps {
@@ -95,29 +95,22 @@ export default async function BlogDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const locale = await getLocale();
 
-  // 1. Fetch post from Payload news collection with correct locale
-  const payload = await getPayload({ config: configPromise });
-  const { docs } = await payload.find({
-    collection: "news",
-    locale,
-    where: {
-      slug: { equals: slug },
-      status: { equals: "published" },
-    },
-  });
-  const post = docs[0];
+  const post = await fetchNewsBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
   const categoryLabels = locale === "ar" ? CATEGORY_LABELS_AR : CATEGORY_LABELS_EN;
-  const categoryLabel = (post.category && categoryLabels[post.category]) || (locale === "ar" ? "أخبار عامة" : "General News");
-  const publishedDateFormatted = formatNewsDate(post.publishedDate);
+  const categoryLabel = String(
+    (post.category && categoryLabels[post.category as string]) ||
+      (locale === "ar" ? "أخبار عامة" : "General News"),
+  );
+  const publishedDateFormatted = formatNewsDate(post.publishedDate as string);
 
-  const coverImageObj = post.coverImage;
-  const coverImageUrl =
-    coverImageObj && typeof coverImageObj !== "string" ? coverImageObj.url : null;
+  const coverImageUrl = getMediaUrl(
+    post.coverImage as Parameters<typeof getMediaUrl>[0],
+  );
 
   const backLabel = locale === "ar" ? "العودة إلى المقالات" : "Back to Articles";
 
@@ -186,7 +179,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
         <ContactCta />
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

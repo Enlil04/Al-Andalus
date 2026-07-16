@@ -15,12 +15,6 @@ export default async function StatsWidget({ req }: WidgetServerProps) {
   const { payload } = req;
   const { admin: adminRoute } = payload.config.routes;
 
-  const siteSettings = await payload.findGlobal({ slug: "site-settings" });
-  const visitors =
-    siteSettings?.analytics?.monthlyVisitors ??
-    siteSettings?.analytics?.totalVisitors ??
-    0;
-
   const [
     insuranceRequests,
     newRequests,
@@ -98,14 +92,6 @@ export default async function StatsWidget({ req }: WidgetServerProps) {
       alert: unreadMessages.totalDocs > 0,
     },
     {
-      label: "Website Visitors",
-      value: Number(visitors) || 0,
-      href: formatAdminURL({
-        adminRoute,
-        path: "/globals/site-settings",
-      }),
-    },
-    {
       label: "Insurance Services",
       value: services.totalDocs,
       href: formatAdminURL({ adminRoute, path: "/collections/products" }),
@@ -146,7 +132,7 @@ export default async function StatsWidget({ req }: WidgetServerProps) {
       <div className="dashboard-widget__header">
         <h3 className="dashboard-widget__title">Quick Statistics</h3>
         <p className="dashboard-widget__subtitle">
-          System overview — requests, content, visitors, and careers
+          System overview — requests, content, and careers
         </p>
       </div>
 

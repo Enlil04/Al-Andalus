@@ -1,18 +1,26 @@
 import { CollectionConfig } from "payload";
 
 import { isAdmin, isAdminOrEditor } from "../access/roles";
+import { bilingualLabel } from "../lib/cms/labels";
 
 export const Jobs: CollectionConfig = {
   slug: "jobs",
+  labels: {
+    singular: bilingualLabel("Job", "وظيفة"),
+    plural: bilingualLabel("Jobs", "الوظائف"),
+  },
   admin: {
-    useAsTitle: "title",
-    defaultColumns: ["title", "department", "location", "status"],
-    description: "الوظائف الشاغرة (Job Openings)",
+    useAsTitle: "titleEn",
+    defaultColumns: ["titleEn", "titleAr", "departmentEn", "status"],
+    description: {
+      en: "Job openings. Enter English and Arabic in the language tabs below.",
+      ar: "الوظائف الشاغرة. أدخل الإنجليزية والعربية من تبويبات اللغة أدناه.",
+    },
     group: {
       en: "Careers",
       ar: "الوظائف",
     },
-    listSearchableFields: ["title", "department", "location"],
+    listSearchableFields: ["titleEn", "titleAr", "departmentEn", "departmentAr", "locationEn", "locationAr"],
   },
   access: {
     read: isAdminOrEditor,
@@ -22,14 +30,77 @@ export const Jobs: CollectionConfig = {
   },
   fields: [
     {
-      name: "title",
-      type: "text",
-      required: true,
-      localized: true,
-      label: {
-        en: "Job Title",
-        ar: "المسمى الوظيفي",
-      },
+      type: "tabs",
+      tabs: [
+        {
+          label: { en: "English", ar: "الإنجليزية" },
+          fields: [
+            {
+              name: "titleEn",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Job Title (English)", "المسمى الوظيفي (إنجليزي)"),
+            },
+            {
+              name: "departmentEn",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Department (English)", "القسم (إنجليزي)"),
+            },
+            {
+              name: "locationEn",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Location (English)", "الموقع (إنجليزي)"),
+            },
+            {
+              name: "descriptionEn",
+              type: "richText",
+              required: true,
+              label: bilingualLabel("Job Description (English)", "وصف الوظيفة (إنجليزي)"),
+            },
+            {
+              name: "requirementsEn",
+              type: "richText",
+              label: bilingualLabel("Requirements (English)", "المتطلبات (إنجليزي)"),
+            },
+          ],
+        },
+        {
+          label: { en: "Arabic", ar: "العربية" },
+          fields: [
+            {
+              name: "titleAr",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Job Title (Arabic)", "المسمى الوظيفي (عربي)"),
+            },
+            {
+              name: "departmentAr",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Department (Arabic)", "القسم (عربي)"),
+            },
+            {
+              name: "locationAr",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Location (Arabic)", "الموقع (عربي)"),
+            },
+            {
+              name: "descriptionAr",
+              type: "richText",
+              required: true,
+              label: bilingualLabel("Job Description (Arabic)", "وصف الوظيفة (عربي)"),
+            },
+            {
+              name: "requirementsAr",
+              type: "richText",
+              label: bilingualLabel("Requirements (Arabic)", "المتطلبات (عربي)"),
+            },
+          ],
+        },
+      ],
     },
     {
       name: "slug",
@@ -39,28 +110,7 @@ export const Jobs: CollectionConfig = {
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "URL Slug",
-        ar: "رابط الوظيفة",
-      },
-    },
-    {
-      name: "department",
-      type: "text",
-      required: true,
-      label: {
-        en: "Department",
-        ar: "القسم",
-      },
-    },
-    {
-      name: "location",
-      type: "text",
-      required: true,
-      label: {
-        en: "Location",
-        ar: "الموقع",
-      },
+      label: bilingualLabel("URL Slug", "رابط الوظيفة"),
     },
     {
       name: "employmentType",
@@ -68,37 +118,15 @@ export const Jobs: CollectionConfig = {
       required: true,
       defaultValue: "full-time",
       options: [
-        { label: { en: "Full Time", ar: "دوام كامل" }, value: "full-time" },
-        { label: { en: "Part Time", ar: "دوام جزئي" }, value: "part-time" },
-        { label: { en: "Contract", ar: "عقد" }, value: "contract" },
-        { label: { en: "Internship", ar: "تدريب" }, value: "internship" },
+        { label: bilingualLabel("Full Time", "دوام كامل"), value: "full-time" },
+        { label: bilingualLabel("Part Time", "دوام جزئي"), value: "part-time" },
+        { label: bilingualLabel("Contract", "عقد"), value: "contract" },
+        { label: bilingualLabel("Internship", "تدريب"), value: "internship" },
       ],
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Employment Type",
-        ar: "نوع التوظيف",
-      },
-    },
-    {
-      name: "description",
-      type: "richText",
-      required: true,
-      localized: true,
-      label: {
-        en: "Job Description",
-        ar: "وصف الوظيفة",
-      },
-    },
-    {
-      name: "requirements",
-      type: "richText",
-      localized: true,
-      label: {
-        en: "Requirements",
-        ar: "المتطلبات",
-      },
+      label: bilingualLabel("Employment Type", "نوع التوظيف"),
     },
     {
       name: "status",
@@ -106,16 +134,13 @@ export const Jobs: CollectionConfig = {
       required: true,
       defaultValue: "open",
       options: [
-        { label: { en: "Open", ar: "مفتوحة" }, value: "open" },
-        { label: { en: "Closed", ar: "مغلقة" }, value: "closed" },
+        { label: bilingualLabel("Open", "مفتوحة"), value: "open" },
+        { label: bilingualLabel("Closed", "مغلقة"), value: "closed" },
       ],
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Status",
-        ar: "الحالة",
-      },
+      label: bilingualLabel("Status", "الحالة"),
     },
   ],
 };

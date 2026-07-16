@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import FooterServer from "../../components/FooterServer";
 import Loader from "../../components/Loader";
 import SmoothScroll from "../../components/SmoothScroll";
 import GSAPAnimations from "../../components/GSAPAnimations";
@@ -44,7 +44,7 @@ export default async function ContactPage() {
 
         <RequestQuoteContact />
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

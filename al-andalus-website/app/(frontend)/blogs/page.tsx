@@ -1,5 +1,4 @@
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
 import Loader from "../../components/Loader";
 import ScrollReveal from "../../components/ScrollReveal";
 import SmoothScroll from "../../components/SmoothScroll";
@@ -10,8 +9,8 @@ import NewsGrid from "../../components/NewsGrid";
 import ContactCta from "../../components/ContactCta";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
-import { getPayload } from "payload";
-import configPromise from "@/payload.config";
+import { fetchPublishedNews } from "@/lib/cms/content";
+import FooterServer from "../../components/FooterServer";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -23,20 +22,11 @@ export async function generateMetadata() {
 }
 
 export default async function BlogsPage() {
-  const payload = await getPayload({ config: configPromise });
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
   const { blogsPage } = siteCopy;
 
-  const { docs: blogItems } = await payload.find({
-    collection: "news",
-    limit: 50,
-    sort: "-publishedDate",
-    locale,
-    where: {
-      status: { equals: "published" },
-    },
-  });
+  const blogItems = await fetchPublishedNews(undefined, 50);
 
   return (
     <>
@@ -63,21 +53,13 @@ export default async function BlogsPage() {
 
           <NewsGrid
             itemBasePath="/blogs"
-            items={blogItems.map((item) => ({
-              id: item.id,
-              title: item.title as string,
-              slug: item.slug as string,
-              publishedDate: item.publishedDate as string | null,
-              category: item.category as string | null,
-              excerpt: item.excerpt as string | null,
-              imageUrl: item.coverImage && typeof item.coverImage !== "string" ? item.coverImage.url : null,
-            }))}
+            items={blogItems}
           />
         </section>
 
         <ContactCta />
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

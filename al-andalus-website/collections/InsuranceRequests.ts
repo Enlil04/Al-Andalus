@@ -2,6 +2,7 @@ import type { CollectionConfig, Endpoint } from "payload";
 
 import { isAdmin, isAdminOrEditor } from "../access/roles";
 import { exportInsuranceRequestsCSV, exportInsuranceRequestsPDF } from "../lib/exportInsuranceRequests";
+import { bilingualLabel } from "../lib/cms/labels";
 
 const exportEndpoints: Omit<Endpoint, "root">[] = [
   {
@@ -18,6 +19,10 @@ const exportEndpoints: Omit<Endpoint, "root">[] = [
 
 export const InsuranceRequests: CollectionConfig = {
   slug: "insurance-requests",
+  labels: {
+    singular: bilingualLabel("Insurance Request", "طلب تأمين"),
+    plural: bilingualLabel("Insurance Requests", "طلبات التأمين"),
+  },
   admin: {
     useAsTitle: "fullName",
     defaultColumns: ["fullName", "insuranceService", "status", "createdAt"],
@@ -50,63 +55,42 @@ export const InsuranceRequests: CollectionConfig = {
         readOnly: true,
         position: "sidebar",
       },
-      label: {
-        en: "Reference #",
-        ar: "رقم المرجع",
-      },
+      label: bilingualLabel("Reference #", "رقم المرجع"),
     },
     {
       name: "fullName",
       type: "text",
       required: true,
-      label: {
-        en: "Full Name",
-        ar: "الاسم الكامل",
-      },
+      label: bilingualLabel("Full Name", "الاسم الكامل"),
     },
     {
       name: "email",
       type: "email",
       required: true,
-      label: {
-        en: "Email",
-        ar: "البريد الإلكتروني",
-      },
+      label: bilingualLabel("Email", "البريد الإلكتروني"),
     },
     {
       name: "phone",
       type: "text",
       required: true,
-      label: {
-        en: "Phone Number",
-        ar: "رقم الهاتف",
-      },
+      label: bilingualLabel("Phone Number", "رقم الهاتف"),
     },
     {
       name: "insuranceService",
       type: "relationship",
       relationTo: "products",
       required: true,
-      label: {
-        en: "Insurance Service",
-        ar: "الخدمة التأمينية",
-      },
+      label: bilingualLabel("Insurance Service", "الخدمة التأمينية"),
     },
     {
       name: "city",
       type: "text",
-      label: {
-        en: "City",
-        ar: "المدينة",
-      },
+      label: bilingualLabel("City", "المدينة"),
     },
     {
       name: "details",
       type: "textarea",
-      label: {
-        en: "Additional Details",
-        ar: "تفاصيل إضافية",
-      },
+      label: bilingualLabel("Additional Details", "تفاصيل إضافية"),
     },
     {
       name: "status",
@@ -114,19 +98,16 @@ export const InsuranceRequests: CollectionConfig = {
       required: true,
       defaultValue: "new",
       options: [
-        { label: { en: "New", ar: "جديد" }, value: "new" },
-        { label: { en: "In Review", ar: "قيد المراجعة" }, value: "in-review" },
-        { label: { en: "Approved", ar: "موافق عليه" }, value: "approved" },
-        { label: { en: "Rejected", ar: "مرفوض" }, value: "rejected" },
-        { label: { en: "Completed", ar: "مكتمل" }, value: "completed" },
+        { label: bilingualLabel("New", "جديد"), value: "new" },
+        { label: bilingualLabel("In Review", "قيد المراجعة"), value: "in-review" },
+        { label: bilingualLabel("Approved", "موافق عليه"), value: "approved" },
+        { label: bilingualLabel("Rejected", "مرفوض"), value: "rejected" },
+        { label: bilingualLabel("Completed", "مكتمل"), value: "completed" },
       ],
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Status",
-        ar: "الحالة",
-      },
+      label: bilingualLabel("Status", "الحالة"),
     },
     {
       name: "adminNotes",
@@ -134,10 +115,7 @@ export const InsuranceRequests: CollectionConfig = {
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Admin Notes",
-        ar: "ملاحظات الإدارة",
-      },
+      label: bilingualLabel("Admin Notes", "ملاحظات الإدارة"),
     },
   ],
   hooks: {

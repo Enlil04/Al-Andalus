@@ -281,6 +281,32 @@ export const featuredServiceSlugs = [
   "cash-in-transit",
 ] as const;
 
+/** Legacy CMS slugs from early seed scripts (e.g. motor-insurance → motor). */
+const LEGACY_SERVICE_SLUGS: Record<string, string> = {
+  "cargo-insurance": "cargo",
+  "engineering-insurance": "engineering",
+  "glass-insurance": "glass",
+  "burglary-insurance": "burglary",
+  "fire-insurance": "fire",
+  "motor-insurance": "motor",
+  "health-insurance": "health",
+  "travel-insurance": "travel",
+  "hull-insurance": "hull",
+  "cyber-insurance": "cyber",
+};
+
+export function normalizeServiceSlug(slug: string): string {
+  return LEGACY_SERVICE_SLUGS[slug] ?? slug;
+}
+
+export function getProductSlugCandidates(slug: string): string[] {
+  const canonical = normalizeServiceSlug(slug);
+  const legacy = Object.entries(LEGACY_SERVICE_SLUGS)
+    .filter(([, value]) => value === canonical)
+    .map(([key]) => key);
+  return [...new Set([canonical, slug, ...legacy])];
+}
+
 export function getServices(locale: string): Service[] {
   return locale === "ar" ? servicesAr : servicesEn;
 }

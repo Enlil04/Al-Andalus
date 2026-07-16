@@ -1,6 +1,7 @@
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import { NextResponse } from "next/server";
+import { sendContactNotification } from "@/lib/contactEmail";
 import { clientKey, rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
@@ -29,20 +30,31 @@ export async function POST(request: Request) {
       );
     }
 
+    const submission = {
+      name: String(data.name).slice(0, 200),
+      email: String(data.email).slice(0, 200),
+      phone: data.phone ? String(data.phone).slice(0, 50) : "",
+      subject: data.subject
+        ? String(data.subject).slice(0, 200)
+        : "New Contact Form Submission",
+      message: String(data.message).slice(0, 5000),
+    };
+
     await payload.create({
       collection: "contact-messages",
       overrideAccess: true,
       data: {
-        name: String(data.name).slice(0, 200),
-        email: String(data.email).slice(0, 200),
-        phone: data.phone ? String(data.phone).slice(0, 50) : "",
-        subject: data.subject
-          ? String(data.subject).slice(0, 200)
-          : "New Contact Form Submission",
-        message: String(data.message).slice(0, 5000),
+        ...submission,
         isRead: false,
       },
     });
+
+    // Dashboard save is primary; email failure should not block the visitor.
+    try {
+      await sendContactNotification(payload, submission);
+    } catch (emailError) {
+      console.error("Contact email notification failed:", emailError);
+    }
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {

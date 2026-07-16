@@ -1,9 +1,31 @@
 import { GlobalConfig } from "payload";
 
+import { bilingualLabel } from "../lib/cms/labels";
+
+const languageTabs = (
+  englishFields: GlobalConfig["fields"],
+  arabicFields: GlobalConfig["fields"],
+) => ({
+  type: "tabs" as const,
+  tabs: [
+    {
+      label: { en: "English", ar: "الإنجليزية" },
+      fields: englishFields,
+    },
+    {
+      label: { en: "Arabic", ar: "العربية" },
+      fields: arabicFields,
+    },
+  ],
+});
+
 export const Homepage: GlobalConfig = {
   slug: "homepage",
   admin: {
-    description: "محتوى الصفحة الرئيسية (Homepage Content)",
+    description: {
+      en: "Homepage content. Enter English and Arabic in the language tabs inside each section.",
+      ar: "محتوى الصفحة الرئيسية. أدخل الإنجليزية والعربية من تبويبات اللغة داخل كل قسم.",
+    },
     group: {
       en: "Website",
       ar: "الموقع",
@@ -24,18 +46,42 @@ export const Homepage: GlobalConfig = {
                 ar: "شرائح البانر",
               },
               fields: [
-                {
-                  name: "headline",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Headline", ar: "العنوان" },
-                },
-                {
-                  name: "subheadline",
-                  type: "textarea",
-                  localized: true,
-                  label: { en: "Subheadline", ar: "العنوان الفرعي" },
-                },
+                languageTabs(
+                  [
+                    {
+                      name: "headlineEn",
+                      type: "text",
+                      label: bilingualLabel("Headline (English)", "العنوان (إنجليزي)"),
+                    },
+                    {
+                      name: "subheadlineEn",
+                      type: "textarea",
+                      label: bilingualLabel("Subheadline (English)", "العنوان الفرعي (إنجليزي)"),
+                    },
+                    {
+                      name: "ctaTextEn",
+                      type: "text",
+                      label: bilingualLabel("Button Text (English)", "نص الزر (إنجليزي)"),
+                    },
+                  ],
+                  [
+                    {
+                      name: "headlineAr",
+                      type: "text",
+                      label: bilingualLabel("Headline (Arabic)", "العنوان (عربي)"),
+                    },
+                    {
+                      name: "subheadlineAr",
+                      type: "textarea",
+                      label: bilingualLabel("Subheadline (Arabic)", "العنوان الفرعي (عربي)"),
+                    },
+                    {
+                      name: "ctaTextAr",
+                      type: "text",
+                      label: bilingualLabel("Button Text (Arabic)", "نص الزر (عربي)"),
+                    },
+                  ],
+                ),
                 {
                   name: "video",
                   type: "upload",
@@ -47,12 +93,6 @@ export const Homepage: GlobalConfig = {
                   type: "upload",
                   relationTo: "media",
                   label: { en: "Fallback Image", ar: "صورة بديلة" },
-                },
-                {
-                  name: "ctaText",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Button Text", ar: "نص الزر" },
                 },
                 {
                   name: "ctaLink",
@@ -70,30 +110,52 @@ export const Homepage: GlobalConfig = {
               type: "group",
               name: "intro",
               fields: [
-                {
-                  name: "titleLine1",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Title Line 1", ar: "السطر الأول" },
-                },
-                {
-                  name: "titleLine2",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Title Line 2", ar: "السطر الثاني" },
-                },
-                {
-                  name: "titleLine3",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Title Line 3", ar: "السطر الثالث" },
-                },
-                {
-                  name: "lead",
-                  type: "textarea",
-                  localized: true,
-                  label: { en: "Lead Text", ar: "النص التمهيدي" },
-                },
+                languageTabs(
+                  [
+                    {
+                      name: "titleLine1En",
+                      type: "text",
+                      label: bilingualLabel("Title Line 1 (English)", "السطر الأول (إنجليزي)"),
+                    },
+                    {
+                      name: "titleLine2En",
+                      type: "text",
+                      label: bilingualLabel("Title Line 2 (English)", "السطر الثاني (إنجليزي)"),
+                    },
+                    {
+                      name: "titleLine3En",
+                      type: "text",
+                      label: bilingualLabel("Title Line 3 (English)", "السطر الثالث (إنجليزي)"),
+                    },
+                    {
+                      name: "leadEn",
+                      type: "textarea",
+                      label: bilingualLabel("Lead Text (English)", "النص التمهيدي (إنجليزي)"),
+                    },
+                  ],
+                  [
+                    {
+                      name: "titleLine1Ar",
+                      type: "text",
+                      label: bilingualLabel("Title Line 1 (Arabic)", "السطر الأول (عربي)"),
+                    },
+                    {
+                      name: "titleLine2Ar",
+                      type: "text",
+                      label: bilingualLabel("Title Line 2 (Arabic)", "السطر الثاني (عربي)"),
+                    },
+                    {
+                      name: "titleLine3Ar",
+                      type: "text",
+                      label: bilingualLabel("Title Line 3 (Arabic)", "السطر الثالث (عربي)"),
+                    },
+                    {
+                      name: "leadAr",
+                      type: "textarea",
+                      label: bilingualLabel("Lead Text (Arabic)", "النص التمهيدي (عربي)"),
+                    },
+                  ],
+                ),
                 {
                   name: "image",
                   type: "upload",
@@ -112,24 +174,42 @@ export const Homepage: GlobalConfig = {
               name: "story",
               label: { en: "Story Section", ar: "قسم القصة" },
               fields: [
-                {
-                  name: "title",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Title", ar: "العنوان" },
-                },
-                {
-                  name: "description",
-                  type: "textarea",
-                  localized: true,
-                  label: { en: "Description", ar: "الوصف" },
-                },
-                {
-                  name: "ctaText",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Button Text", ar: "نص الزر" },
-                },
+                languageTabs(
+                  [
+                    {
+                      name: "titleEn",
+                      type: "text",
+                      label: bilingualLabel("Title (English)", "العنوان (إنجليزي)"),
+                    },
+                    {
+                      name: "descriptionEn",
+                      type: "textarea",
+                      label: bilingualLabel("Description (English)", "الوصف (إنجليزي)"),
+                    },
+                    {
+                      name: "ctaTextEn",
+                      type: "text",
+                      label: bilingualLabel("Button Text (English)", "نص الزر (إنجليزي)"),
+                    },
+                  ],
+                  [
+                    {
+                      name: "titleAr",
+                      type: "text",
+                      label: bilingualLabel("Title (Arabic)", "العنوان (عربي)"),
+                    },
+                    {
+                      name: "descriptionAr",
+                      type: "textarea",
+                      label: bilingualLabel("Description (Arabic)", "الوصف (عربي)"),
+                    },
+                    {
+                      name: "ctaTextAr",
+                      type: "text",
+                      label: bilingualLabel("Button Text (Arabic)", "نص الزر (عربي)"),
+                    },
+                  ],
+                ),
                 {
                   name: "ctaLink",
                   type: "text",
@@ -142,29 +222,47 @@ export const Homepage: GlobalConfig = {
               name: "aboutPreview",
               label: { en: "About Preview", ar: "معاينة من نحن" },
               fields: [
-                {
-                  name: "title",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Title", ar: "العنوان" },
-                },
-                {
-                  name: "description",
-                  type: "textarea",
-                  localized: true,
-                  label: { en: "Description", ar: "الوصف" },
-                },
+                languageTabs(
+                  [
+                    {
+                      name: "titleEn",
+                      type: "text",
+                      label: bilingualLabel("Title (English)", "العنوان (إنجليزي)"),
+                    },
+                    {
+                      name: "descriptionEn",
+                      type: "textarea",
+                      label: bilingualLabel("Description (English)", "الوصف (إنجليزي)"),
+                    },
+                    {
+                      name: "ctaTextEn",
+                      type: "text",
+                      label: bilingualLabel("Button Text (English)", "نص الزر (إنجليزي)"),
+                    },
+                  ],
+                  [
+                    {
+                      name: "titleAr",
+                      type: "text",
+                      label: bilingualLabel("Title (Arabic)", "العنوان (عربي)"),
+                    },
+                    {
+                      name: "descriptionAr",
+                      type: "textarea",
+                      label: bilingualLabel("Description (Arabic)", "الوصف (عربي)"),
+                    },
+                    {
+                      name: "ctaTextAr",
+                      type: "text",
+                      label: bilingualLabel("Button Text (Arabic)", "نص الزر (عربي)"),
+                    },
+                  ],
+                ),
                 {
                   name: "image",
                   type: "upload",
                   relationTo: "media",
                   label: { en: "Image", ar: "الصورة" },
-                },
-                {
-                  name: "ctaText",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Button Text", ar: "نص الزر" },
                 },
                 {
                   name: "ctaLink",
@@ -183,24 +281,42 @@ export const Homepage: GlobalConfig = {
               name: "recruit",
               label: { en: "Careers Section", ar: "قسم الوظائف" },
               fields: [
-                {
-                  name: "title",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Title", ar: "العنوان" },
-                },
-                {
-                  name: "description",
-                  type: "textarea",
-                  localized: true,
-                  label: { en: "Description", ar: "الوصف" },
-                },
-                {
-                  name: "ctaText",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Button Text", ar: "نص الزر" },
-                },
+                languageTabs(
+                  [
+                    {
+                      name: "titleEn",
+                      type: "text",
+                      label: bilingualLabel("Title (English)", "العنوان (إنجليزي)"),
+                    },
+                    {
+                      name: "descriptionEn",
+                      type: "textarea",
+                      label: bilingualLabel("Description (English)", "الوصف (إنجليزي)"),
+                    },
+                    {
+                      name: "ctaTextEn",
+                      type: "text",
+                      label: bilingualLabel("Button Text (English)", "نص الزر (إنجليزي)"),
+                    },
+                  ],
+                  [
+                    {
+                      name: "titleAr",
+                      type: "text",
+                      label: bilingualLabel("Title (Arabic)", "العنوان (عربي)"),
+                    },
+                    {
+                      name: "descriptionAr",
+                      type: "textarea",
+                      label: bilingualLabel("Description (Arabic)", "الوصف (عربي)"),
+                    },
+                    {
+                      name: "ctaTextAr",
+                      type: "text",
+                      label: bilingualLabel("Button Text (Arabic)", "نص الزر (عربي)"),
+                    },
+                  ],
+                ),
                 {
                   name: "ctaLink",
                   type: "text",
@@ -213,24 +329,42 @@ export const Homepage: GlobalConfig = {
               name: "contactCta",
               label: { en: "Contact CTA", ar: "دعوة التواصل" },
               fields: [
-                {
-                  name: "title",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Title", ar: "العنوان" },
-                },
-                {
-                  name: "description",
-                  type: "textarea",
-                  localized: true,
-                  label: { en: "Description", ar: "الوصف" },
-                },
-                {
-                  name: "buttonText",
-                  type: "text",
-                  localized: true,
-                  label: { en: "Button Text", ar: "نص الزر" },
-                },
+                languageTabs(
+                  [
+                    {
+                      name: "titleEn",
+                      type: "text",
+                      label: bilingualLabel("Title (English)", "العنوان (إنجليزي)"),
+                    },
+                    {
+                      name: "descriptionEn",
+                      type: "textarea",
+                      label: bilingualLabel("Description (English)", "الوصف (إنجليزي)"),
+                    },
+                    {
+                      name: "buttonTextEn",
+                      type: "text",
+                      label: bilingualLabel("Button Text (English)", "نص الزر (إنجليزي)"),
+                    },
+                  ],
+                  [
+                    {
+                      name: "titleAr",
+                      type: "text",
+                      label: bilingualLabel("Title (Arabic)", "العنوان (عربي)"),
+                    },
+                    {
+                      name: "descriptionAr",
+                      type: "textarea",
+                      label: bilingualLabel("Description (Arabic)", "الوصف (عربي)"),
+                    },
+                    {
+                      name: "buttonTextAr",
+                      type: "text",
+                      label: bilingualLabel("Button Text (Arabic)", "نص الزر (عربي)"),
+                    },
+                  ],
+                ),
                 {
                   name: "buttonLink",
                   type: "text",

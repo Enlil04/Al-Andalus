@@ -1,18 +1,26 @@
 import { CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
+import { bilingualLabel } from "../lib/cms/labels";
 
 export const FAQs: CollectionConfig = {
   slug: "faqs",
+  labels: {
+    singular: bilingualLabel("FAQ", "سؤال شائع"),
+    plural: bilingualLabel("FAQs", "الأسئلة الشائعة"),
+  },
   admin: {
-    useAsTitle: "question",
-    defaultColumns: ["question", "category", "order"],
-    description: "الأسئلة الشائعة (FAQ Management)",
+    useAsTitle: "questionEn",
+    defaultColumns: ["questionEn", "questionAr", "category", "order"],
+    description: {
+      en: "Enter English and Arabic content in the tabs below.",
+      ar: "أدخل المحتوى بالإنجليزية والعربية من التبويبات أدناه.",
+    },
     group: {
       en: "Website",
       ar: "الموقع",
     },
-    listSearchableFields: ["question"],
+    listSearchableFields: ["questionEn", "questionAr"],
   },
   access: {
     read: isAdminOrEditor,
@@ -22,24 +30,49 @@ export const FAQs: CollectionConfig = {
   },
   fields: [
     {
-      name: "question",
-      type: "text",
-      required: true,
-      localized: true,
-      label: {
-        en: "Question",
-        ar: "السؤال",
-      },
-    },
-    {
-      name: "answer",
-      type: "richText",
-      required: true,
-      localized: true,
-      label: {
-        en: "Answer",
-        ar: "الإجابة",
-      },
+      type: "tabs",
+      tabs: [
+        {
+          label: {
+            en: "English",
+            ar: "الإنجليزية",
+          },
+          fields: [
+            {
+              name: "questionEn",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Question (English)", "السؤال (إنجليزي)"),
+            },
+            {
+              name: "answerEn",
+              type: "richText",
+              required: true,
+              label: bilingualLabel("Answer (English)", "الإجابة (إنجليزي)"),
+            },
+          ],
+        },
+        {
+          label: {
+            en: "Arabic",
+            ar: "العربية",
+          },
+          fields: [
+            {
+              name: "questionAr",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Question (Arabic)", "السؤال (عربي)"),
+            },
+            {
+              name: "answerAr",
+              type: "richText",
+              required: true,
+              label: bilingualLabel("Answer (Arabic)", "الإجابة (عربي)"),
+            },
+          ],
+        },
+      ],
     },
     {
       name: "category",
@@ -47,19 +80,28 @@ export const FAQs: CollectionConfig = {
       required: true,
       defaultValue: "general",
       options: [
-        { label: { en: "General", ar: "عام" }, value: "general" },
-        { label: { en: "Health Insurance", ar: "التأمين الصحي" }, value: "health" },
-        { label: { en: "Motor Insurance", ar: "تأمين السيارات" }, value: "motor" },
-        { label: { en: "Fire Insurance", ar: "تأمين الحريق" }, value: "fire" },
-        { label: { en: "Personal Accident", ar: "الحوادث الشخصية" }, value: "accident" },
+        { label: bilingualLabel("General", "عام"), value: "general" },
+        {
+          label: bilingualLabel("Health Insurance", "التأمين الصحي"),
+          value: "health",
+        },
+        {
+          label: bilingualLabel("Motor Insurance", "تأمين السيارات"),
+          value: "motor",
+        },
+        {
+          label: bilingualLabel("Fire Insurance", "تأمين الحريق"),
+          value: "fire",
+        },
+        {
+          label: bilingualLabel("Personal Accident", "الحوادث الشخصية"),
+          value: "accident",
+        },
       ],
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Category",
-        ar: "التصنيف",
-      },
+      label: bilingualLabel("Category", "التصنيف"),
     },
     {
       name: "order",
@@ -68,10 +110,7 @@ export const FAQs: CollectionConfig = {
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Display Order",
-        ar: "ترتيب العرض",
-      },
+      label: bilingualLabel("Display Order", "ترتيب العرض"),
     },
   ],
 };

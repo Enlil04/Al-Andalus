@@ -32,6 +32,28 @@ export async function POST(request: Request) {
       );
     }
 
+    let insuranceServiceId: string | number = data.insuranceService;
+    if (typeof insuranceServiceId === "string" && !/^\d+$/.test(insuranceServiceId)) {
+      const { docs } = await payload.find({
+        collection: "products",
+        limit: 1,
+        overrideAccess: true,
+        where: {
+          or: [
+            { slug: { equals: insuranceServiceId } },
+            { title: { equals: insuranceServiceId } },
+          ],
+        },
+      });
+      if (!docs.length) {
+        return NextResponse.json(
+          { error: "Selected insurance service is not available." },
+          { status: 400 },
+        );
+      }
+      insuranceServiceId = docs[0].id;
+    }
+
     await payload.create({
       collection: "insurance-requests",
       overrideAccess: true,
@@ -39,7 +61,7 @@ export async function POST(request: Request) {
         fullName: String(data.fullName).slice(0, 200),
         email: String(data.email).slice(0, 200),
         phone: String(data.phone).slice(0, 50),
-        insuranceService: data.insuranceService,
+        insuranceService: insuranceServiceId,
         city: data.city ? String(data.city).slice(0, 100) : "",
         details: data.details ? String(data.details).slice(0, 5000) : "",
         status: "new",

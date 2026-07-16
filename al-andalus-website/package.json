@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "^3.85.1",
+    "@payloadcms/email-nodemailer": "^3.85.1",
     "@payloadcms/next": "^3.85.1",
     "@payloadcms/richtext-lexical": "^3.85.1",
     "@radix-ui/react-accordion": "^1.2.15",
@@ -26,6 +27,7 @@
     "lucide-react": "^1.23.0",
     "motion": "^12.42.2",
     "next": "16.2.9",
+    "nodemailer": "^9.0.3",
     "payload": "^3.85.1",
     "postcss": "^8.5.16",
     "react": "19.2.4",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tsx": "^4.23.0",

@@ -1,8 +1,6 @@
 import Image from "next/image";
-import { getPayload } from "payload";
-import configPromise from "@/payload.config";
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import FooterServer from "../../components/FooterServer";
 import Loader from "../../components/Loader";
 import SmoothScroll from "../../components/SmoothScroll";
 import GSAPAnimations from "../../components/GSAPAnimations";
@@ -12,6 +10,7 @@ import AnimatedHeadline from "../../components/AnimatedHeadline";
 import ContactCta from "../../components/ContactCta";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
+import { fetchPartners } from "@/lib/cms/content";
 import "./Partners.css";
 
 export async function generateMetadata() {
@@ -33,15 +32,8 @@ export async function generateMetadata() {
 }
 
 export default async function PartnersPage() {
-  const payload = await getPayload({ config: configPromise });
   const locale = await getLocale();
-
-  const { docs: partners } = await payload.find({
-    collection: "partners",
-    limit: 100,
-    sort: "order",
-    locale,
-  });
+  const partners = await fetchPartners(undefined, 100);
 
   const bannerTitle = locale === "ar" ? "الشركاء" : "PARTNERS";
   const bannerSubtitle = locale === "ar" ? "شبكتنا الموثوقة" : "Our Trusted Network";
@@ -89,11 +81,15 @@ export default async function PartnersPage() {
             <div className="partners-page__grid">
               {partners.length > 0 ? (
                 partners.map((partner, i) => {
-                  const logoUrl =
-                    partner.logo && typeof partner.logo !== "string"
-                      ? partner.logo.url
+                  const logo =
+                    partner.logo &&
+                    typeof partner.logo !== "string" &&
+                    typeof partner.logo !== "number"
+                      ? (partner.logo as { url?: string })
                       : null;
+                  const logoUrl = logo?.url ?? null;
                   const websiteUrl = partner.website as string | null;
+                  const partnerName = partner.name as string;
 
                   const CardContent = (
                     <>
@@ -104,14 +100,14 @@ export default async function PartnersPage() {
                         {logoUrl ? (
                           <Image
                             src={logoUrl}
-                            alt={partner.name as string}
+                            alt={partnerName}
                             width={120}
                             height={70}
                             style={{ objectFit: "contain" }}
                           />
                         ) : (
                           <span className="partner-page-card__text">
-                            {partner.name as string}
+                            {partnerName}
                           </span>
                         )}
                       </div>
@@ -122,7 +118,7 @@ export default async function PartnersPage() {
                   );
 
                   return (
-                    <ScrollReveal key={partner.id} delay={(i % 4) + 1}>
+                    <ScrollReveal key={String(partner.id)} delay={(i % 4) + 1}>
                       {websiteUrl ? (
                         <a
                           href={websiteUrl}
@@ -151,7 +147,7 @@ export default async function PartnersPage() {
 
         <ContactCta />
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

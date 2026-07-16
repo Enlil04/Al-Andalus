@@ -1,18 +1,26 @@
 import { CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
+import { bilingualLabel } from "../lib/cms/labels";
 
 export const Products: CollectionConfig = {
   slug: "products",
+  labels: {
+    singular: bilingualLabel("Product", "خدمة"),
+    plural: bilingualLabel("Products", "الخدمات"),
+  },
   admin: {
-    useAsTitle: "title",
-    defaultColumns: ["title", "status", "isFeatured", "order"],
-    description: "إدارة الخدمات التأمينية (Insurance Services Management)",
+    useAsTitle: "titleEn",
+    defaultColumns: ["titleEn", "titleAr", "category", "status", "isFeatured", "order"],
+    description: {
+      en: "Insurance services. Enter English and Arabic in the language tabs below.",
+      ar: "إدارة الخدمات التأمينية. أدخل الإنجليزية والعربية من تبويبات اللغة أدناه.",
+    },
     group: {
       en: "Insurance",
       ar: "التأمين",
     },
-    listSearchableFields: ["title", "slug"],
+    listSearchableFields: ["titleEn", "titleAr", "slug"],
   },
   access: {
     read: isAdminOrEditor,
@@ -22,14 +30,65 @@ export const Products: CollectionConfig = {
   },
   fields: [
     {
-      name: "title",
-      type: "text",
-      required: true,
-      localized: true,
-      label: {
-        en: "Service Name",
-        ar: "اسم الخدمة",
-      },
+      type: "tabs",
+      tabs: [
+        {
+          label: { en: "English", ar: "الإنجليزية" },
+          fields: [
+            {
+              name: "titleEn",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Service Name (English)", "اسم الخدمة (إنجليزي)"),
+            },
+            {
+              name: "shortDescriptionEn",
+              type: "textarea",
+              required: true,
+              label: bilingualLabel("Short Description (English)", "وصف مختصر (إنجليزي)"),
+            },
+            {
+              name: "descriptionEn",
+              type: "richText",
+              label: bilingualLabel("Full Description (English)", "الوصف الكامل (إنجليزي)"),
+            },
+          ],
+        },
+        {
+          label: { en: "Arabic", ar: "العربية" },
+          fields: [
+            {
+              name: "titleAr",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Service Name (Arabic)", "اسم الخدمة (عربي)"),
+            },
+            {
+              name: "shortDescriptionAr",
+              type: "textarea",
+              required: true,
+              label: bilingualLabel("Short Description (Arabic)", "وصف مختصر (عربي)"),
+            },
+            {
+              name: "descriptionAr",
+              type: "richText",
+              label: bilingualLabel("Full Description (Arabic)", "الوصف الكامل (عربي)"),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "icon",
+      type: "upload",
+      relationTo: "media",
+      label: bilingualLabel("Service Icon", "أيقونة الخدمة"),
+    },
+    {
+      name: "thumbnail",
+      type: "upload",
+      relationTo: "media",
+      label: bilingualLabel("Service Image", "صورة الخدمة"),
     },
     {
       name: "slug",
@@ -39,47 +98,27 @@ export const Products: CollectionConfig = {
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "URL Slug",
-        ar: "رابط الخدمة",
-      },
+      label: bilingualLabel("URL Slug", "رابط الخدمة"),
     },
     {
-      name: "shortDescription",
-      type: "textarea",
+      name: "category",
+      type: "select",
       required: true,
-      localized: true,
-      label: {
-        en: "Short Description",
-        ar: "وصف مختصر",
+      defaultValue: "business",
+      options: [
+        { label: bilingualLabel("Personal", "شخصي"), value: "personal" },
+        { label: bilingualLabel("Business", "أعمال"), value: "business" },
+        { label: bilingualLabel("Industrial", "صناعي"), value: "industrial" },
+        { label: bilingualLabel("Financial", "مالي"), value: "financial" },
+      ],
+      admin: {
+        position: "sidebar",
+        description: {
+          en: "Controls which tab the service appears under on the Services page.",
+          ar: "يحدد التبويب الذي تظهر تحته الخدمة في صفحة الخدمات.",
+        },
       },
-    },
-    {
-      name: "description",
-      type: "richText",
-      localized: true,
-      label: {
-        en: "Full Description",
-        ar: "الوصف الكامل",
-      },
-    },
-    {
-      name: "icon",
-      type: "upload",
-      relationTo: "media",
-      label: {
-        en: "Service Icon",
-        ar: "أيقونة الخدمة",
-      },
-    },
-    {
-      name: "thumbnail",
-      type: "upload",
-      relationTo: "media",
-      label: {
-        en: "Service Image",
-        ar: "صورة الخدمة",
-      },
+      label: bilingualLabel("Display Category", "فئة العرض"),
     },
     {
       name: "isFeatured",
@@ -88,10 +127,7 @@ export const Products: CollectionConfig = {
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Featured on Homepage",
-        ar: "مميز في الصفحة الرئيسية",
-      },
+      label: bilingualLabel("Featured on Homepage", "مميز في الصفحة الرئيسية"),
     },
     {
       name: "status",
@@ -99,19 +135,16 @@ export const Products: CollectionConfig = {
       required: true,
       defaultValue: "active",
       options: [
-        { label: { en: "Available", ar: "متاح" }, value: "active" },
+        { label: bilingualLabel("Available", "متاح"), value: "active" },
         {
-          label: { en: "Coming Soon", ar: "قريباً" },
+          label: bilingualLabel("Coming Soon", "قريباً"),
           value: "under-development",
         },
       ],
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Availability",
-        ar: "التوفر",
-      },
+      label: bilingualLabel("Availability", "التوفر"),
     },
     {
       name: "order",
@@ -120,10 +153,7 @@ export const Products: CollectionConfig = {
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Display Order",
-        ar: "ترتيب العرض",
-      },
+      label: bilingualLabel("Display Order", "ترتيب العرض"),
     },
   ],
 };

@@ -1,5 +1,5 @@
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import FooterServer from "../../components/FooterServer";
 import Loader from "../../components/Loader";
 import ScrollReveal from "../../components/ScrollReveal";
 import SmoothScroll from "../../components/SmoothScroll";
@@ -226,7 +226,7 @@ export default async function AboutPage() {
           ctaLink={contactCta.ctaLink}
         />
 
-        <Footer socialLinks={siteSettings.socialLinks} />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

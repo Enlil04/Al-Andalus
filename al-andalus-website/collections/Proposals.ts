@@ -1,9 +1,14 @@
 import { CollectionConfig } from "payload";
 import { isAdmin, isAdminOrEditor } from "../access/roles";
 import crypto from "crypto";
+import { bilingualFieldHint, bilingualLabel } from "../lib/cms/labels";
 
 export const Proposals: CollectionConfig = {
   slug: "proposals",
+  labels: {
+    singular: bilingualLabel("Proposal", "عرض"),
+    plural: bilingualLabel("Proposals", "العروض"),
+  },
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "status", "createdAt"],
@@ -39,9 +44,10 @@ export const Proposals: CollectionConfig = {
       name: "title",
       type: "text",
       required: true,
-      label: {
-        en: "Company / Proposal Title",
-        ar: "اسم الشركة / عنوان العرض",
+      localized: true,
+      label: bilingualLabel("Company / Proposal Title", "اسم الشركة / عنوان العرض"),
+      admin: {
+        description: bilingualFieldHint,
       },
     },
     {
@@ -49,10 +55,7 @@ export const Proposals: CollectionConfig = {
       type: "upload",
       relationTo: "media",
       required: true,
-      label: {
-        en: "Proposal PDF Document",
-        ar: "ملف العرض (PDF)",
-      },
+      label: bilingualLabel("Proposal PDF Document", "ملف العرض (PDF)"),
     },
     {
       name: "token",
@@ -65,15 +68,9 @@ export const Proposals: CollectionConfig = {
         components: {
           Field: "./components/dashboard/ShareLinkField.tsx#default",
         },
-        description: {
-          en: "Secure unique link token. Automatically generated on save.",
-          ar: "رمز الرابط الآمن الفريد. يتم إنشاؤه تلقائياً عند الحفظ.",
-        },
+        description: bilingualFieldHint,
       },
-      label: {
-        en: "Share Link",
-        ar: "رابط المشاركة الآمن",
-      },
+      label: bilingualLabel("Share Link", "رابط المشاركة الآمن"),
     },
     {
       name: "status",
@@ -82,25 +79,22 @@ export const Proposals: CollectionConfig = {
       required: true,
       options: [
         {
-          label: { en: "Draft", ar: "مسودة" },
+          label: bilingualLabel("Draft", "مسودة"),
           value: "draft",
         },
         {
-          label: { en: "Active", ar: "نشط" },
+          label: bilingualLabel("Active", "نشط"),
           value: "active",
         },
         {
-          label: { en: "Archived", ar: "مؤرشف" },
+          label: bilingualLabel("Archived", "مؤرشف"),
           value: "archived",
         },
       ],
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Status",
-        ar: "الحالة",
-      },
+      label: bilingualLabel("Status", "الحالة"),
     },
   ],
 };

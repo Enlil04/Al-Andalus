@@ -202,3 +202,105 @@
     }
   }
 }
+
+.analytics-widget {
+  padding: calc(var(--base) * 1);
+  border-radius: var(--style-radius-m);
+  border: 1px solid var(--theme-elevation-150);
+  background: var(--theme-elevation-0);
+
+  &__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(var(--base) * 0.75);
+    margin-bottom: calc(var(--base) * 0.9);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: calc(var(--base) * 0.25) calc(var(--base) * 0.55);
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-700);
+    font-size: calc(var(--base) * 0.6);
+    font-weight: 600;
+
+    &--on {
+      background: rgba(22, 163, 74, 0.12);
+      color: #15803d;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--base) * 0.4);
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: calc(var(--base) * 0.35) calc(var(--base) * 0.7);
+    border: 1px solid var(--theme-elevation-250);
+    border-radius: 999px;
+    color: var(--theme-text);
+    font-size: calc(var(--base) * 0.62);
+    font-weight: 500;
+    text-decoration: none;
+    background: var(--theme-elevation-50);
+
+    &:hover {
+      background: var(--theme-elevation-100);
+    }
+
+    &--primary {
+      border-color: #0b223d;
+      background: #0b223d;
+      color: #fff;
+
+      &:hover {
+        background: #143456;
+      }
+    }
+  }
+
+  &__embed-wrap {
+    overflow: hidden;
+    border-radius: var(--style-radius-s);
+    border: 1px solid var(--theme-elevation-150);
+    background: var(--theme-elevation-50);
+  }
+
+  &__embed {
+    display: block;
+    width: 100%;
+    min-height: 520px;
+    border: 0;
+  }
+
+  &__empty {
+    padding: calc(var(--base) * 1);
+    border-radius: var(--style-radius-s);
+    background: var(--theme-elevation-50);
+    border: 1px dashed var(--theme-elevation-250);
+    color: var(--theme-elevation-700);
+    font-size: calc(var(--base) * 0.68);
+    line-height: 1.55;
+
+    p {
+      margin: 0 0 calc(var(--base) * 0.6);
+    }
+
+    ol {
+      margin: 0;
+      padding-inline-start: 1.2rem;
+    }
+
+    li + li {
+      margin-top: calc(var(--base) * 0.25);
+    }
+  }
+}

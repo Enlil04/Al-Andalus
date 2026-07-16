@@ -3,6 +3,7 @@ import configPromise from "@/payload.config";
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { getProductSeedEntries } from "@/lib/productSeed";
 
 function isSeedAllowed(request: Request): boolean {
   if (process.env.ALLOW_SEED !== "true") return false;
@@ -16,6 +17,28 @@ function isSeedAllowed(request: Request): boolean {
   return header === secret || querySecret === secret;
 }
 
+async function upsertProduct(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  productId: number | string,
+  product: ReturnType<typeof getProductSeedEntries>[number],
+) {
+  await payload.update({
+    collection: "products",
+    id: productId,
+    overrideAccess: true,
+    data: {
+      titleEn: product.titleEn,
+      titleAr: product.titleAr,
+      shortDescriptionEn: product.shortDescriptionEn,
+      shortDescriptionAr: product.shortDescriptionAr,
+      category: product.category,
+      isFeatured: product.isFeatured,
+      status: product.status,
+      order: product.order,
+    },
+  });
+}
+
 export async function GET(request: Request) {
   if (!isSeedAllowed(request)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -23,42 +46,16 @@ export async function GET(request: Request) {
 
   try {
     const payload = await getPayload({ config: configPromise });
+    const products = getProductSeedEntries();
 
-    const products = [
-      { name: "Cargo Insurance", status: "active", isFeatured: false },
-      { name: "Engineering Insurance", status: "active", isFeatured: false },
-      { name: "Glass Insurance", status: "active", isFeatured: false },
-      { name: "Burglary Insurance", status: "active", isFeatured: false },
-      { name: "Bankers Blanket", status: "under-development", isFeatured: false },
-      { name: "Cash in Transit", status: "active", isFeatured: false },
-      { name: "Public Liability", status: "active", isFeatured: false },
-      { name: "Fire Insurance", status: "active", isFeatured: false },
-      { name: "Fidelity Guarantee", status: "active", isFeatured: false },
-      {
-        name: "Motor Insurance",
-        status: "active",
-        isFeatured: true,
-        desc: "Comprehensive coverage for vehicles against accidents, damages, and legal liabilities. Protecting you and your vehicle on every road in Iraq.",
-      },
-      {
-        name: "Health Insurance",
-        status: "active",
-        isFeatured: true,
-        desc: "Comprehensive healthcare coverage for medical treatment, hospitalization, surgeries, diagnostics, and related healthcare expenses for individuals and groups.",
-      },
-      { name: "Loan Protection", status: "under-development", isFeatured: false },
-      { name: "Travel Insurance", status: "active", isFeatured: false },
-      { name: "Medical Malpractice", status: "active", isFeatured: false },
-      { name: "Hull Insurance", status: "active", isFeatured: false },
-      { name: "Cyber Insurance", status: "under-development", isFeatured: false },
-    ];
+    let created = 0;
+    let updated = 0;
 
-    let count = 0;
-    for (const [index, p] of products.entries()) {
-      const slug = p.name.toLowerCase().replace(/ /g, "-");
+    for (const product of products) {
       const existing = await payload.find({
         collection: "products",
-        where: { slug: { equals: slug } },
+        where: { slug: { equals: product.slug } },
+        limit: 1,
         overrideAccess: true,
       });
 
@@ -67,15 +64,21 @@ export async function GET(request: Request) {
           collection: "products",
           overrideAccess: true,
           data: {
-            title: p.name,
-            slug,
-            shortDescription: p.desc || "Comprehensive insurance protection.",
-            isFeatured: p.isFeatured,
-            status: p.status as "active" | "under-development",
-            order: index + 1,
+            titleEn: product.titleEn,
+            titleAr: product.titleAr,
+            slug: product.slug,
+            shortDescriptionEn: product.shortDescriptionEn,
+            shortDescriptionAr: product.shortDescriptionAr,
+            category: product.category,
+            isFeatured: product.isFeatured,
+            status: product.status,
+            order: product.order,
           },
         });
-        count++;
+        created++;
+      } else {
+        await upsertProduct(payload, existing.docs[0].id, product);
+        updated++;
       }
     }
 
@@ -106,6 +109,7 @@ export async function GET(request: Request) {
           const filePath = path.join(partnersDir, file);
           const mediaDoc = await payload.create({
             collection: "media",
+            locale: "en",
             overrideAccess: true,
             data: { alt: `Partner ${index + 1} Logo` },
             filePath,
@@ -113,6 +117,7 @@ export async function GET(request: Request) {
 
           await payload.create({
             collection: "partners",
+            locale: "en",
             overrideAccess: true,
             data: {
               name: `Partner ${index + 1}`,
@@ -128,37 +133,58 @@ export async function GET(request: Request) {
     let newsCount = 0;
     const dummyNews = [
       {
-        title: "Al-Andalus Expands Insurance Network",
+        titleEn: "Al-Andalus Expands Insurance Network",
+        titleAr: "الأندلس توسّع شبكة التأمين",
+        excerptEn:
+          "This is a placeholder excerpt for the news article to demonstrate the layout.",
+        excerptAr: "هذا مقتطف تجريبي للمقال لإظهار تخطيط الصفحة.",
         category: "company",
         publishedDate: new Date().toISOString(),
       },
       {
-        title: "New Health Insurance Packages for 2027",
+        titleEn: "New Health Insurance Packages for 2027",
+        titleAr: "باقات تأمين صحي جديدة لعام 2027",
+        excerptEn:
+          "This is a placeholder excerpt for the news article to demonstrate the layout.",
+        excerptAr: "هذا مقتطف تجريبي للمقال لإظهار تخطيط الصفحة.",
         category: "health",
         publishedDate: new Date(Date.now() - 86400000).toISOString(),
       },
       {
-        title: "Awarded Best Insurtech of the Year",
+        titleEn: "Awarded Best Insurtech of the Year",
+        titleAr: "جائزة أفضل شركة تكنولوجيا تأمين للعام",
+        excerptEn:
+          "This is a placeholder excerpt for the news article to demonstrate the layout.",
+        excerptAr: "هذا مقتطف تجريبي للمقال لإظهار تخطيط الصفحة.",
         category: "company",
         publishedDate: new Date(Date.now() - 86400000 * 5).toISOString(),
       },
       {
-        title: "Important Update on Motor Policies",
+        titleEn: "Important Update on Motor Policies",
+        titleAr: "تحديث مهم حول وثائق تأمين السيارات",
+        excerptEn:
+          "This is a placeholder excerpt for the news article to demonstrate the layout.",
+        excerptAr: "هذا مقتطف تجريبي للمقال لإظهار تخطيط الصفحة.",
         category: "motor",
         publishedDate: new Date(Date.now() - 86400000 * 10).toISOString(),
       },
       {
-        title: "Navigating Travel Insurance in 2026",
+        titleEn: "Navigating Travel Insurance in 2026",
+        titleAr: "دليلك لتأمين السفر في 2026",
+        excerptEn:
+          "This is a placeholder excerpt for the news article to demonstrate the layout.",
+        excerptAr: "هذا مقتطف تجريبي للمقال لإظهار تخطيط الصفحة.",
         category: "travel",
         publishedDate: new Date(Date.now() - 86400000 * 15).toISOString(),
       },
     ];
 
     for (const news of dummyNews) {
-      const slug = news.title.toLowerCase().replace(/ /g, "-");
+      const slug = news.titleEn.toLowerCase().replace(/ /g, "-");
       const existing = await payload.find({
         collection: "news",
         where: { slug: { equals: slug } },
+        limit: 1,
         overrideAccess: true,
       });
 
@@ -167,7 +193,8 @@ export async function GET(request: Request) {
           collection: "news",
           overrideAccess: true,
           data: {
-            title: news.title,
+            titleEn: news.titleEn,
+            titleAr: news.titleAr,
             slug,
             category: news.category as
               | "company"
@@ -176,8 +203,30 @@ export async function GET(request: Request) {
               | "travel",
             publishedDate: news.publishedDate,
             status: "published",
-            excerpt:
-              "This is a placeholder excerpt for the news article to demonstrate the layout.",
+            excerptEn: news.excerptEn,
+            excerptAr: news.excerptAr,
+          },
+        });
+        newsCount++;
+      } else {
+        await payload.update({
+          collection: "news",
+          id: existing.docs[0].id,
+          locale: "en",
+          overrideAccess: true,
+          data: {
+            title: news.titleEn,
+            excerpt: news.excerptEn,
+          },
+        });
+        await payload.update({
+          collection: "news",
+          id: existing.docs[0].id,
+          locale: "ar",
+          overrideAccess: true,
+          data: {
+            title: news.titleAr,
+            excerpt: news.excerptAr,
           },
         });
         newsCount++;
@@ -186,7 +235,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Seeded ${count} products, ${partnersCount} partners, and ${newsCount} news articles.`,
+      message: `Products: ${created} created, ${updated} updated (EN+AR). Partners: ${partnersCount}. News: ${newsCount} synced (EN+AR).`,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Seed failed";

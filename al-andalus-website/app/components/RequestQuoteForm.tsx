@@ -8,6 +8,7 @@ import AnimatedHeadline from "./AnimatedHeadline";
 import { contactInfo } from "@/lib/contact";
 import { getSiteCopy } from "@/lib/copy";
 import { useLocale } from "./LocaleProvider";
+import type { QuoteProduct } from "@/lib/cms/content";
 import "./RequestQuote.css";
 
 const coverageFieldKeys = [
@@ -29,7 +30,22 @@ const coverageFieldKeys = [
   "contractValue",
 ] as const;
 
-export default function RequestQuoteForm() {
+const QUOTE_PRODUCT_SLUGS: Record<
+  "travel" | "motor" | "health" | "fire" | "engineering",
+  string
+> = {
+  travel: "travel",
+  motor: "motor",
+  health: "health",
+  fire: "fire",
+  engineering: "engineering",
+};
+
+type RequestQuoteFormProps = {
+  products?: QuoteProduct[];
+};
+
+export default function RequestQuoteForm({ products = [] }: RequestQuoteFormProps) {
   const { locale } = useLocale();
   const siteCopy = getSiteCopy(locale);
   const { form: formCopy } = siteCopy.requestQuotePage;
@@ -77,6 +93,11 @@ export default function RequestQuoteForm() {
       .join("\n\n");
 
     try {
+      const productSlug = QUOTE_PRODUCT_SLUGS[activeType];
+      const matchedProduct =
+        products.find((product) => product.slug === productSlug) ??
+        products.find((product) => product.slug.includes(productSlug));
+
       const res = await fetch("/api/insurance-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -85,7 +106,7 @@ export default function RequestQuoteForm() {
           email: data.get("email"),
           phone: data.get("phone"),
           city: data.get("city"),
-          insuranceService: activeLabel,
+          insuranceService: matchedProduct?.id ?? productSlug,
           details,
         }),
       });

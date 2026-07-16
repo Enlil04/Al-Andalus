@@ -1,13 +1,21 @@
 import { CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
+import { bilingualFieldHint, bilingualLabel } from "../lib/cms/labels";
 
 export const Partners: CollectionConfig = {
   slug: "partners",
+  labels: {
+    singular: bilingualLabel("Partner", "شريك"),
+    plural: bilingualLabel("Partners", "الشركاء"),
+  },
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "order"],
-    description: "شركاء النجاح والعملاء (Partners & Clients Management)",
+    description: {
+      en: `Partners & clients. ${bilingualFieldHint.en}`,
+      ar: `شركاء النجاح والعملاء. ${bilingualFieldHint.ar}`,
+    },
     group: {
       en: "Content",
       ar: "المحتوى",
@@ -25,9 +33,10 @@ export const Partners: CollectionConfig = {
       name: "name",
       type: "text",
       required: true,
-      label: {
-        en: "Partner Name",
-        ar: "اسم الشريك",
+      localized: true,
+      label: bilingualLabel("Partner Name", "اسم الشريك"),
+      admin: {
+        description: bilingualFieldHint,
       },
     },
     {
@@ -35,18 +44,12 @@ export const Partners: CollectionConfig = {
       type: "upload",
       relationTo: "media",
       required: true,
-      label: {
-        en: "Logo",
-        ar: "الشعار",
-      },
+      label: bilingualLabel("Logo", "الشعار"),
     },
     {
       name: "website",
       type: "text",
-      label: {
-        en: "Website URL",
-        ar: "رابط الموقع",
-      },
+      label: bilingualLabel("Website URL", "رابط الموقع"),
     },
     {
       name: "order",
@@ -55,10 +58,7 @@ export const Partners: CollectionConfig = {
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Display Order",
-        ar: "ترتيب العرض",
-      },
+      label: bilingualLabel("Display Order", "ترتيب العرض"),
     },
   ],
 };

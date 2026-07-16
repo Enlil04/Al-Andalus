@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+import FooterServer from "../../../components/FooterServer";
 import Loader from "../../../components/Loader";
 import SmoothScroll from "../../../components/SmoothScroll";
 import GSAPAnimations from "../../../components/GSAPAnimations";
@@ -148,7 +148,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

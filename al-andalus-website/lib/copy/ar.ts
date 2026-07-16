@@ -43,9 +43,9 @@ export const siteCopy = {
   },
 
   hero: {
-    headline: "عندما تكون الرهانات عالية،\nيجب أن يكون مؤمنك كذلك.",
-    headlineRight: "مؤمن واحد.\nفي جميع أنحاء البلاد.",
-    scrollLabel: "( مرر للأسفل )",
+    headline: "عندما تكبر المخاطر،\nيجب أن تكون حمايتك أكبر.",
+    headlineRight: "مؤمّن واحد.\nفي كل أنحاء العراق.",
+    scrollLabel: "( للأسفل )",
   },
 
   intro: {

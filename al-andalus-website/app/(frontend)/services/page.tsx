@@ -1,5 +1,5 @@
 import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import FooterServer from "../../components/FooterServer";
 import Loader from "../../components/Loader";
 import SmoothScroll from "../../components/SmoothScroll";
 import GSAPAnimations from "../../components/GSAPAnimations";
@@ -11,6 +11,7 @@ import CultureSection from "../../components/CultureSection";
 import ContactCta from "../../components/ContactCta";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
+import { fetchAllProducts } from "@/lib/cms/content";
 
 const messageImage = "/al-and images/5f32f6eefa193becbdd238d11fdd52aa.jpg";
 const messageBottomImage = "/al-and images/Modern Office Interior.png";
@@ -29,6 +30,7 @@ export default async function ServicesPage() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
   const { servicesPage } = siteCopy;
+  const services = await fetchAllProducts();
 
   return (
     <>
@@ -128,14 +130,14 @@ export default async function ServicesPage() {
         </section>
 
         {/* ═══════════════ 3. SERVICES CARDS ═══════════════ */}
-        <ServicesCardSection id="services-card-section" />
+        <ServicesCardSection id="services-card-section" services={services} />
 
         {/* ═══════════════ 4. INDUSTRIES DIAGRAM ═══════════════ */}
         <CultureSection />
 
         <ContactCta />
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );

@@ -13,6 +13,14 @@ import { useLocale } from "./LocaleProvider";
 
 interface Props {
   id?: string;
+  services?: Service[];
+}
+
+function filterServicesByCategory(
+  services: Service[],
+  category: ServiceCategoryId,
+) {
+  return services.filter((service) => service.category === category);
 }
 
 function ServiceCard({ service, locale }: { service: Service; locale: string }) {
@@ -59,10 +67,15 @@ function ServiceCard({ service, locale }: { service: Service; locale: string }) 
   );
 }
 
-export default function ServicesCardSection({ id = "services-card-section" }: Props) {
+export default function ServicesCardSection({
+  id = "services-card-section",
+  services,
+}: Props) {
   const { locale } = useLocale();
   const [activeCategory, setActiveCategory] = useState<ServiceCategoryId>("personal");
-  const filteredServices = getServicesByCategory(activeCategory, locale);
+  const filteredServices = services
+    ? filterServicesByCategory(services, activeCategory)
+    : getServicesByCategory(activeCategory, locale);
   const serviceCategories = getServiceCategories(locale);
 
   return (

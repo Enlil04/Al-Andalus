@@ -8,6 +8,7 @@ import JobsDescriptionScroll from "./JobsDescriptionScroll";
 import { getSiteCopy } from "@/lib/copy";
 import { useLocale } from "./LocaleProvider";
 import Link from "next/link";
+import type { JobListItem } from "@/lib/cms/content";
 
 function slugify(text: string) {
   // Replace custom characters to match URL format
@@ -46,11 +47,27 @@ function ChevronIcon({ isRtl }: { isRtl: boolean }) {
   );
 }
 
-export default function JobsDescriptionList() {
+type JobsDescriptionListProps = {
+  jobs?: JobListItem[];
+};
+
+export default function JobsDescriptionList({ jobs }: JobsDescriptionListProps) {
   const { locale } = useLocale();
   const siteCopy = getSiteCopy(locale);
   const { listings } = siteCopy.jobsPage;
-  const categories = listings.categories;
+
+  const cmsJobs =
+    jobs ??
+    listings.jobs.map((job) => ({
+      slug: slugify(job.title),
+      title: job.title,
+      department: job.category,
+    }));
+
+  const categories = [
+    locale === "ar" ? "الكل" : "ALL",
+    ...Array.from(new Set(cmsJobs.map((job) => job.department))),
+  ];
 
   const allLabel = locale === "ar" ? "الكل" : "ALL";
 
@@ -65,8 +82,8 @@ export default function JobsDescriptionList() {
 
   const filteredJobs =
     activeCategory === allLabel
-      ? listings.jobs
-      : listings.jobs.filter((job) => job.category === activeCategory);
+      ? cmsJobs
+      : cmsJobs.filter((job) => job.department === activeCategory);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -95,27 +112,6 @@ export default function JobsDescriptionList() {
       }
     );
   }, [activeCategory]);
-
-  // We need to slugify english equivalent for static jobs links so routing doesn't break
-  const getJobSlug = (jobTitle: string) => {
-    // Check if it's the corporate accounting job
-    if (jobTitle.includes("Accounting") || jobTitle.includes("الشؤون الإدارية")) {
-      return "corporate-affairs-accounting";
-    }
-    if (jobTitle.includes("Field Agent") || jobTitle.includes("ميداني")) {
-      return "insurance-field-agent";
-    }
-    if (jobTitle.includes("Underwriting") || jobTitle.includes("اكتتاب")) {
-      return "underwriting-specialist";
-    }
-    if (jobTitle.includes("Claims") || jobTitle.includes("مطالبات")) {
-      return "claims-officer";
-    }
-    if (jobTitle.includes("Technical Sales") || jobTitle.includes("مبيعات فنية")) {
-      return "technical-sales-representative";
-    }
-    return slugify(jobTitle);
-  };
 
   return (
     <section className="jobs-description" id="job-description">
@@ -146,19 +142,16 @@ export default function JobsDescriptionList() {
           </nav>
 
           <ul ref={listRef} className="jobs-description__list" key={activeCategory}>
-            {filteredJobs.map((job) => {
-              const jobSlug = getJobSlug(job.title);
-              return (
-                <li key={job.title} className="jobs-description__item">
-                  <Link href={`/jobs/${jobSlug}`} className="jobs-description__link w-full text-left">
-                    <span className="jobs-description__job-title">{job.title}</span>
-                    <span className="jobs-description__chevron">
-                      <ChevronIcon isRtl={locale === "ar"} />
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
+            {filteredJobs.map((job) => (
+              <li key={job.slug} className="jobs-description__item">
+                <Link href={`/jobs/${job.slug}`} className="jobs-description__link w-full text-left">
+                  <span className="jobs-description__job-title">{job.title}</span>
+                  <span className="jobs-description__chevron">
+                    <ChevronIcon isRtl={locale === "ar"} />
+                  </span>
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

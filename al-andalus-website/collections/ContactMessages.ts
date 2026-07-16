@@ -1,9 +1,14 @@
 import { CollectionConfig } from "payload";
 
 import { isAdmin, isAdminOrEditor } from "../access/roles";
+import { bilingualLabel } from "../lib/cms/labels";
 
 export const ContactMessages: CollectionConfig = {
   slug: "contact-messages",
+  labels: {
+    singular: bilingualLabel("Contact Message", "رسالة تواصل"),
+    plural: bilingualLabel("Contact Messages", "رسائل التواصل"),
+  },
   admin: {
     useAsTitle: "subject",
     defaultColumns: ["name", "email", "subject", "isRead", "createdAt"],
@@ -25,45 +30,30 @@ export const ContactMessages: CollectionConfig = {
       name: "name",
       type: "text",
       required: true,
-      label: {
-        en: "Full Name",
-        ar: "الاسم الكامل",
-      },
+      label: bilingualLabel("Full Name", "الاسم الكامل"),
     },
     {
       name: "email",
       type: "email",
       required: true,
-      label: {
-        en: "Email",
-        ar: "البريد الإلكتروني",
-      },
+      label: bilingualLabel("Email", "البريد الإلكتروني"),
     },
     {
       name: "phone",
       type: "text",
-      label: {
-        en: "Phone Number",
-        ar: "رقم الهاتف",
-      },
+      label: bilingualLabel("Phone Number", "رقم الهاتف"),
     },
     {
       name: "subject",
       type: "text",
       required: true,
-      label: {
-        en: "Subject",
-        ar: "الموضوع",
-      },
+      label: bilingualLabel("Subject", "الموضوع"),
     },
     {
       name: "message",
       type: "textarea",
       required: true,
-      label: {
-        en: "Message",
-        ar: "الرسالة",
-      },
+      label: bilingualLabel("Message", "الرسالة"),
     },
     {
       name: "isRead",
@@ -72,10 +62,7 @@ export const ContactMessages: CollectionConfig = {
       admin: {
         position: "sidebar",
       },
-      label: {
-        en: "Read",
-        ar: "مقروءة",
-      },
+      label: bilingualLabel("Read", "مقروءة"),
     },
   ],
 };

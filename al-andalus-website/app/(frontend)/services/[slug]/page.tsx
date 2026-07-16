@@ -1,10 +1,8 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getPayload } from "payload";
-import configPromise from "@/payload.config";
 import { getServices } from "@/lib/services";
 import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+import FooterServer from "../../../components/FooterServer";
 import Loader from "../../../components/Loader";
 import SmoothScroll from "../../../components/SmoothScroll";
 import GSAPAnimations from "../../../components/GSAPAnimations";
@@ -14,6 +12,9 @@ import AnimatedHeadline from "../../../components/AnimatedHeadline";
 import ContactCta from "../../../components/ContactCta";
 import Link from "next/link";
 import { getLocale } from "@/lib/locale";
+import { fetchProductBySlug } from "@/lib/cms/content";
+import { serializeLexical } from "@/lib/cms/lexical";
+import { getMediaUrl } from "@/lib/cms/media";
 import "./ServiceDetail.css";
 
 interface PageProps {
@@ -41,66 +42,46 @@ const SERVICE_IMAGES: Record<string, string> = {
   cyber: "/al-and images/Futuristic Data Center.png",
 };
 
-function serializeLexical(richTextObj: any): string {
-  if (!richTextObj || !richTextObj.root || !richTextObj.root.children) return "";
-  return richTextObj.root.children
-    .map((node: any) => {
-      if (node.children) {
-        return node.children.map((child: any) => child.text || "").join("");
-      }
-      return "";
-    })
-    .join("\n\n");
-}
-
 export default async function ServiceDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const locale = await getLocale();
 
-  // 1. Fetch from database first with correct locale
-  const payload = await getPayload({ config: configPromise });
-  const { docs } = await payload.find({
-    collection: "products",
-    locale,
-    where: {
-      slug: { equals: slug },
-    },
-  });
-  const productDoc = docs[0];
-
-  // 2. Lookup local configuration as fallback with correct locale
+  const productDoc = await fetchProductBySlug(slug);
   const currentServices = getServices(locale);
   const staticService = currentServices.find((s) => s.slug === slug);
 
-  // If not found in either, return 404
   if (!productDoc && !staticService) {
     notFound();
   }
 
-  // Bind values with fallback
-  const title = productDoc?.title || staticService?.title || "";
-  const subtitle = staticService?.subtitle || (locale === "ar" ? "خدمة تأمينية" : "Insurance Service");
-  
+  const title = (productDoc?.title as string) || staticService?.title || "";
+  const subtitle =
+    staticService?.subtitle ||
+    (locale === "ar" ? "خدمة تأمينية" : "Insurance Service");
+
   let descriptionText = "";
   if (productDoc) {
     if (productDoc.description) {
       descriptionText = serializeLexical(productDoc.description);
     }
     if (!descriptionText) {
-      descriptionText = productDoc.shortDescription;
+      descriptionText = (productDoc.shortDescription as string) ?? "";
     }
   } else {
     descriptionText = staticService?.description || "";
   }
 
-  const dbImageUrl =
-    productDoc?.thumbnail && typeof productDoc.thumbnail !== "string"
-      ? productDoc.thumbnail.url
-      : null;
-  const imageUrl = dbImageUrl || SERVICE_IMAGES[slug] || "/al-and images/Misty Urban Development.png";
+  const dbImageUrl = getMediaUrl(
+    productDoc?.thumbnail as Parameters<typeof getMediaUrl>[0],
+  );
+  const imageUrl =
+    dbImageUrl || SERVICE_IMAGES[slug] || "/al-and images/Misty Urban Development.png";
 
   const label = locale === "ar" ? "( تغطية الخدمة )" : "( Service Coverage )";
-  const headline = locale === "ar" ? "حماية الأصول وضمان الاستمرارية" : "Safeguarding Assets & Supporting Continuity";
+  const headline =
+    locale === "ar"
+      ? "حماية الأصول وضمان الاستمرارية"
+      : "Safeguarding Assets & Supporting Continuity";
   const quoteButtonLabel = locale === "ar" ? "طلب تسعيرة" : "Request a Quote";
 
   return (
@@ -112,7 +93,6 @@ export default async function ServiceDetailPage({ params }: PageProps) {
 
         <PageBanner title={title} subtitle={subtitle} showImage={false} />
 
-        {/* ═══════════════ 1. SERVICE DETAILS ═══════════════ */}
         <section className="service-detail__intro jobs-section">
           <div className="about-grid">
             <div className="about-grid__cols-1-6">
@@ -163,7 +143,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
 
         <ContactCta />
 
-        <Footer />
+        <FooterServer />
       </SmoothScroll>
     </>
   );
