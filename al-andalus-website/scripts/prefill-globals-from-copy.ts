@@ -9,7 +9,7 @@ import { siteCopy as ar } from "../lib/copy/ar";
 
 const client = createClient({ url: "file:./database.db" });
 
-function lexicalFromParagraphs(paragraphs: string[], rtl = false) {
+function lexicalFromParagraphs(paragraphs: readonly string[], rtl = false) {
   return JSON.stringify({
     root: {
       type: "root",
