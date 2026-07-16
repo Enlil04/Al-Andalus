@@ -1,6 +1,9 @@
+import path from "path";
 import { CollectionConfig } from "payload";
 import { isAdminOrEditor } from "../access/roles";
 import { bilingualFieldHint, bilingualLabel } from "../lib/cms/labels";
+
+const mediaDir = path.resolve(process.cwd(), "public/media");
 
 export const Media: CollectionConfig = {
   slug: "media",
@@ -22,7 +25,8 @@ export const Media: CollectionConfig = {
   },
   upload: {
     mimeTypes: ["image/*", "video/*", "application/pdf"],
-    staticDir: "public/media",
+    // Absolute path so Hostinger volume mounts resolve correctly regardless of cwd.
+    staticDir: mediaDir,
     imageSizes: [
       {
         name: "thumbnail",

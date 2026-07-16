@@ -13,6 +13,7 @@ import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import { getLocale } from "@/lib/locale";
 import { getSiteCopy } from "@/lib/copy";
+import { getMediaUrl } from "@/lib/cms/media";
 import {
   fetchHomepageContent,
   fetchFeaturedProducts,
@@ -20,6 +21,7 @@ import {
   fetchPublishedNews,
   fetchPartners,
 } from "@/lib/cms/content";
+import CmsImage from "../components/CmsImage";
 import FooterServer from "../components/FooterServer";
 import HeroBackground from "../components/HeroBackground";
 
@@ -28,7 +30,7 @@ function getPartnerLogoUrl(partner: Record<string, unknown>): string | null {
   if (!logo || typeof logo === "string" || typeof logo === "number") {
     return null;
   }
-  return (logo as { url?: string }).url ?? null;
+  return getMediaUrl(logo as Parameters<typeof getMediaUrl>[0]);
 }
 
 export async function generateMetadata() {
@@ -123,8 +125,9 @@ export default async function Home() {
 
             <div className="intro__right">
               <ScrollReveal delay={2}>
-                <Image
-                  src={intro.imageUrl ?? defaultIntroImage}
+                <CmsImage
+                  src={intro.imageUrl}
+                  fallbackSrc={defaultIntroImage}
                   alt="Al Andalus"
                   width={300}
                   height={188}
@@ -378,8 +381,9 @@ export default async function Home() {
                           </span>
                           <div className="partner-grid-card__logo">
                             {logoUrl ? (
-                              <Image
+                              <CmsImage
                                 src={logoUrl}
+                                fallbackSrc="/logo.svg"
                                 alt={partner.name as string}
                                 width={150}
                                 height={80}
@@ -424,8 +428,9 @@ export default async function Home() {
                           </span>
                           <div className="partner-grid-card__logo">
                             {logoUrl ? (
-                              <Image
+                              <CmsImage
                                 src={logoUrl}
+                                fallbackSrc="/logo.svg"
                                 alt={partner.name as string}
                                 width={150}
                                 height={80}
@@ -464,8 +469,9 @@ export default async function Home() {
                           </span>
                           <div className="partner-grid-card__logo">
                             {logoUrl ? (
-                              <Image
+                              <CmsImage
                                 src={logoUrl}
+                                fallbackSrc="/logo.svg"
                                 alt={partner.name as string}
                                 width={150}
                                 height={80}

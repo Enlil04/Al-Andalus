@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Header from "../../components/Header";
 import FooterServer from "../../components/FooterServer";
 import Loader from "../../components/Loader";
@@ -8,9 +7,11 @@ import PageBanner from "../../components/PageBanner";
 import ScrollReveal from "../../components/ScrollReveal";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
 import ContactCta from "../../components/ContactCta";
+import CmsImage from "../../components/CmsImage";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
 import { fetchPartners } from "@/lib/cms/content";
+import { getMediaUrl } from "@/lib/cms/media";
 import "./Partners.css";
 
 export async function generateMetadata() {
@@ -81,13 +82,9 @@ export default async function PartnersPage() {
             <div className="partners-page__grid">
               {partners.length > 0 ? (
                 partners.map((partner, i) => {
-                  const logo =
-                    partner.logo &&
-                    typeof partner.logo !== "string" &&
-                    typeof partner.logo !== "number"
-                      ? (partner.logo as { url?: string })
-                      : null;
-                  const logoUrl = logo?.url ?? null;
+                  const logoUrl = getMediaUrl(
+                    partner.logo as Parameters<typeof getMediaUrl>[0],
+                  );
                   const websiteUrl = partner.website as string | null;
                   const partnerName = partner.name as string;
 
@@ -98,8 +95,9 @@ export default async function PartnersPage() {
                       </span>
                       <div className="partner-page-card__logo">
                         {logoUrl ? (
-                          <Image
+                          <CmsImage
                             src={logoUrl}
+                            fallbackSrc="/logo.svg"
                             alt={partnerName}
                             width={120}
                             height={70}
