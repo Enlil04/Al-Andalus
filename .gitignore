@@ -14,10 +14,12 @@ out/
 build/
 dist/
 
-# Local databases
+# Local databases — never commit live DB / seed dumps
 *.db
-!database.db
+*.sqlite
 *.db-journal
+**/database.db
+**/database.seed.*
 
 # Logs and debug
 *.log

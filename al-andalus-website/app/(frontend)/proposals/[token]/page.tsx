@@ -10,6 +10,8 @@ import GSAPAnimations from "../../../components/GSAPAnimations";
 import PageBanner from "../../../components/PageBanner";
 import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
+import { getLocale } from "@/lib/locale";
+import { getSiteCopy } from "@/lib/copy";
 import "../Proposals.css";
 
 interface PageProps {
@@ -19,8 +21,9 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps) {
+  const locale = await getLocale();
   return {
-    title: "Agreement | Al-Andalus Insurance",
+    title: locale === "ar" ? "اتفاقية | الأندلس للتأمين" : "Agreement | Al-Andalus Insurance",
     robots: {
       index: false,
       follow: false,
@@ -30,10 +33,15 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function ProposalDetailPage({ params }: PageProps) {
   const { token } = await params;
+  const locale = await getLocale();
   const payload = await getPayload({ config: configPromise });
 
   const { docs } = await payload.find({
     collection: "proposals",
+    locale,
+    depth: 1,
+    limit: 1,
+    overrideAccess: true,
     where: {
       and: [
         { token: { equals: token } },
@@ -43,14 +51,28 @@ export default async function ProposalDetailPage({ params }: PageProps) {
   });
 
   if (!docs.length) {
-    return notFound();
+    notFound();
   }
 
   const proposal = docs[0];
   const pdfDoc = proposal.pdf;
-  
-  const pdfUrl = pdfDoc && typeof pdfDoc !== "string" ? pdfDoc.url : null;
-  const pdfFilename = pdfDoc && typeof pdfDoc !== "string" ? pdfDoc.filename : "proposal.pdf";
+  const hasPdf = Boolean(
+    pdfDoc && typeof pdfDoc !== "string" && typeof pdfDoc !== "number",
+  );
+  const pdfUrl = hasPdf ? `/api/proposals/${encodeURIComponent(token)}/file` : null;
+  const pdfFilename =
+    hasPdf && pdfDoc && typeof pdfDoc !== "string" && typeof pdfDoc !== "number"
+      ? pdfDoc.filename || "proposal.pdf"
+      : "proposal.pdf";
+
+  const bannerTitle = locale === "ar" ? "العرض التأميني" : "PROPOSAL";
+  const bannerSubtitle = locale === "ar" ? "رابط مشترك آمن" : "Secure Shared Link";
+  const label = locale === "ar" ? "( اتفاقية آمنة )" : "( Secure Agreement )";
+  const intro = locale === "ar"
+    ? "هذا عرض تأميني آمن تمت مشاركته معك حصرياً. يمكنك مراجعة شروط الاتفاقية في عارض المستندات، أو تنزيل ملف PDF مباشرة باستخدام الزر أدناه."
+    : "This is a secure proposal shared exclusively with you. You can review the agreement terms in the document viewer, or download the PDF file directly using the button below.";
+  const downloadLabel = locale === "ar" ? "تنزيل ملف PDF" : "Download PDF";
+  const noDocumentLabel = locale === "ar" ? "لا يوجد مستند مرفق بهذا العرض حالياً." : "No document is attached to this proposal yet.";
 
   return (
     <>
@@ -60,8 +82,8 @@ export default async function ProposalDetailPage({ params }: PageProps) {
         <Header />
 
         <PageBanner
-          title="PROPOSAL"
-          subtitle="Secure Shared Link"
+          title={bannerTitle}
+          subtitle={bannerSubtitle}
           showImage={false}
         />
 
@@ -69,7 +91,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
           <div className="about-grid proposal-view__grid">
             <aside className="proposal-view__aside about-grid__cols-1-5">
               <ScrollReveal>
-                <span className="proposal-view__label">( Secure Agreement )</span>
+                <span className="proposal-view__label">{label}</span>
               </ScrollReveal>
               <AnimatedHeadline
                 title={proposal.title}
@@ -78,7 +100,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
               />
               <ScrollReveal delay={0.5}>
                 <p className="proposal-view__intro">
-                  This is a secure proposal shared exclusively with you. You can review the agreement terms in the document viewer, or download the PDF file directly using the button below.
+                  {intro}
                 </p>
               </ScrollReveal>
 
@@ -91,7 +113,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
                     rel="noopener noreferrer"
                     className="btn"
                   >
-                    Download PDF
+                    {downloadLabel}
                     <svg
                       className="btn-arrow"
                       viewBox="0 0 14 14"
@@ -99,6 +121,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
                       stroke="currentColor"
                       strokeWidth="1.5"
                       aria-hidden="true"
+                      style={locale === "ar" ? { transform: "rotate(180deg)", marginRight: "0.5rem" } : undefined}
                     >
                       <path d="M1 7h12M8 2l5 5-5 5" />
                     </svg>
@@ -118,7 +141,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
                 </div>
               ) : (
                 <div className="proposal-view__no-document">
-                  <p>No document is attached to this proposal yet.</p>
+                  <p>{noDocumentLabel}</p>
                 </div>
               )}
             </div>

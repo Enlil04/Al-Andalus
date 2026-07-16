@@ -14,7 +14,8 @@ export const Proposals: CollectionConfig = {
     },
   },
   access: {
-    read: () => true, // Publicly readable for clients holding the link
+    // Public access only via token-gated page / file routes (overrideAccess).
+    read: isAdminOrEditor,
     create: isAdminOrEditor,
     update: isAdminOrEditor,
     delete: isAdmin,

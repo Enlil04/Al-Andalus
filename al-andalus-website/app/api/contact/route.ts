@@ -1,39 +1,55 @@
-import { getPayload } from 'payload';
-import configPromise from '@/payload.config';
-import { NextResponse } from 'next/server';
+import { getPayload } from "payload";
+import configPromise from "@/payload.config";
+import { NextResponse } from "next/server";
+import { clientKey, rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
+  const limited = rateLimit(clientKey(request, "contact"), {
+    limit: 5,
+    windowMs: 60_000,
+  });
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limited.retryAfterSec) },
+      },
+    );
+  }
+
   try {
     const data = await request.json();
     const payload = await getPayload({ config: configPromise });
 
-    // Validate required fields
     if (!data.name || !data.email || !data.message) {
       return NextResponse.json(
-        { error: 'Name, email, and message are required.' },
-        { status: 400 }
+        { error: "Name, email, and message are required." },
+        { status: 400 },
       );
     }
 
-    // Create entry in ContactMessages collection
-    const result = await payload.create({
+    await payload.create({
       collection: "contact-messages",
+      overrideAccess: true,
       data: {
-        name: data.name,
-        email: data.email,
-        phone: data.phone || '',
-        subject: data.subject || 'New Contact Form Submission',
-        message: data.message,
+        name: String(data.name).slice(0, 200),
+        email: String(data.email).slice(0, 200),
+        phone: data.phone ? String(data.phone).slice(0, 50) : "",
+        subject: data.subject
+          ? String(data.subject).slice(0, 200)
+          : "New Contact Form Submission",
+        message: String(data.message).slice(0, 5000),
         isRead: false,
       },
     });
 
-    return NextResponse.json({ success: true, result }, { status: 201 });
-  } catch (error: any) {
-    console.error('Contact Form Error:', error);
+    return NextResponse.json({ success: true }, { status: 201 });
+  } catch (error) {
+    console.error("Contact Form Error:", error);
     return NextResponse.json(
-      { error: 'An error occurred while submitting the form.' },
-      { status: 500 }
+      { error: "An error occurred while submitting the form." },
+      { status: 500 },
     );
   }
 }

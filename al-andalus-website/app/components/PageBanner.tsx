@@ -11,7 +11,7 @@ interface PageBannerProps {
 export default function PageBanner({
   title,
   subtitle,
-  imageSrc = "/al-and images/Urban Skyline Under Blue Sky.png",
+  imageSrc = "/al-and images/close-up-partial-view-of-businesspeople-in-formal-2026-03-12-23-51-14-utc.jpg",
   showImage = true,
 }: PageBannerProps) {
   return (

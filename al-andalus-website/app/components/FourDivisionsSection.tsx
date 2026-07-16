@@ -3,7 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { useLocale } from "./LocaleProvider";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { waitForPageReady } from "@/lib/pageReady";
@@ -16,10 +17,12 @@ const CIRCLE_POSITIONS = [
   "circle-coollaser",
 ] as const;
 
-const pillars = siteCopy.whyChoosePillars;
-const { whyChooseSection } = siteCopy;
-
 export default function FourDivisionsSection() {
+  const { locale } = useLocale();
+  const siteCopy = getSiteCopy(locale);
+  const pillars = siteCopy.whyChoosePillars;
+  const { whyChooseSection } = siteCopy;
+
   const [activeId, setActiveId] = useState<string>(pillars[0]?.id ?? "licensed");
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -51,7 +54,7 @@ export default function FourDivisionsSection() {
       cleanupReady();
       ctx?.revert();
     };
-  }, []);
+  }, [pillars]);
 
   return (
     <section className="four-divisions" id="why-us" ref={containerRef}>

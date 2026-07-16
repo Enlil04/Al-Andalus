@@ -1,8 +1,8 @@
 import type { Payload } from "payload";
-import { siteCopy } from "@/lib/copy/en";
-import { faqItems, type FaqItem } from "@/lib/faq";
+import { getSiteCopy } from "@/lib/copy";
+import { getFaqItems, type FaqItem } from "@/lib/faq";
 import { getFeaturedServices, type Service } from "@/lib/services";
-import { FRONTEND_LOCALE } from "./locale";
+import { getLocale } from "../locale";
 import { serializeLexical } from "./lexical";
 import { getMediaUrl } from "./media";
 import { getCMSPayload } from "./payload";
@@ -81,9 +81,11 @@ function splitLines(text: string): string[] {
 
 export async function fetchHomepageContent(payload?: Payload) {
   const cms = payload ?? (await getCMSPayload());
+  const currentLocale = await getLocale();
+  const siteCopy = getSiteCopy(currentLocale);
   const [homepage, siteSettings] = await Promise.all([
-    cms.findGlobal({ slug: "homepage", locale: FRONTEND_LOCALE }),
-    cms.findGlobal({ slug: "site-settings", locale: FRONTEND_LOCALE }),
+    cms.findGlobal({ slug: "homepage", locale: currentLocale }),
+    cms.findGlobal({ slug: "site-settings", locale: currentLocale }),
   ]);
 
   const heroSlide = homepage.heroSlides?.[0];
@@ -148,9 +150,11 @@ export async function fetchHomepageContent(payload?: Payload) {
 
 export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPageContent> {
   const cms = payload ?? (await getCMSPayload());
+  const currentLocale = await getLocale();
+  const siteCopy = getSiteCopy(currentLocale);
   const about = await cms.findGlobal({
     slug: "about-page",
-    locale: FRONTEND_LOCALE,
+    locale: currentLocale,
   });
 
   const fallback = siteCopy.aboutPage;
@@ -203,7 +207,7 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
           name: fallback.leadership.md.signoff,
           role: fallback.leadership.md.role,
           bioParagraphs: fallback.leadership.md.paragraphs,
-          photoUrl: "/al-and images/Modern Office Interior.png",
+          photoUrl: "/al-and images/ChatGPT Image Jul 15, 2026, 10_41_41 PM.png",
         },
       ];
 
@@ -220,9 +224,11 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
 
 export async function fetchSiteSettings(payload?: Payload): Promise<SiteSettingsContent> {
   const cms = payload ?? (await getCMSPayload());
+  const currentLocale = await getLocale();
+  const siteCopy = getSiteCopy(currentLocale);
   const settings = await cms.findGlobal({
     slug: "site-settings",
-    locale: FRONTEND_LOCALE,
+    locale: currentLocale,
   });
 
   const social = siteCopy.footer.social;
@@ -248,9 +254,10 @@ export async function fetchSiteSettings(payload?: Payload): Promise<SiteSettings
 
 export async function fetchFeaturedProducts(payload?: Payload): Promise<Service[]> {
   const cms = payload ?? (await getCMSPayload());
+  const currentLocale = await getLocale();
   const { docs } = await cms.find({
     collection: "products",
-    locale: FRONTEND_LOCALE,
+    locale: currentLocale,
     limit: 10,
     sort: "order",
     where: {
@@ -262,7 +269,7 @@ export async function fetchFeaturedProducts(payload?: Payload): Promise<Service[
   });
 
   if (docs.length === 0) {
-    return getFeaturedServices();
+    return getFeaturedServices(currentLocale);
   }
 
   return docs.map((product) => ({
@@ -275,15 +282,16 @@ export async function fetchFeaturedProducts(payload?: Payload): Promise<Service[
 
 export async function fetchFaqs(payload?: Payload): Promise<FaqItem[]> {
   const cms = payload ?? (await getCMSPayload());
+  const currentLocale = await getLocale();
   const { docs } = await cms.find({
     collection: "faqs",
-    locale: FRONTEND_LOCALE,
+    locale: currentLocale,
     limit: 20,
     sort: "order",
   });
 
   if (docs.length === 0) {
-    return faqItems;
+    return getFaqItems(currentLocale);
   }
 
   return docs.map((item) => ({

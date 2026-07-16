@@ -9,20 +9,27 @@ import AnimatedHeadline from "../../components/AnimatedHeadline";
 import ServicesCardSection from "../../components/ServicesCardSection";
 import CultureSection from "../../components/CultureSection";
 import ContactCta from "../../components/ContactCta";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { getLocale } from "@/lib/locale";
 
-const messageImage = "/al-and images/Misty Urban Development.png";
+const messageImage = "/al-and images/5f32f6eefa193becbdd238d11fdd52aa.jpg";
 const messageBottomImage = "/al-and images/Modern Office Interior.png";
 const voicesImagePrimary = "/al-and images/Urban Skyline Under Blue Sky.png";
 
-const { servicesPage } = siteCopy;
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  return {
+    title: siteCopy.meta.services.title,
+    description: siteCopy.meta.services.description,
+  };
+}
 
-export const metadata = {
-  title: siteCopy.meta.services.title,
-  description: siteCopy.meta.services.description,
-};
+export default async function ServicesPage() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  const { servicesPage } = siteCopy;
 
-export default function ServicesPage() {
   return (
     <>
       <Loader />
@@ -33,6 +40,7 @@ export default function ServicesPage() {
         <PageBanner
           title={servicesPage.banner.title}
           subtitle={servicesPage.banner.subtitle}
+          imageSrc="/al-and images/extended-family-group-portrait-on-a-teal-sofa-2026-03-18-13-49-06-utc.jpg"
         />
 
         {/* ═══════════════ 1. MESSAGE ═══════════════ */}

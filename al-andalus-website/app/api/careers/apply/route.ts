@@ -1,8 +1,25 @@
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import { NextResponse } from "next/server";
+import { clientKey, rateLimit } from "@/lib/rateLimit";
+
+const MAX_CV_BYTES = 5 * 1024 * 1024; // 5 MB
 
 export async function POST(request: Request) {
+  const limited = rateLimit(clientKey(request, "careers"), {
+    limit: 3,
+    windowMs: 60_000,
+  });
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limited.retryAfterSec) },
+      },
+    );
+  }
+
   try {
     const formData = await request.formData();
     const payload = await getPayload({ config: configPromise });
@@ -21,11 +38,31 @@ export async function POST(request: Request) {
       );
     }
 
+    if (cv.size > MAX_CV_BYTES) {
+      return NextResponse.json(
+        { error: "CV must be 5 MB or smaller." },
+        { status: 400 },
+      );
+    }
+
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (cv.type && !allowedTypes.includes(cv.type)) {
+      return NextResponse.json(
+        { error: "CV must be a PDF or Word document." },
+        { status: 400 },
+      );
+    }
+
     const buffer = Buffer.from(await cv.arrayBuffer());
     const media = await payload.create({
       collection: "media",
+      overrideAccess: true,
       data: {
-        alt: `${fullName} CV`,
+        alt: `${String(fullName).slice(0, 100)} CV`,
       },
       file: {
         data: buffer,
@@ -35,20 +72,21 @@ export async function POST(request: Request) {
       },
     });
 
-    const result = await payload.create({
+    await payload.create({
       collection: "job-applications",
+      overrideAccess: true,
       data: {
         job: String(job),
-        fullName: String(fullName),
-        email: String(email),
-        phone: String(phone),
-        coverLetter: coverLetter ? String(coverLetter) : "",
+        fullName: String(fullName).slice(0, 200),
+        email: String(email).slice(0, 200),
+        phone: String(phone).slice(0, 50),
+        coverLetter: coverLetter ? String(coverLetter).slice(0, 5000) : "",
         cv: media.id,
         status: "new",
       },
     });
 
-    return NextResponse.json({ success: true, result }, { status: 201 });
+    return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
     console.error("Job Application Error:", error);
     return NextResponse.json(

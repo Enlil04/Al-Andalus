@@ -35,7 +35,8 @@ export const InsuranceRequests: CollectionConfig = {
   },
   access: {
     read: isAdminOrEditor,
-    create: () => true,
+    // Public creates go through /api/insurance-requests (overrideAccess + rate limit).
+    create: () => false,
     update: isAdminOrEditor,
     delete: isAdmin,
   },

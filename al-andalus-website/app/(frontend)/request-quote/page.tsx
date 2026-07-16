@@ -7,16 +7,25 @@ import GSAPAnimations from "../../components/GSAPAnimations";
 import PageBanner from "../../components/PageBanner";
 import RequestQuoteForm from "../../components/RequestQuoteForm";
 import RequestQuoteContact from "../../components/RequestQuoteContact";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { getLocale } from "@/lib/locale";
 
-const { requestQuotePage } = siteCopy;
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  return {
+    title: siteCopy.meta.requestQuote.title,
+    description: siteCopy.meta.requestQuote.description,
+  };
+}
 
-export const metadata = {
-  title: siteCopy.meta.requestQuote.title,
-  description: siteCopy.meta.requestQuote.description,
-};
+export default async function RequestQuotePage() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  const { requestQuotePage } = siteCopy;
 
-export default function RequestQuotePage() {
+  const loadingText = locale === "ar" ? "جاري تحميل نموذج طلب التسعيرة..." : "Loading Quote Form...";
+
   return (
     <>
       <Loader />
@@ -30,7 +39,7 @@ export default function RequestQuotePage() {
           showImage={false}
         />
 
-        <Suspense fallback={<div className="request-quote__loading">Loading Quote Form...</div>}>
+        <Suspense fallback={<div className="request-quote__loading">{loadingText}</div>}>
           <RequestQuoteForm />
         </Suspense>
 

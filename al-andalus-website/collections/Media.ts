@@ -1,9 +1,23 @@
 import { CollectionConfig } from "payload";
+import { isAdminOrEditor } from "../access/roles";
 
 export const Media: CollectionConfig = {
   slug: "media",
   access: {
-    read: () => true,
+    // Public can read images/videos for the marketing site.
+    // PDFs (CVs, proposals) require staff — serve proposals via /api/proposals/[token]/file.
+    read: ({ req }) => {
+      if (isAdminOrEditor({ req })) return true;
+      return {
+        or: [
+          { mimeType: { contains: "image/" } },
+          { mimeType: { contains: "video/" } },
+        ],
+      };
+    },
+    create: isAdminOrEditor,
+    update: isAdminOrEditor,
+    delete: isAdminOrEditor,
   },
   upload: {
     mimeTypes: ["image/*", "video/*", "application/pdf"],

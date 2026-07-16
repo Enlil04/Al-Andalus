@@ -8,18 +8,25 @@ import ScrollReveal from "../../components/ScrollReveal";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
 import JobsDescriptionList from "../../components/JobsDescriptionList";
 import ContactCta from "../../components/ContactCta";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { getLocale } from "@/lib/locale";
 
 const challengeImage = "/al-and images/Misty Urban Development.png";
 
-const { jobsPage } = siteCopy;
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  return {
+    title: siteCopy.meta.jobs.title,
+    description: siteCopy.meta.jobs.description,
+  };
+}
 
-export const metadata = {
-  title: siteCopy.meta.jobs.title,
-  description: siteCopy.meta.jobs.description,
-};
+export default async function JobsPage() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  const { jobsPage } = siteCopy;
 
-export default function JobsPage() {
   return (
     <>
       <Loader />
@@ -27,7 +34,11 @@ export default function JobsPage() {
         <GSAPAnimations />
         <Header />
 
-        <PageBanner title={jobsPage.banner.title} subtitle={jobsPage.banner.subtitle} />
+        <PageBanner
+          title={jobsPage.banner.title}
+          subtitle={jobsPage.banner.subtitle}
+          imageSrc="/al-and images/businesspeople-open-hand-to-shaking-hands-in-offic-2026-03-13-01-59-19-utc.jpg"
+        />
 
         {/* ═══════════════ 1. MESSAGE ═══════════════ */}
         <section className="jobs-challenge jobs-section" id="message">

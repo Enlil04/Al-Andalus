@@ -14,6 +14,39 @@ declare global {
   }
 }
 
+function killScrollTriggers() {
+  ScrollTrigger.getAll().forEach((trigger) => {
+    try {
+      trigger.kill(true);
+    } catch {
+      // Ignore DOM races during App Router transitions.
+    }
+  });
+}
+
+function isInternalNavigation(anchor: HTMLAnchorElement) {
+  const href = anchor.getAttribute("href");
+  if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) {
+    return false;
+  }
+  if (anchor.target && anchor.target !== "_self") return false;
+
+  try {
+    const url = new URL(href, window.location.href);
+    if (url.origin !== window.location.origin) return false;
+    if (
+      url.pathname === window.location.pathname &&
+      url.search === window.location.search &&
+      !url.hash
+    ) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const lenis = new Lenis({
@@ -64,9 +97,31 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     const onLoaderComplete = () => ScrollTrigger.refresh();
     window.addEventListener("app:loader-complete", onLoaderComplete);
 
+    // Kill ScrollTriggers *before* React tears down the old page DOM.
+    const onDocumentClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+      const anchor = (event.target as Element | null)?.closest?.("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      if (!isInternalNavigation(anchor)) return;
+
+      killScrollTriggers();
+    };
+
+    const onPopState = () => {
+      killScrollTriggers();
+    };
+
+    document.addEventListener("click", onDocumentClick, true);
+    window.addEventListener("popstate", onPopState);
+
     return () => {
+      document.removeEventListener("click", onDocumentClick, true);
+      window.removeEventListener("popstate", onPopState);
       window.removeEventListener("app:loader-complete", onLoaderComplete);
       gsap.ticker.remove(tickerUpdate);
+      killScrollTriggers();
       lenis.destroy();
       window.__scrollReady = false;
     };

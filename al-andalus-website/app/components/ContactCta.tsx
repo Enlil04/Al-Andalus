@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AnimatedHeadline from "./AnimatedHeadline";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { getLocale } from "@/lib/locale";
 
 type ContactCtaProps = {
   headline?: string;
@@ -9,22 +10,29 @@ type ContactCtaProps = {
   ctaLink?: string;
 };
 
-export default function ContactCta({
-  headline = siteCopy.contact.headline,
-  lines = siteCopy.contact.lines,
-  cta = siteCopy.contact.cta,
+export default async function ContactCta({
+  headline,
+  lines,
+  cta,
   ctaLink = "/contact",
 }: ContactCtaProps) {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+
+  const defaultHeadline = headline ?? siteCopy.contact.headline;
+  const defaultLines = lines ?? siteCopy.contact.lines;
+  const defaultCta = cta ?? siteCopy.contact.cta;
+
   return (
     <section className="contact-cta" id="contact">
       <div className="contact-cta__bg" />
 
       <div className="contact-cta__content">
         <div className="contact-cta__hero">
-          <AnimatedHeadline title={headline} className="contact-cta__title" />
+          <AnimatedHeadline title={defaultHeadline} className="contact-cta__title" />
 
           <div className="contact-cta__desc">
-            {lines.map((line) => (
+            {defaultLines.map((line) => (
               <p key={line}>{line}</p>
             ))}
           </div>
@@ -32,7 +40,7 @@ export default function ContactCta({
 
         <Link href={ctaLink} className="contact-cta__btn">
           <div className="contact-cta__btn-bg" />
-          <span>{cta}</span>
+          <span>{defaultCta}</span>
         </Link>
       </div>
     </section>

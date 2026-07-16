@@ -2,13 +2,18 @@ import React from "react";
 import Link from "next/link";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { getLocale } from "@/lib/locale";
 import "./CultureSection.css";
 
-const CultureSection = () => {
+const CultureSection = async () => {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
   const { industries } = siteCopy.servicesPage;
   const [nodeConstruction, nodeTrade] = industries.coreItems;
   const [nodeRetail, nodeBanking, nodeHealthcare] = industries.nodes;
+
+  const btnLabel = locale === "ar" ? "اقرأ المزيد" : "Read more";
 
   return (
     <section className="culture-section" id="culture">
@@ -113,7 +118,7 @@ const CultureSection = () => {
 
         <div className="culture-footer">
           <Link href="/request-quote" className="btn culture-footer__btn">
-            Read more
+            {btnLabel}
             <svg
               className="btn-arrow"
               viewBox="0 0 14 14"
@@ -121,6 +126,7 @@ const CultureSection = () => {
               stroke="currentColor"
               strokeWidth="1.5"
               aria-hidden="true"
+              style={locale === "ar" ? { transform: "rotate(180deg)", marginRight: "0.5rem" } : undefined}
             >
               <path d="M1 7h12M8 2l5 5-5 5" />
             </svg>

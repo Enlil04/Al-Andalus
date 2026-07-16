@@ -3,18 +3,25 @@
 import React, { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
-import { contactInfo } from "@/lib/contact";
-import { siteCopy } from "@/lib/copy/en";
+import { getContactInfo } from "@/lib/contact";
+import { getSiteCopy } from "@/lib/copy";
+import { useLocale } from "./LocaleProvider";
 import "./RequestQuoteContact.css";
 
-const { contact: contactCopy } = siteCopy.requestQuotePage;
-
 export default function RequestQuoteContact() {
+  const { locale } = useLocale();
+  const siteCopy = getSiteCopy(locale);
+  const { contact: contactCopy } = siteCopy.requestQuotePage;
+  const contactInfo = getContactInfo(locale);
+
   const [activeBranchId, setActiveBranchId] = useState<string>("baghdad");
 
   const activeBranch =
     contactInfo.branches.find((b) => b.id === activeBranchId) ??
     contactInfo.branches[0];
+
+  const shortcodeLabel = locale === "ar" ? "الرقم المختصر" : "Shortcode";
+  const phoneLabel = locale === "ar" ? "الهاتف" : "Phone";
 
   return (
     <section className="quote-contact" id="visit-us">
@@ -38,11 +45,11 @@ export default function RequestQuoteContact() {
             <p className="quote-contact__card-label">{contactCopy.generalInquiries}</p>
             <ul className="quote-contact__list">
               <li>
-                <span className="quote-contact__list-key">Shortcode</span>
+                <span className="quote-contact__list-key">{shortcodeLabel}</span>
                 <span className="quote-contact__list-value">{contactInfo.shortcode}</span>
               </li>
               <li>
-                <span className="quote-contact__list-key">Phone</span>
+                <span className="quote-contact__list-key">{phoneLabel}</span>
                 <a href={contactInfo.phoneHref} className="quote-contact__list-value quote-contact__link">
                   {contactInfo.phone}
                 </a>
@@ -93,7 +100,7 @@ export default function RequestQuoteContact() {
               className="quote-contact__map-link"
             >
               {contactCopy.mapLink}
-              <svg className="quote-contact__map-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <svg className="quote-contact__map-arrow" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" style={locale === "ar" ? { transform: "rotate(180deg)", marginRight: "0.5rem" } : undefined}>
                 <path d="M1 7h12M8 2l5 5-5 5" />
               </svg>
             </a>

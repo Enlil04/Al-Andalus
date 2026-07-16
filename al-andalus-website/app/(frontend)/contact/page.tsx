@@ -7,15 +7,25 @@ import GSAPAnimations from "../../components/GSAPAnimations";
 import PageBanner from "../../components/PageBanner";
 import ContactForm from "../../components/ContactForm";
 import RequestQuoteContact from "../../components/RequestQuoteContact";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { getLocale } from "@/lib/locale";
 
-export const metadata = {
-  title: "Contact Us | Al-Andalus International Insurance",
-  description:
-    "Get in touch with Al-Andalus International Insurance. Call 7366 or +964 771 000 6000. Find our branch offices and maps across Baghdad, Basrah, and Erbil.",
-};
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  return {
+    title: siteCopy.meta.contact.title,
+    description: siteCopy.meta.contact.description,
+  };
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  const { contactPage } = siteCopy;
+
+  const loadingText = locale === "ar" ? "جاري تحميل نموذج الاتصال..." : "Loading Contact Form...";
+
   return (
     <>
       <Loader />
@@ -24,11 +34,11 @@ export default function ContactPage() {
         <Header />
 
         <PageBanner
-          title="CONTACT US"
-          subtitle="Get in touch"
+          title={contactPage.banner.title}
+          subtitle={contactPage.banner.subtitle}
         />
 
-        <Suspense fallback={<div className="request-quote__loading">Loading Contact Form...</div>}>
+        <Suspense fallback={<div className="request-quote__loading">{loadingText}</div>}>
           <ContactForm />
         </Suspense>
 

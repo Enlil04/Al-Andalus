@@ -3,10 +3,13 @@
 import React, { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { useLocale } from "./LocaleProvider";
 import "./RequestQuote.css";
 
 export default function ContactForm() {
+  const { locale } = useLocale();
+  const siteCopy = getSiteCopy(locale);
   const { form: formCopy } = siteCopy.contactPage;
 
   const [formData, setFormData] = useState({
@@ -60,6 +63,11 @@ export default function ContactForm() {
     }
   };
 
+  const namePlaceholder = locale === "ar" ? "أحمد علي" : "John Doe";
+  const emailPlaceholder = locale === "ar" ? "ahmed@example.com" : "john@example.com";
+  const subjectPlaceholder = locale === "ar" ? "استفسار عام" : "General inquiry";
+  const messagePlaceholder = locale === "ar" ? "كيف يمكننا مساعدتك؟" : "How can we help you?";
+
   return (
     <section className="request-quote" id="contact-form-section">
       <div className="about-grid request-quote__grid">
@@ -92,7 +100,7 @@ export default function ContactForm() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    placeholder="John Doe"
+                    placeholder={namePlaceholder}
                     autoComplete="name"
                   />
                   <span className="request-quote__help-text">{formCopy.fields.nameHelp}</span>
@@ -107,7 +115,7 @@ export default function ContactForm() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    placeholder="john@example.com"
+                    placeholder={emailPlaceholder}
                     autoComplete="email"
                   />
                   <span className="request-quote__help-text">{formCopy.fields.emailHelp}</span>
@@ -135,7 +143,7 @@ export default function ContactForm() {
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    placeholder="General inquiry"
+                    placeholder={subjectPlaceholder}
                   />
                   <span className="request-quote__help-text">{formCopy.fields.subjectHelp}</span>
                 </div>
@@ -148,7 +156,7 @@ export default function ContactForm() {
                     value={formData.message}
                     onChange={handleChange}
                     required
-                    placeholder="How can we help you?"
+                    placeholder={messagePlaceholder}
                     rows={4}
                   />
                   <span className="request-quote__help-text">{formCopy.fields.messageHelp}</span>
@@ -170,6 +178,7 @@ export default function ContactForm() {
                   stroke="currentColor"
                   strokeWidth="1.5"
                   aria-hidden="true"
+                  style={locale === "ar" ? { transform: "rotate(180deg)", marginRight: "0.5rem" } : undefined}
                 >
                   <path d="M1 7h12M8 2l5 5-5 5" />
                 </svg>

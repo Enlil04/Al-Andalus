@@ -145,10 +145,40 @@ export default buildConfig({
       url: process.env.DATABASE_URI || "file:./database.db",
       authToken: process.env.DATABASE_AUTH_TOKEN || undefined,
     },
-    push: true,
+    // Avoid silent schema push in production unless explicitly enabled.
+    push:
+      process.env.PAYLOAD_DATABASE_PUSH === "true" ||
+      process.env.NODE_ENV !== "production",
   }),
 
-  secret: process.env.PAYLOAD_SECRET || "default-secret-change-me",
+  secret: (() => {
+    const secret = process.env.PAYLOAD_SECRET;
+    const isMissing =
+      !secret ||
+      secret === "default-secret-change-me" ||
+      secret === "change-me-to-a-long-random-string" ||
+      secret === "change-me-to-a-long-random-string-at-least-32";
+
+    if (isMissing) {
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(
+          "PAYLOAD_SECRET must be set to a strong random string in production.",
+        );
+      }
+      console.warn(
+        "[payload] PAYLOAD_SECRET is missing or still a placeholder — set a strong secret before production.",
+      );
+      return "default-secret-change-me-dev-only";
+    }
+
+    if (secret.length < 32) {
+      console.warn(
+        "[payload] PAYLOAD_SECRET should be at least 32 characters.",
+      );
+    }
+
+    return secret;
+  })(),
 
   sharp,
 

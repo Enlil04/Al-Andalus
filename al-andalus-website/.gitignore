@@ -34,10 +34,12 @@ yarn-error.log*
 .env*
 !.env.example
 
-# local database
+# local database — never commit live DB files
 *.db
-!database.db
+*.sqlite
 *.db-journal
+database.db
+database.seed.*
 
 # vercel
 .vercel
@@ -45,3 +47,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ad-hoc local scripts / dumps
+tmp-*.mjs
+tmp-*.js

@@ -1,8 +1,23 @@
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import { NextResponse } from "next/server";
+import { clientKey, rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
+  const limited = rateLimit(clientKey(request, "insurance"), {
+    limit: 5,
+    windowMs: 60_000,
+  });
+  if (!limited.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limited.retryAfterSec) },
+      },
+    );
+  }
+
   try {
     const data = await request.json();
     const payload = await getPayload({ config: configPromise });
@@ -17,20 +32,21 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await payload.create({
+    await payload.create({
       collection: "insurance-requests",
+      overrideAccess: true,
       data: {
-        fullName: data.fullName,
-        email: data.email,
-        phone: data.phone,
+        fullName: String(data.fullName).slice(0, 200),
+        email: String(data.email).slice(0, 200),
+        phone: String(data.phone).slice(0, 50),
         insuranceService: data.insuranceService,
-        city: data.city || "",
-        details: data.details || "",
+        city: data.city ? String(data.city).slice(0, 100) : "",
+        details: data.details ? String(data.details).slice(0, 5000) : "",
         status: "new",
       },
     });
 
-    return NextResponse.json({ success: true, result }, { status: 201 });
+    return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
     console.error("Insurance Request Error:", error);
     return NextResponse.json(

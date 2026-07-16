@@ -23,23 +23,23 @@
 }
 
 .partners-page__container {
-  max-width: 1300px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 clamp(1.5rem, var(--gutter, 1.5rem), 4rem);
 }
 
 .partners-page__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 /* ═══ Partner Card ═══ */
 .partner-page-card {
   background: var(--white);
   border: 1px solid var(--navy-900);
-  border-radius: 12px;
-  height: 220px;
+  border-radius: 10px;
+  height: 150px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -66,9 +66,9 @@
 
 .partner-page-card__num {
   position: absolute;
-  top: 1rem;
-  left: 1.5rem;
-  font-size: 0.8rem;
+  top: 0.65rem;
+  left: 0.85rem;
+  font-size: 0.68rem;
   font-weight: 600;
   font-family: var(--font-en);
   color: var(--navy-600);
@@ -77,8 +77,8 @@
 .partner-page-card__logo {
   position: relative;
   z-index: 2;
-  width: 65%;
-  height: 55%;
+  width: 72%;
+  height: 52%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,7 +91,7 @@
 }
 
 .partner-page-card__text {
-  font-size: 1.4rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--navy-900);
   text-align: center;
@@ -99,10 +99,10 @@
 
 .partner-page-card__name {
   position: absolute;
-  bottom: 1rem;
+  bottom: 0.65rem;
   left: 0;
   right: 0;
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   font-weight: 600;
   font-family: var(--font-en);
   color: var(--navy-900);
@@ -124,9 +124,25 @@
 }
 
 /* ═══ Responsive ═══ */
+@media (max-width: 1200px) {
+  .partners-page__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1024px) {
   .partners-page__grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .partners-page__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .partner-page-card {
+    height: 140px;
   }
 }
 
@@ -136,6 +152,6 @@
   }
 
   .partner-page-card {
-    height: 180px;
+    height: 160px;
   }
 }

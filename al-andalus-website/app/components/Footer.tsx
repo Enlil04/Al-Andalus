@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { useLocale } from "./LocaleProvider";
 import AnimatedHeadline from "./AnimatedHeadline";
 import type { SiteSettingsContent } from "@/lib/cms/content";
 
@@ -18,9 +21,13 @@ const TiktokIcon = () => (
 
 const socialIcons = {
   Facebook: FacebookIcon,
+  فيسبوك: FacebookIcon,
   Instagram: InstagramIcon,
+  إنستغرام: InstagramIcon,
   LinkedIn: LinkedinIcon,
+  "لينكد إن": LinkedinIcon,
   TikTok: TiktokIcon,
+  "تيك توك": TiktokIcon,
 } as const;
 
 function FooterLink({
@@ -55,9 +62,19 @@ type FooterProps = {
 };
 
 export default function Footer({ socialLinks }: FooterProps) {
+  const { locale } = useLocale();
+  const siteCopy = getSiteCopy(locale);
   const { footer } = siteCopy;
   const { links } = footer;
   const social = socialLinks ?? footer.social;
+
+  const toggleLanguage = () => {
+    const nextLocale = locale === "en" ? "ar" : "en";
+    document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000`;
+    window.location.reload();
+  };
+
+  const privacyLabel = locale === "ar" ? "سياسة الخصوصية" : "PRIVACY POLICY";
 
   return (
     <footer className="footer-new">
@@ -73,7 +90,7 @@ export default function Footer({ socialLinks }: FooterProps) {
 
         <div className="footer-new__social">
           {social.map((item) => {
-            const Icon = socialIcons[item.label as keyof typeof socialIcons];
+            const Icon = socialIcons[item.label as keyof typeof socialIcons] || FacebookIcon;
             return (
               <a
                 key={item.label}
@@ -112,10 +129,14 @@ export default function Footer({ socialLinks }: FooterProps) {
           ©{new Date().getFullYear()} {footer.copyright}
         </div>
         <div className="footer-new__bottom-right">
-          <Link href="/privacy">PRIVACY POLICY</Link>
+          <Link href="/privacy">{privacyLabel}</Link>
           <span style={{ margin: "0 10px" }}>|</span>
-          <button type="button" className="footer-new__lang">
-            AR
+          <button
+            type="button"
+            className="footer-new__lang"
+            onClick={toggleLanguage}
+          >
+            {locale === "en" ? "العربية" : "EN"}
           </button>
         </div>
       </div>

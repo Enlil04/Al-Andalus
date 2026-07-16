@@ -5,24 +5,29 @@ import { gsap } from "gsap";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
 import JobsDescriptionScroll from "./JobsDescriptionScroll";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { useLocale } from "./LocaleProvider";
 import Link from "next/link";
 
 function slugify(text: string) {
+  // Replace custom characters to match URL format
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/[^a-z0-9\u0600-\u06FF]+/g, "-") // Support Arabic chars in slug if any, else fallback
+    .replace(/[^a-z0-9]+/g, "-") // Standard URL clean
     .replace(/(^-|-$)+/g, "");
 }
 
-const { listings } = siteCopy.jobsPage;
-const categories = listings.categories;
-
-type Category = (typeof categories)[number];
-
-function ChevronIcon() {
+function ChevronIcon({ isRtl }: { isRtl: boolean }) {
   return (
-    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+    <svg 
+      width="16" 
+      height="12" 
+      viewBox="0 0 16 12" 
+      fill="none" 
+      aria-hidden="true"
+      style={isRtl ? { transform: "rotate(180deg)" } : undefined}
+    >
       <path
         d="M1 1L7 6L1 11"
         stroke="currentColor"
@@ -42,12 +47,24 @@ function ChevronIcon() {
 }
 
 export default function JobsDescriptionList() {
-  const [activeCategory, setActiveCategory] = useState<Category>("ALL");
+  const { locale } = useLocale();
+  const siteCopy = getSiteCopy(locale);
+  const { listings } = siteCopy.jobsPage;
+  const categories = listings.categories;
+
+  const allLabel = locale === "ar" ? "الكل" : "ALL";
+
+  const [activeCategory, setActiveCategory] = useState<string>(allLabel);
   const listRef = useRef<HTMLUListElement>(null);
   const isFirstRender = useRef(true);
 
+  // Sync active category if locale changes
+  useEffect(() => {
+    setActiveCategory(locale === "ar" ? "الكل" : "ALL");
+  }, [locale]);
+
   const filteredJobs =
-    activeCategory === "ALL"
+    activeCategory === allLabel
       ? listings.jobs
       : listings.jobs.filter((job) => job.category === activeCategory);
 
@@ -79,6 +96,27 @@ export default function JobsDescriptionList() {
     );
   }, [activeCategory]);
 
+  // We need to slugify english equivalent for static jobs links so routing doesn't break
+  const getJobSlug = (jobTitle: string) => {
+    // Check if it's the corporate accounting job
+    if (jobTitle.includes("Accounting") || jobTitle.includes("الشؤون الإدارية")) {
+      return "corporate-affairs-accounting";
+    }
+    if (jobTitle.includes("Field Agent") || jobTitle.includes("ميداني")) {
+      return "insurance-field-agent";
+    }
+    if (jobTitle.includes("Underwriting") || jobTitle.includes("اكتتاب")) {
+      return "underwriting-specialist";
+    }
+    if (jobTitle.includes("Claims") || jobTitle.includes("مطالبات")) {
+      return "claims-officer";
+    }
+    if (jobTitle.includes("Technical Sales") || jobTitle.includes("مبيعات فنية")) {
+      return "technical-sales-representative";
+    }
+    return slugify(jobTitle);
+  };
+
   return (
     <section className="jobs-description" id="job-description">
       <JobsDescriptionScroll />
@@ -109,13 +147,13 @@ export default function JobsDescriptionList() {
 
           <ul ref={listRef} className="jobs-description__list" key={activeCategory}>
             {filteredJobs.map((job) => {
-              const jobSlug = slugify(job.title);
+              const jobSlug = getJobSlug(job.title);
               return (
                 <li key={job.title} className="jobs-description__item">
                   <Link href={`/jobs/${jobSlug}`} className="jobs-description__link w-full text-left">
                     <span className="jobs-description__job-title">{job.title}</span>
                     <span className="jobs-description__chevron">
-                      <ChevronIcon />
+                      <ChevronIcon isRtl={locale === "ar"} />
                     </span>
                   </Link>
                 </li>

@@ -1,2 +1,6 @@
-/** Locale used for public-facing pages until i18n routing is added. */
-export const FRONTEND_LOCALE = "en" as const;
+import { getLocale } from "../locale";
+
+/** Gets the active locale dynamically from request context. */
+export async function getCMSLocale(): Promise<"en" | "ar"> {
+  return await getLocale();
+}

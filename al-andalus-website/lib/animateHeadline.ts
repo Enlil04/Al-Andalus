@@ -12,8 +12,12 @@ export type AnimateHeadlineOptions = {
 const WORD_WRAP_STYLE: Partial<CSSStyleDeclaration> = {
   display: "inline-block",
   overflow: "hidden",
-  marginRight: "0.25em",
+  marginInlineEnd: "0.25em",
   verticalAlign: "bottom",
+  paddingTop: "0.2em",
+  marginTop: "-0.2em",
+  paddingBottom: "0.2em",
+  marginBottom: "-0.2em",
 };
 
 const WORD_INNER_STYLE: Partial<CSSStyleDeclaration> = {
@@ -43,6 +47,7 @@ function appendLine(parent: HTMLElement, line: string) {
   const lineWrap = document.createElement("span");
   lineWrap.className = "ah-line";
   lineWrap.style.display = "block";
+  lineWrap.dir = "auto";
 
   line.split(" ").forEach((word) => {
     if (word) appendWord(lineWrap, word);
@@ -64,6 +69,7 @@ export function wrapHeadlineElement(el: HTMLElement): void {
       const lineText = lineEl.textContent?.trim() ?? "";
       lineEl.textContent = "";
       lineEl.style.display = "block";
+      lineEl.dir = "auto";
       lineText.split(" ").forEach((word) => {
         if (word) appendWord(lineEl, word);
       });

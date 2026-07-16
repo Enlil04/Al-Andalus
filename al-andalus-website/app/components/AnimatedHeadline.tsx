@@ -16,6 +16,8 @@ interface Props {
   /** Play on page ready (for above-the-fold headlines after the loader) */
   immediate?: boolean;
   delay?: number;
+  /** Wrap words but skip mount animation (triggered elsewhere) */
+  deferAnimation?: boolean;
 }
 
 export default function AnimatedHeadline({
@@ -25,12 +27,13 @@ export default function AnimatedHeadline({
   start = "top 72%",
   immediate = false,
   delay,
+  deferAnimation = false,
 }: Props) {
   const containerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return;
+    if (!el || deferAnimation) return;
 
     let tween: gsap.core.Tween | undefined;
 
@@ -47,7 +50,7 @@ export default function AnimatedHeadline({
       tween?.scrollTrigger?.kill();
       tween?.kill();
     };
-  }, [title, start, immediate, delay]);
+  }, [title, start, immediate, delay, deferAnimation]);
 
   const lines = title.replace(/\\n/g, "\n").split("\n");
   const Tag = as as React.ElementType;
@@ -55,7 +58,12 @@ export default function AnimatedHeadline({
   return (
     <Tag ref={containerRef as React.Ref<HTMLElement>} className={className}>
       {lines.map((line, lineIndex) => (
-        <span key={lineIndex} className="ah-line" style={{ display: "block" }}>
+        <span
+          key={lineIndex}
+          className="ah-line"
+          dir="auto"
+          style={{ display: "block" }}
+        >
           {line.split(" ").map((word, wordIndex) => (
             <span
               key={wordIndex}
@@ -63,8 +71,12 @@ export default function AnimatedHeadline({
               style={{
                 display: "inline-block",
                 overflow: "hidden",
-                marginRight: "0.25em",
+                marginInlineEnd: "0.25em",
                 verticalAlign: "bottom",
+                paddingTop: "0.2em",
+                marginTop: "-0.2em",
+                paddingBottom: "0.2em",
+                marginBottom: "-0.2em",
               }}
             >
               <span

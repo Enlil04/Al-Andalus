@@ -16,7 +16,8 @@ export const JobApplications: CollectionConfig = {
   },
   access: {
     read: isAdminOrEditor,
-    create: () => true,
+    // Public creates go through /api/careers/apply (overrideAccess + rate limit).
+    create: () => false,
     update: isAdminOrEditor,
     delete: isAdmin,
   },

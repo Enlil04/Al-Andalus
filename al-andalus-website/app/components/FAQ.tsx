@@ -3,7 +3,8 @@
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
 import type { FaqItem } from "@/lib/faq";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { useLocale } from "./LocaleProvider";
 import { FaqPro } from "@/app/components/ui/faq-pro";
 
 type FAQProps = {
@@ -11,7 +12,13 @@ type FAQProps = {
 };
 
 export default function FAQ({ items }: FAQProps) {
+  const { locale } = useLocale();
+  const siteCopy = getSiteCopy(locale);
   const { label, title } = siteCopy.faq;
+
+  const subtitle = locale === "ar"
+    ? "تجد هنا إجابات على الأسئلة الأكثر شيوعاً حول منتجاتنا التأمينية، وخيارات التغطية، وعمليات الشركة."
+    : "Find answers to the most frequently asked questions about our insurance products, coverage options, and company operations.";
 
   return (
     <section className="faq" id="faq">
@@ -25,7 +32,7 @@ export default function FAQ({ items }: FAQProps) {
             <AnimatedHeadline title={title} className="faq__title" />
             <ScrollReveal delay={1}>
               <p className="faq__subtitle">
-                Find answers to the most frequently asked questions about our insurance products, coverage options, and company operations.
+                {subtitle}
               </p>
             </ScrollReveal>
           </div>

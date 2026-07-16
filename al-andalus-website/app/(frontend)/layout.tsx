@@ -1,8 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { cairo, poppins } from "@/lib/fonts";
+import { getLocale } from "@/lib/locale";
+import { LocaleProvider } from "@/app/components/LocaleProvider";
 import "./globals.css";
 
 export const dynamic = "force-dynamic";
+
+export const viewport: Viewport = {
+  themeColor: "#0B223D",
+};
 
 export const metadata: Metadata = {
   title: "Al-Andalus Insurance International | شركة الأندلس للتأمين الدولي",
@@ -12,7 +18,6 @@ export const metadata: Metadata = {
     icon: "/logo.svg",
     apple: "/logo.svg",
   },
-  themeColor: "#0B223D",
   openGraph: {
     title: "Al-Andalus International Insurance",
     description:
@@ -23,14 +28,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const dir = locale === "ar" ? "rtl" : "ltr";
+
   return (
-    <html lang="en" dir="ltr" className={`${poppins.variable} ${cairo.variable}`}>
-      <body>{children}</body>
+    <html lang={locale} dir={dir} className={`${poppins.variable} ${cairo.variable}`}>
+      <body>
+        <LocaleProvider locale={locale}>
+          {children}
+        </LocaleProvider>
+      </body>
     </html>
   );
 }
+

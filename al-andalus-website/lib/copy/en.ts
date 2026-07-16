@@ -43,7 +43,8 @@ export const siteCopy = {
   },
 
   hero: {
-    headline: "When the risks are real, your insurer should be too.",
+    headline: "When the stakes are high,\nyour insurer should be too.",
+    headlineRight: "One insurer.\nAcross the country.",
     scrollLabel: "( SCROLL DOWN )",
   },
 

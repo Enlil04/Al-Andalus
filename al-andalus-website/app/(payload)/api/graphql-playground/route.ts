@@ -3,5 +3,12 @@
 import config from '@payload-config'
 import '@payloadcms/next/css'
 import { GRAPHQL_PLAYGROUND_GET } from '@payloadcms/next/routes'
+import { NextResponse } from 'next/server'
 
-export const GET = GRAPHQL_PLAYGROUND_GET(config)
+const playgroundEnabled =
+  process.env.ENABLE_GRAPHQL_PLAYGROUND === 'true' ||
+  process.env.NODE_ENV !== 'production'
+
+export const GET = playgroundEnabled
+  ? GRAPHQL_PLAYGROUND_GET(config)
+  : async () => NextResponse.json({ error: 'Not found' }, { status: 404 })

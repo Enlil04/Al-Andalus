@@ -2,7 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import Loader from "../../../components/Loader";
@@ -13,6 +13,7 @@ import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
 import ContactCta from "../../../components/ContactCta";
 import Link from "next/link";
+import { getLocale } from "@/lib/locale";
 import "./JobDetail.css";
 
 interface PageProps {
@@ -28,8 +29,20 @@ function slugify(text: string) {
     .replace(/(^-|-$)+/g, "");
 }
 
-// Curated job descriptions for static jobs fallback
-const STATIC_JOB_DETAILS: Record<
+function serializeLexical(richTextObj: any): string {
+  if (!richTextObj || !richTextObj.root || !richTextObj.root.children) return "";
+  return richTextObj.root.children
+    .map((node: any) => {
+      if (node.children) {
+        return node.children.map((child: any) => child.text || "").join("");
+      }
+      return "";
+    })
+    .join("\n\n");
+}
+
+// English Fallback
+const STATIC_JOB_DETAILS_EN: Record<
   string,
   { description: string; requirements: string[]; location: string; employmentType: string }
 > = {
@@ -100,25 +113,88 @@ const STATIC_JOB_DETAILS: Record<
   },
 };
 
-function serializeLexical(richTextObj: any): string {
-  if (!richTextObj || !richTextObj.root || !richTextObj.root.children) return "";
-  return richTextObj.root.children
-    .map((node: any) => {
-      if (node.children) {
-        return node.children.map((child: any) => child.text || "").join("");
-      }
-      return "";
-    })
-    .join("\n\n");
-}
+// Arabic Translations
+const STATIC_JOB_DETAILS_AR: Record<
+  string,
+  { description: string; requirements: string[]; location: string; employmentType: string }
+> = {
+  "corporate-affairs-accounting": {
+    location: "المقر الرئيسي في بغداد",
+    employmentType: "دوام كامل",
+    description:
+      "نبحث عن موظف متمرس في الشؤون الإدارية والمحاسبة لإدارة المعاملات المالية للشركة، وإعداد الميزانيات العمومية، وتجميع التقارير المالية التنظيمية لديوان التأمين، والمساعدة في الامتثال التشغيلي للموارد البشرية. ستعمل بشكل وثيق مع المديرين التنفيذيين للحفاظ على معايير التدقيق المالي.",
+    requirements: [
+      "درجة البكالوريوس في المحاسبة أو المالية أو إدارة الأعمال.",
+      "خبرة سنتين أو أكثر في مجال المحاسبة، ويفضل أن تكون في قطاعات البنوك أو التدقيق أو التأمين في العراق.",
+      "إتقان برامج المحاسبة (مثل QuickBooks، الأمين) وإتقان متقدم لبرنامج Microsoft Excel.",
+      "معرفة قوية باللوائح المالية العراقية وسياسات الامتثال الضريبي.",
+      "إتقان اللغة العربية؛ وتعتبر مهارات الاتصال باللغة الإنجليزية ميزة إضافية.",
+    ],
+  },
+  "insurance-field-agent": {
+    location: "العراق (عدة فروع: بغداد / البصرة / أربيل)",
+    employmentType: "دوام كامل / عمولة",
+    description:
+      "تبحث شركة الأندلس عن وكلاء تأمين ميدانيين نشطين للتواصل مع عملاء التجزئة والعملاء التجاريين في العراق. في هذا الدور، ستمثل عروض التأمين العام لدينا، وتقدم خيارات التأمين للشركات المحلية، وتجمع معلومات تقييم المخاطر الأولية للعملاء، وتنسق تجديد وثائق التأمين.",
+    requirements: [
+      "مهارات ممتازة في التواصل والتقديم والمبيعات.",
+      "خبرة سنة أو أكثر كوكيل مبيعات أو وكيل ميداني في أسواق التجزئة أو الأسواق التجارية المحلية.",
+      "شخصية طموحة لديها القدرة على إدارة العملاء المحتملين بشكل مستقل.",
+      "يفضل الإلمام بمفاهيم التأمين العام (السيارات، الصحة، السرقة).",
+      "شهادة ثانوية أو جامعية في أي تخصص.",
+    ],
+  },
+  "underwriting-specialist": {
+    location: "المقر الرئيسي في بغداد",
+    employmentType: "دوام كامل",
+    description:
+      "نحن نوظف أخصائي اكتتاب لتقييم ملفات المخاطر لخطوط التأمين التجاري والشخصي. تشمل مسؤولياتك تحليل طلبات الحصول على الوثائق، والتنسيق مع المساحين، وتسعير المخاطر باستخدام الإرشادات المعتمدة، وإإعداد عقود التأمين للسيارات والحريق والتغطيات الهندسية.",
+    requirements: [
+      "درجة البكالوريوس في التمويل أو إدارة المخاطر أو الاقتصاد أو الرياضيات.",
+      "خبرة لا تقل عن سنتين في الاكتتاب المهني في التأمينات العامة في العراق.",
+      "عقلية تحليلية مع اهتمام شديد بالتفاصيل وعوامل الخطر.",
+      "الالقدرة على كتابة الوثائق بوضوح وبما يتوافق مع القوانين المحلية.",
+      "إتقان اللغة العربية ومهارات مهنية في اللغة الإنجليزية.",
+    ],
+  },
+  "claims-officer": {
+    location: "فرع أربيل",
+    employmentType: "دوام كامل",
+    description:
+      "يبحث فرعنا في أربيل عن مسؤول مطالبات لإدارة عمليات معالجة مطالبات التأمين والتحقق منها. ستعمل كجهة اتصال رئيسية للمطالبين، وتنسق عمليات فحص الحوادث مع مسوي الخسائر الخارجيين، وتقيم تغطيات الوثائق واستثناءاتها، وتقديم توصيات التسوية لمديري الفروع.",
+    requirements: [
+      "شهادة جامعية في القانون أو الهندسة أو إدارة الأعمال أو المجالات ذات الصلة.",
+      "خبرة سنة أو أكثر في عمليات المطالبات أو الدعم الفني في التأمين العام.",
+      "مهارات ممتازة في التفاوض وعلاقات العملاء أثناء معالجة الحوادث.",
+      "الاهتمام بمعايير التدقيق واللوائح وإجراءات تسوية المطالبات.",
+      "إتقان اللغتين الكردية والعربية مطلوب.",
+    ],
+  },
+  "technical-sales-representative": {
+    location: "فرع البصرة",
+    employmentType: "دوام كامل",
+    description:
+      "نحن نوظف ممثل مبيعات فنية لفرعنا في البصرة لبناء وتطوير محفظة العلاقات مع الشركاء التجاريين ومشغلي الخدمات اللوجستية والمقاولين. ستقوم بإعداد مقترحات التغطية، وتقديم وثائق تأمين الشحن البحري والمسؤولية للعملاء من الشركات، وضمان تجديد العقود.",
+    requirements: [
+      "درجة البكالوريوس في التسويق أو إدارة الأعمال أو الهندسة.",
+      "خبرة سنتين أو أكثر في المبيعات المؤسسية (B2B) في جنوب العراق.",
+      "الإلمام بقطاعات الخدمات اللوجستية البحرية والشحن والنفط والغاز في البصرة.",
+      "مهارات قوية في التواصل وبناء العلاقات.",
+      "إتقان اللغة العربية؛ ويفضل مهارات المحادثة باللغة الإنجليزية.",
+    ],
+  },
+};
 
 export default async function JobDetailPage({ params }: PageProps) {
   const { slug } = await params;
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
 
-  // 1. Fetch from database first
+  // 1. Fetch from database first with correct locale
   const payload = await getPayload({ config: configPromise });
   const { docs } = await payload.find({
     collection: "jobs",
+    locale,
     where: {
       slug: { equals: slug },
     },
@@ -137,23 +213,34 @@ export default async function JobDetailPage({ params }: PageProps) {
 
   // Bind values with fallback
   const title = dbJob?.title || staticJob?.title || "";
-  const category = dbJob?.department || staticJob?.category || "Operations";
+  const category = dbJob?.department || staticJob?.category || (locale === "ar" ? "العمليات" : "Operations");
   
   let descriptionHTML: React.ReactNode = null;
   let requirementsHTML: React.ReactNode = null;
-  let location = "Iraq (Multi-Branch)";
-  let employmentType = "Full-Time";
+  let location = locale === "ar" ? "العراق (فروع متعددة)" : "Iraq (Multi-Branch)";
+  let employmentType = locale === "ar" ? "دوام كامل" : "Full-Time";
 
   if (dbJob) {
     location = dbJob.location;
-    employmentType =
-      dbJob.employmentType === "full-time"
-        ? "Full-Time"
-        : dbJob.employmentType === "part-time"
-          ? "Part-Time"
-          : dbJob.employmentType === "contract"
-            ? "Contract"
-            : "Internship";
+    if (locale === "ar") {
+      employmentType =
+        dbJob.employmentType === "full-time"
+          ? "دوام كامل"
+          : dbJob.employmentType === "part-time"
+            ? "دوام جزئي"
+            : dbJob.employmentType === "contract"
+              ? "عقد"
+              : "تدريب عملي";
+    } else {
+      employmentType =
+        dbJob.employmentType === "full-time"
+          ? "Full-Time"
+          : dbJob.employmentType === "part-time"
+            ? "Part-Time"
+            : dbJob.employmentType === "contract"
+              ? "Contract"
+              : "Internship";
+    }
 
     const descText = serializeLexical(dbJob.description);
     descriptionHTML = descText.split("\n\n").map((p, i) => <p key={i} style={{ marginBottom: "1rem" }}>{p}</p>);
@@ -170,7 +257,7 @@ export default async function JobDetailPage({ params }: PageProps) {
     }
   } else {
     // Static job detail mapping
-    const details = STATIC_JOB_DETAILS[slug];
+    const details = locale === "ar" ? STATIC_JOB_DETAILS_AR[slug] : STATIC_JOB_DETAILS_EN[slug];
     if (details) {
       location = details.location;
       employmentType = details.employmentType;
@@ -183,9 +270,18 @@ export default async function JobDetailPage({ params }: PageProps) {
         </ul>
       );
     } else {
-      descriptionHTML = <p>No job description available.</p>;
+      descriptionHTML = <p>{locale === "ar" ? "لا يوجد وصف وظيفي متاح حالياً." : "No job description available."}</p>;
     }
   }
+
+  // Localized Labels
+  const positionInfoLabel = locale === "ar" ? "معلومات الوظيفة" : "Position Info";
+  const deptLabel = locale === "ar" ? "القسم" : "Department";
+  const locLabel = locale === "ar" ? "الموقع" : "Location";
+  const typeLabel = locale === "ar" ? "نوع الوظيفة" : "Job Type";
+  const applyLabel = locale === "ar" ? "التقديم الآن" : "Apply Now";
+  const overviewLabel = locale === "ar" ? "الوصف الوظيفي" : "Role Overview";
+  const reqsLabel = locale === "ar" ? "الشروط والمؤهلات" : "Requirements & Qualifications";
 
   return (
     <>
@@ -201,33 +297,34 @@ export default async function JobDetailPage({ params }: PageProps) {
             <div className="job-detail__sidebar about-grid__cols-1-4">
               <ScrollReveal>
                 <div className="job-sidebar-card">
-                  <AnimatedHeadline title="Position Info" className="job-sidebar-card__title" as="h4" />
+                  <AnimatedHeadline title={positionInfoLabel} className="job-sidebar-card__title" as="h4" />
                   <div className="job-sidebar-card__meta-list">
                     <div className="job-sidebar-meta">
-                      <span className="job-sidebar-meta__label">Department</span>
+                      <span className="job-sidebar-meta__label">{deptLabel}</span>
                       <span className="job-sidebar-meta__value">{category}</span>
                     </div>
                     <div className="job-sidebar-meta">
-                      <span className="job-sidebar-meta__label">Location</span>
+                      <span className="job-sidebar-meta__label">{locLabel}</span>
                       <span className="job-sidebar-meta__value">{location}</span>
                     </div>
                     <div className="job-sidebar-meta">
-                      <span className="job-sidebar-meta__label">Job Type</span>
+                      <span className="job-sidebar-meta__label">{typeLabel}</span>
                       <span className="job-sidebar-meta__value">{employmentType}</span>
                     </div>
                   </div>
                   <Link
-                    href={`mailto:hr@alandalus-iq.com?subject=Application for ${encodeURIComponent(title)}`}
+                    href={`mailto:hr@alandalus-iq.com?subject=${locale === "ar" ? "طلب تقديم لوظيفة" : "Application for"} ${encodeURIComponent(title)}`}
                     className="btn w-full text-center"
                     style={{ marginTop: "1rem" }}
                   >
-                    Apply Now
+                    {applyLabel}
                     <svg
                       className="btn-arrow"
                       viewBox="0 0 14 14"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="1.5"
+                      style={locale === "ar" ? { transform: "rotate(180deg)", marginRight: "0.5rem" } : undefined}
                     >
                       <path d="M1 7h12M8 2l5 5-5 5" />
                     </svg>
@@ -239,7 +336,7 @@ export default async function JobDetailPage({ params }: PageProps) {
             <div className="job-detail__content about-grid__cols-5-12">
               <ScrollReveal delay={0.5}>
                 <div className="job-content-section">
-                  <AnimatedHeadline title="Role Overview" className="job-content-section__title" as="h3" />
+                  <AnimatedHeadline title={overviewLabel} className="job-content-section__title" as="h3" />
                   <div className="job-content-section__body">{descriptionHTML}</div>
                 </div>
               </ScrollReveal>
@@ -248,7 +345,7 @@ export default async function JobDetailPage({ params }: PageProps) {
                 <ScrollReveal delay={0.7}>
                   <div className="job-content-section">
                     <AnimatedHeadline
-                      title="Requirements & Qualifications"
+                      title={reqsLabel}
                       className="job-content-section__title"
                       as="h3"
                     />

@@ -15,7 +15,8 @@ export const ContactMessages: CollectionConfig = {
   },
   access: {
     read: isAdminOrEditor,
-    create: () => true,
+    // Public creates go through /api/contact (overrideAccess + rate limit).
+    create: () => false,
     update: isAdminOrEditor,
     delete: isAdmin,
   },

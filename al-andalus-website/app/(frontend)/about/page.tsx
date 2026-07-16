@@ -15,28 +15,36 @@ import {
   fetchSiteSettings,
 } from "@/lib/cms/content";
 import { getCMSPayload } from "@/lib/cms/payload";
-import { siteCopy } from "@/lib/copy/en";
+import { getSiteCopy } from "@/lib/copy";
+import { getLocale } from "@/lib/locale";
 
 const missionImage = "/al-and images/Misty Urban Development.png";
-const missionAccentImage = "/al-and images/Modern Office Interior.png";
+const missionAccentImage = "/al-and images/ChatGPT Image Jul 15, 2026, 09_57_27 PM.png";
 
-const { aboutPage } = siteCopy;
-const { mission } = aboutPage;
-
-export const metadata = {
-  title: siteCopy.meta.about.title,
-  description: siteCopy.meta.about.description,
-};
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  return {
+    title: siteCopy.meta.about.title,
+    description: siteCopy.meta.about.description,
+  };
+}
 
 export default async function AboutPage() {
   const payload = await getCMSPayload();
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  const { aboutPage } = siteCopy;
+  const { mission } = aboutPage;
+
   const [aboutContent, { contactCta }, siteSettings] = await Promise.all([
     fetchAboutPageContent(payload),
     fetchHomepageContent(payload),
     fetchSiteSettings(payload),
   ]);
 
-
+  const boardMemberLabel = locale === "ar" ? "أعضاء مجلس الإدارة" : "Board member";
+  const companyTitle = locale === "ar" ? "( الشركة )" : "( COMPANY )";
 
   return (
     <>
@@ -48,6 +56,7 @@ export default async function AboutPage() {
         <PageBanner
           title={aboutContent.bannerTitle}
           subtitle={aboutContent.bannerSubtitle}
+          imageSrc="/al-and images/ChatGPT Image Jul 15, 2026, 09_56_24 PM.png"
         />
 
         {/* ═══════════════ 2–3. MISSION ═══════════════ */}
@@ -184,7 +193,7 @@ export default async function AboutPage() {
         <section className="about-company" id="company">
           <div className="about-grid">
             <AnimatedHeadline
-              title="( COMPANY )"
+              title={companyTitle}
               className="about-company__title about-grid__section-title"
             />
 
@@ -197,7 +206,7 @@ export default async function AboutPage() {
               ))}
 
               <div className="about-company__row">
-                <span className="about-company__label">Board member</span>
+                <span className="about-company__label">{boardMemberLabel}</span>
                 <div className="about-company__board">
                   {aboutPage.boardMembers.map((member) => (
                     <p className="about-company__board-entry" key={member.name}>

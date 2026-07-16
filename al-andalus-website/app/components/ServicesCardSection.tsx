@@ -4,18 +4,19 @@ import { useState } from "react";
 import Link from "next/link";
 import ScrollReveal from "./ScrollReveal";
 import {
-  serviceCategories,
+  getServiceCategories,
   getServicesByCategory,
   type ServiceCategoryId,
   type Service,
 } from "@/lib/services";
+import { useLocale } from "./LocaleProvider";
 
 interface Props {
   id?: string;
 }
 
-function ServiceCard({ service }: { service: Service }) {
-  const hint = service.subtitle ?? `Coverage for ${service.title.replace(" Insurance", "")}.`;
+function ServiceCard({ service, locale }: { service: Service; locale: string }) {
+  const hint = service.subtitle ?? (locale === "ar" ? `تغطية لـ ${service.title.replace("تأمين ", "")}` : `Coverage for ${service.title.replace(" Insurance", "")}.`);
 
   return (
     <article className="services-card-section__card" id={service.slug}>
@@ -32,7 +33,9 @@ function ServiceCard({ service }: { service: Service }) {
 
       <div className="services-card-section__card-footer">
         {service.underDevelopment ? (
-          <span className="services-card-section__badge">Under development</span>
+          <span className="services-card-section__badge">
+            {locale === "ar" ? "قيد التطوير" : "Under development"}
+          </span>
         ) : (
           <Link
             href={`/services/${service.slug}`}
@@ -45,6 +48,7 @@ function ServiceCard({ service }: { service: Service }) {
               stroke="currentColor"
               strokeWidth="1.5"
               aria-hidden="true"
+              style={locale === "ar" ? { transform: "rotate(180deg)" } : undefined}
             >
               <path d="M3 11L11 3M11 3H5M11 3V9" />
             </svg>
@@ -56,8 +60,10 @@ function ServiceCard({ service }: { service: Service }) {
 }
 
 export default function ServicesCardSection({ id = "services-card-section" }: Props) {
+  const { locale } = useLocale();
   const [activeCategory, setActiveCategory] = useState<ServiceCategoryId>("personal");
-  const filteredServices = getServicesByCategory(activeCategory);
+  const filteredServices = getServicesByCategory(activeCategory, locale);
+  const serviceCategories = getServiceCategories(locale);
 
   return (
     <section className="services-card-section" id={id}>
@@ -85,7 +91,7 @@ export default function ServicesCardSection({ id = "services-card-section" }: Pr
               delay={index % 3}
               className="services-card-section__grid-item"
             >
-              <ServiceCard service={service} />
+              <ServiceCard service={service} locale={locale} />
             </ScrollReveal>
           ))}
         </div>

@@ -13,31 +13,60 @@ import Link from "next/link";
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import { getFeaturedServices } from "@/lib/services";
-import { faqItems } from "@/lib/faq";
+import { getFaqItems } from "@/lib/faq";
+import { getLocale } from "@/lib/locale";
+import { getSiteCopy } from "@/lib/copy";
+import { fetchHomepageContent } from "@/lib/cms/content";
+
+export async function generateMetadata() {
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  return {
+    title: siteCopy.meta.home.title,
+    description: siteCopy.meta.home.description,
+  };
+}
 
 export default async function Home() {
   const payload = await getPayload({ config: configPromise });
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
 
   const { docs: newsItems } = await payload.find({
     collection: "news",
     limit: 5,
     sort: "-publishedDate",
+    locale,
     where: {
       status: { equals: "published" },
     },
   });
 
-  const featuredServices = getFeaturedServices();
+  const homepageContent = await fetchHomepageContent(payload);
+  const { intro, story, aboutPreview, contactCta } = homepageContent;
+
+  const featuredServices = getFeaturedServices(locale);
 
   const { docs: partners } = await payload.find({
     collection: "partners",
     limit: 8,
     sort: "order",
+    locale,
   });
 
   const firstRowPartners = partners.slice(0, 2);
   const secondRowPartners = partners.slice(2, 5);
   const thirdRowPartners = partners.slice(5, 8);
+
+  const servicesHeadline = locale === "ar" ? "خدماتنا" : "OUR\nSERVICES";
+  const viewAllServicesLabel = locale === "ar" ? "عرض جميع الخدمات" : "View all services";
+  const whyUsLabel = locale === "ar" ? "( لماذا الأندلس )" : "( WHY AL-ANDALUS )";
+  const newsLabel = locale === "ar" ? "( الأخبار )" : "( News )";
+  const newsTitle = locale === "ar" ? "أحدث الأخبار" : "Latest Updates";
+  const viewAllLabel = locale === "ar" ? "عرض الكل" : "View All";
+  const partnersTitle = locale === "ar" ? "الشركاء\nوالعملاء" : "PARTNERS\nCLIENTS";
+  const noPartnersLabel = locale === "ar" ? "لا يوجد شركاء." : "No partners found.";
+  const viewAllPartnersLabel = locale === "ar" ? "عرض جميع الشركاء" : "View all partners";
 
   return (
     <>
@@ -47,43 +76,49 @@ export default async function Home() {
         <Header />
 
         {/* ═══════════════ HERO SECTION ═══════════════ */}
-        <section className="hero" id="hero">
-          <div className="hero__media">
-            <video
-              src="/al-and%20images/magnific_a-cinematic-slowmotion-sh_y6Lq5THPW9.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-            />
-          </div>
-
-          <div className="hero__bottom">
-            <AnimatedHeadline
-              title="When the risks are real, your insurer should be too."
-              className="hero__title"
-              as="h1"
-              immediate
-              delay={2.2}
-            />
-            <p className="hero__scroll">( SCROLL DOWN )</p>
-          </div>
-        </section>
+        <div className="hero-track" id="hero">
+          <section className="hero">
+            <div className="hero__media">
+              <video
+                src="/al-and%20images/e089f973-10d9-4cf2-b693-fa9f22764c76.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+            </div>
+            <div className="hero__content">
+              <div className="hero__titles">
+                <AnimatedHeadline
+                  title={siteCopy.hero.headline}
+                  className="hero__title hero__title--left"
+                  as="h1"
+                  immediate
+                  delay={2.2}
+                />
+                <AnimatedHeadline
+                  title={siteCopy.hero.headlineRight}
+                  className="hero__title hero__title--right"
+                  as="h2"
+                  deferAnimation
+                />
+              </div>
+              <p className="hero__scroll">{siteCopy.hero.scrollLabel}</p>
+            </div>
+          </section>
+        </div>
 
         {/* ═══════════════ INTRODUCTION ═══════════════ */}
         <section className="intro" id="intro">
           <div className="intro__content">
             <div className="intro__left">
               <AnimatedHeadline
-                title={"Al Andalus\ninternational\ninsurance"}
+                title={intro.titleLines.join("\n")}
                 className="intro__title"
               />
               <ScrollReveal delay={1}>
                 <p className="intro__lead">
-                  Incorporated in 2015 under Iraqi Companies Law No. 21 of 1997.
-                  Licensed for general insurance by the Ministry of Finance —
-                  License 38/2018, under Insurance Business Regulation Law No. 10
-                  of 2005. Authorized capital: 21 billion Iraqi dinars.
+                  {intro.lead}
                 </p>
               </ScrollReveal>
             </div>
@@ -108,12 +143,16 @@ export default async function Home() {
         <section className="story" id="story">
           <div className="story__content">
             <div className="story__images">
-              <div
+              <Image
+                src="/al-and images/IMG_6081.JPG"
+                alt="Story large image"
+                width={640}
+                height={900}
                 className="story__image story__image--large"
-                aria-hidden="true"
+                style={{ objectFit: "cover" }}
               />
               <Image
-                src="/al-and images/WhatsApp Image 2026-05-18 at 1.33.44 PM.jpeg"
+                src="/al-and images/3cec34a2-2758-4570-910e-32a896e080de.jpg"
                 alt="Story small image"
                 width={300}
                 height={280}
@@ -124,29 +163,18 @@ export default async function Home() {
 
             <div className="story__text">
               <ScrollReveal>
-                <p>
-                  Since 2015, Al-Andalus has focused on insurance solutions
-                  that keep pace with economic and social change in Iraq.
-                  <br />
-                  We invested in qualified people — and built a reputation in
-                  the market by doing the work properly.
-                  <br />
-                  Our team spans three branches: Baghdad, Basrah, and Erbil.
-                </p>
+                {story.paragraphs.slice(0, 1).map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
               </ScrollReveal>
               <ScrollReveal delay={1}>
-                <p>
-                  Demand for insurance grows with rising incomes, sharper risk
-                  awareness, and more varied needs — from individuals to large
-                  institutions.
-                  <br />
-                  A company at this level is not a luxury in Iraq&apos;s
-                  economy. It is part of how stability gets built.
-                </p>
+                {story.paragraphs.slice(1).map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
               </ScrollReveal>
               <ScrollReveal delay={2}>
-                <Link href="#about" className="story__btn">
-                  READ MORE
+                <Link href={story.ctaLink} className="story__btn">
+                  {story.ctaText}
                 </Link>
               </ScrollReveal>
             </div>
@@ -162,22 +190,20 @@ export default async function Home() {
         <section className="about-pinned" id="about">
           <div className="about-pinned__sticky">
             <div className="about-pinned__text-center">
-              <span className="about-pinned__label">( ABOUT )</span>
+              <span className="about-pinned__label">{aboutPreview.label}</span>
               <AnimatedHeadline
-                title={"HERE FOR\nTHE LONG\nRUN"}
+                title={aboutPreview.headline}
                 className="about-pinned__title"
               />
             </div>
             <div className="about-pinned__text-bottom">
               <p>
-                Founded 13 September 2015. Licensed general insurer.
-                <br />
-                Twenty-one billion dinars in authorized capital.
-                <br />
-                Four branches. One team — technical and administrative
-                specialists working across Iraq.
-                <br />
-                Insurance that matches how this country actually operates.
+                {aboutPreview.text.split("\n").map((line, idx) => (
+                  <span key={idx}>
+                    {idx > 0 && <br />}
+                    {line}
+                  </span>
+                ))}
               </p>
             </div>
           </div>
@@ -195,12 +221,12 @@ export default async function Home() {
           <div className="services-split__left">
             <div className="services-split__sticky">
               <AnimatedHeadline
-                title={"OUR\nSERVICES"}
+                title={servicesHeadline}
                 className="services-split__title"
               />
               <div className="services-split__footer">
                 <Link href="/services" className="btn">
-                  View all services
+                  {viewAllServicesLabel}
                   <svg
                     className="btn-arrow"
                     viewBox="0 0 14 14"
@@ -237,9 +263,9 @@ export default async function Home() {
                     </h3>
                     <p className="service-card__desc">{svc.description}</p>
                     <Link
-                      href={`/services#${svc.slug}`}
+                      href={`/services/${svc.slug}`}
                       className="service-card__btn"
-                      aria-label={`Read more about ${svc.title}`}
+                      aria-label={locale === "ar" ? `اقرأ المزيد عن ${svc.title}` : `Read more about ${svc.title}`}
                     >
                       +
                     </Link>
@@ -254,25 +280,40 @@ export default async function Home() {
         <section className="vs-section" id="why-us">
           <div className="vs-overlay">
             <div className="vs-overlay__sticky">
-              <span className="vs-overlay__label">( WHY AL-ANDALUS )</span>
+              <span className="vs-overlay__label">{whyUsLabel}</span>
               <AnimatedHeadline
-                title={"MORE THAN\nA POLICY"}
+                title={siteCopy.whyUs.headline}
                 className="vs-overlay__title"
               />
               <p className="vs-overlay__desc">
-                Insurance is not just a contract on paper.
-                <br />
-                It is how people and institutions stay standing
-                <br />
-                when something goes wrong.
+                {siteCopy.whyUs.desc.split("\n").map((line, idx) => (
+                  <span key={idx}>
+                    {idx > 0 && <br />}
+                    {line}
+                  </span>
+                ))}
               </p>
             </div>
           </div>
 
           <div className="vs-grid">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div className="vs-card" key={item}>
-                <div className="vs-card__bg" />
+            {[
+              "/al-and images/conference-1.jpg",
+              "/al-and images/conference-2.jpg",
+              "/al-and images/conference-3.jpg",
+              "/al-and images/conference-4.jpg",
+              "/al-and images/IMG_5713.JPG",
+              "/al-and images/IMG_6081.JPG",
+            ].map((src) => (
+              <div className="vs-card" key={src}>
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  sizes="(max-width: 900px) 100vw, 50vw"
+                  className="vs-card__image"
+                />
+                <div className="vs-card__bg" aria-hidden="true" />
               </div>
             ))}
           </div>
@@ -283,9 +324,9 @@ export default async function Home() {
           <div className="news__header">
             <div>
               <ScrollReveal>
-                <p className="news__label">( News )</p>
+                <p className="news__label">{newsLabel}</p>
               </ScrollReveal>
-              <AnimatedHeadline title="Latest Updates" className="news__title" />
+              <AnimatedHeadline title={newsTitle} className="news__title" />
             </div>
           </div>
 
@@ -304,7 +345,7 @@ export default async function Home() {
           <div className="news__footer">
             <ScrollReveal delay={2}>
               <Link href="/blogs" className="btn">
-                View All
+                {viewAllLabel}
                 <svg
                   className="btn-arrow"
                   viewBox="0 0 14 14"
@@ -324,7 +365,7 @@ export default async function Home() {
           <div className="partners-grid-section__container">
             <div className="partners-grid-section__header">
               <AnimatedHeadline
-                title={"PARTNERS\nCLIENTS"}
+                title={partnersTitle}
                 className="partners-grid-section__title"
               />
             </div>
@@ -371,7 +412,7 @@ export default async function Home() {
                   })}
                 </div>
               ) : (
-                <p>No partners found.</p>
+                <p>{noPartnersLabel}</p>
               )}
             </div>
           </div>
@@ -467,7 +508,7 @@ export default async function Home() {
               <div className="partners-grid-section__footer">
                 <ScrollReveal delay={2}>
                   <Link href="/partners" className="btn">
-                    View all partners
+                    {viewAllPartnersLabel}
                     <svg
                       className="btn-arrow"
                       viewBox="0 0 14 14"
@@ -485,7 +526,7 @@ export default async function Home() {
         </section>
 
         {/* ═══════════════ FAQ ═══════════════ */}
-        <FAQ items={faqItems} />
+        <FAQ items={getFaqItems(locale)} />
 
         <ContactCta />
 

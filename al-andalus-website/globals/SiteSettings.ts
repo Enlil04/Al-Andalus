@@ -25,7 +25,7 @@ export const SiteSettings: GlobalConfig = {
       name: "heroText",
       type: "text",
       localized: true,
-      defaultValue: "Protecting What Matters Most",
+      defaultValue: "When the stakes are high,\nyour insurer should be too.",
       label: {
         en: "Hero Headline",
         ar: "عنوان البانر الرئيسي",

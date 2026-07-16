@@ -12,6 +12,7 @@ import AnimatedHeadline from "../../../components/AnimatedHeadline";
 import BlogPostHeading from "../../../components/BlogPostHeading";
 import ContactCta from "../../../components/ContactCta";
 import Link from "next/link";
+import { getLocale } from "@/lib/locale";
 import "./BlogDetail.css";
 
 interface PageProps {
@@ -20,13 +21,22 @@ interface PageProps {
   }>;
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
+const CATEGORY_LABELS_EN: Record<string, string> = {
   company: "Company News",
   motor: "Motor Insurance",
   health: "Health Insurance",
   travel: "Travel Insurance",
   fire: "Fire Insurance",
   general: "General News",
+};
+
+const CATEGORY_LABELS_AR: Record<string, string> = {
+  company: "أخبار الشركة",
+  motor: "تأمين السيارات",
+  health: "التأمين الصحي",
+  travel: "تأمين السفر",
+  fire: "تأمين الحريق",
+  general: "أخبار عامة",
 };
 
 function formatNewsDate(date?: string | null) {
@@ -83,11 +93,13 @@ function serializeLexicalHTML(richTextObj: any): React.ReactNode[] {
 
 export default async function BlogDetailPage({ params }: PageProps) {
   const { slug } = await params;
+  const locale = await getLocale();
 
-  // 1. Fetch post from Payload news collection
+  // 1. Fetch post from Payload news collection with correct locale
   const payload = await getPayload({ config: configPromise });
   const { docs } = await payload.find({
     collection: "news",
+    locale,
     where: {
       slug: { equals: slug },
       status: { equals: "published" },
@@ -99,12 +111,15 @@ export default async function BlogDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const categoryLabel = (post.category && CATEGORY_LABELS[post.category]) || "General News";
+  const categoryLabels = locale === "ar" ? CATEGORY_LABELS_AR : CATEGORY_LABELS_EN;
+  const categoryLabel = (post.category && categoryLabels[post.category]) || (locale === "ar" ? "أخبار عامة" : "General News");
   const publishedDateFormatted = formatNewsDate(post.publishedDate);
 
   const coverImageObj = post.coverImage;
   const coverImageUrl =
     coverImageObj && typeof coverImageObj !== "string" ? coverImageObj.url : null;
+
+  const backLabel = locale === "ar" ? "العودة إلى المقالات" : "Back to Articles";
 
   return (
     <>
@@ -157,10 +172,11 @@ export default async function BlogDetailPage({ params }: PageProps) {
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="1.5"
+                      style={locale === "ar" ? { transform: "rotate(180deg)", marginLeft: "0.5rem" } : undefined}
                     >
                       <path d="M13 7H1M1 7l5-5M1 7l5 5" />
                     </svg>
-                    Back to Articles
+                    {backLabel}
                   </Link>
                 </div>
               </ScrollReveal>
