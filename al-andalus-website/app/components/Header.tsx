@@ -8,7 +8,7 @@ import { useLocale } from "@/app/components/LocaleProvider";
 
 const SCROLL_THRESHOLD = 80;
 
-export default function Header() {
+export default function Header({ logoUrl }: { logoUrl?: string | null }) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -41,14 +41,20 @@ export default function Header() {
   };
 
   const navLinks = locale === "ar" ? [
-    { label: "الخدمات", href: "/services" },
     { label: "من نحن", href: "/about" },
+    { label: "الخدمات", href: "/services" },
+  ] : [
+    { label: "About Us", href: "/about" },
+    { label: "Services", href: "/services" },
+  ];
+
+  const otherLinks = locale === "ar" ? [
+    { label: "التطبيق", href: "/application" },
     { label: "الشركاء", href: "/partners" },
     { label: "الوظائف", href: "/jobs" },
     { label: "المدونة", href: "/blogs" },
   ] : [
-    { label: "Services", href: "/services" },
-    { label: "About Us", href: "/about" },
+    { label: "Application", href: "/application" },
     { label: "Partners", href: "/partners" },
     { label: "Jobs", href: "/jobs" },
     { label: "Blogs", href: "/blogs" },
@@ -56,6 +62,7 @@ export default function Header() {
 
   const quotesLabel = locale === "ar" ? "تسعيرة" : "Quote";
   const quotesMenuLabel = locale === "ar" ? "طلبات التسعير" : "Quotes";
+  const otherLabel = locale === "ar" ? "المزيد" : "Other";
   const contactUsLabel = locale === "ar" ? "اتصل بنا" : "Contact Us";
 
   const insuranceTypes = locale === "ar" ? [
@@ -99,15 +106,35 @@ export default function Header() {
             ))}
           </div>
         </div>
+
+        <div className="header__dropdown">
+          <span className="header__nav-link header__dropdown-trigger">
+            {otherLabel} <span className="header__dropdown-arrow">▼</span>
+          </span>
+          <div className="header__dropdown-menu">
+            {otherLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="header__dropdown-item"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
       </nav>
 
       <Link href="/" className="header__logo" aria-label="Al Andalus International Insurance">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/1.png"
+          src={logoUrl || "/1.png"}
           alt="Al-Andalus International Insurance"
           className="header__logo-img"
         />
+        <span className="header__logo-text">
+          {locale === "ar" ? "الرئيسية" : "Homepage"}
+        </span>
       </Link>
 
       <div className="header__right">
@@ -144,6 +171,17 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 className="header__mobile-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="header__mobile-dropdown-title">{otherLabel}</div>
+            {otherLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="header__mobile-link header__mobile-link--sub"
                 onClick={() => setMenuOpen(false)}
               >
                 {link.label}

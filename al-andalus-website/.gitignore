@@ -51,3 +51,7 @@ next-env.d.ts
 # ad-hoc local scripts / dumps
 tmp-*.mjs
 tmp-*.js
+
+# private uploads (CVs, proposal PDFs) — never commit, never serve statically
+/private-media/*
+!/private-media/.gitkeep

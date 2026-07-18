@@ -2,28 +2,39 @@ import React from "react";
 import Link from "next/link";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
-import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
 import "./CultureSection.css";
 
-const CultureSection = async () => {
-  const locale = await getLocale();
-  const siteCopy = getSiteCopy(locale);
-  const { industries } = siteCopy.servicesPage;
-  const [nodeConstruction, nodeTrade] = industries.coreItems;
-  const [nodeRetail, nodeBanking, nodeHealthcare] = industries.nodes;
+type CultureSectionProps = {
+  label: string;
+  headline: string;
+  coreTitle: string;
+  buttonText: string;
+  buttonLink: string;
+  sectors: readonly { title: string; desc: string }[];
+};
 
-  const btnLabel = locale === "ar" ? "اقرأ المزيد" : "Read more";
+const CultureSection = async ({
+  label,
+  headline,
+  coreTitle,
+  buttonText,
+  buttonLink,
+  sectors,
+}: CultureSectionProps) => {
+  const locale = await getLocale();
+  const [nodeConstruction, nodeTrade, nodeRetail, nodeBanking, nodeHealthcare] =
+    sectors;
 
   return (
     <section className="culture-section" id="culture">
       <div className="culture-container">
         <div className="culture-header">
           <ScrollReveal>
-            <span className="culture-label">{industries.label}</span>
+            <span className="culture-label">{label}</span>
           </ScrollReveal>
           <AnimatedHeadline
-            title={industries.headline}
+            title={headline}
             className="culture-headline"
             as="h2"
           />
@@ -38,7 +49,7 @@ const CultureSection = async () => {
 
             <div className="diagram-core">
               <AnimatedHeadline
-                title={industries.coreTitle}
+                title={coreTitle}
                 className="core-title"
                 as="h3"
               />
@@ -117,8 +128,8 @@ const CultureSection = async () => {
         </div>
 
         <div className="culture-footer">
-          <Link href="/request-quote" className="btn culture-footer__btn">
-            {btnLabel}
+          <Link href={buttonLink} className="btn culture-footer__btn">
+            {buttonText}
             <svg
               className="btn-arrow"
               viewBox="0 0 14 14"

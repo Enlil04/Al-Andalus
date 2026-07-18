@@ -49,9 +49,15 @@ function ChevronIcon({ isRtl }: { isRtl: boolean }) {
 
 type JobsDescriptionListProps = {
   jobs?: JobListItem[];
+  listingsEyebrow?: string;
+  listingsTitle?: string;
 };
 
-export default function JobsDescriptionList({ jobs }: JobsDescriptionListProps) {
+export default function JobsDescriptionList({
+  jobs,
+  listingsEyebrow,
+  listingsTitle,
+}: JobsDescriptionListProps) {
   const { locale } = useLocale();
   const siteCopy = getSiteCopy(locale);
   const { listings } = siteCopy.jobsPage;
@@ -120,9 +126,12 @@ export default function JobsDescriptionList({ jobs }: JobsDescriptionListProps) 
       <div className="about-grid">
         <div className="jobs-description__header about-grid__span-all">
           <ScrollReveal>
-            <p className="jobs-description__eyebrow">{listings.eyebrow}</p>
+            <p className="jobs-description__eyebrow">{listingsEyebrow ?? listings.eyebrow}</p>
           </ScrollReveal>
-          <AnimatedHeadline title={listings.title} className="jobs-description__title" />
+          <AnimatedHeadline
+            title={listingsTitle ?? listings.title}
+            className="jobs-description__title"
+          />
         </div>
 
         <div className="jobs-description__layout about-grid__span-all">

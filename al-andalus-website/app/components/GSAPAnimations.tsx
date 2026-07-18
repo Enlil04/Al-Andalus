@@ -256,16 +256,18 @@ export default function GSAPAnimations() {
 
       /* ── Contact CTA: big text parallax ── */
       if (document.querySelector(".contact-cta")) {
-        gsap.to(".contact-cta__bg-text", {
-          xPercent: -15,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".contact-cta",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
+        if (document.querySelector(".contact-cta__bg-text")) {
+          gsap.to(".contact-cta__bg-text", {
+            xPercent: -15,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".contact-cta",
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1,
+            },
+          });
+        }
 
         /* ── Contact CTA: scroll background expansion ── */
         gsap.fromTo(

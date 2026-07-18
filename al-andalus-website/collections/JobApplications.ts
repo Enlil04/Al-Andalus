@@ -63,7 +63,7 @@ export const JobApplications: CollectionConfig = {
     {
       name: "cv",
       type: "upload",
-      relationTo: "media",
+      relationTo: "documents",
       required: true,
       label: bilingualLabel("CV / Resume", "السيرة الذاتية"),
     },

@@ -43,9 +43,17 @@ const QUOTE_PRODUCT_SLUGS: Record<
 
 type RequestQuoteFormProps = {
   products?: QuoteProduct[];
+  formLabel?: string;
+  formHeadline?: string;
+  formIntro?: string;
 };
 
-export default function RequestQuoteForm({ products = [] }: RequestQuoteFormProps) {
+export default function RequestQuoteForm({
+  products = [],
+  formLabel,
+  formHeadline,
+  formIntro,
+}: RequestQuoteFormProps) {
   const { locale } = useLocale();
   const siteCopy = getSiteCopy(locale);
   const { form: formCopy } = siteCopy.requestQuotePage;
@@ -213,15 +221,15 @@ export default function RequestQuoteForm({ products = [] }: RequestQuoteFormProp
       <div className="about-grid request-quote__grid">
         <aside className="request-quote__aside about-grid__cols-1-5">
           <ScrollReveal>
-            <span className="request-quote__label">{formCopy.label}</span>
+            <span className="request-quote__label">{formLabel ?? formCopy.label}</span>
           </ScrollReveal>
           <ScrollReveal delay={0.5}>
             <h2 className="request-quote__headline">
-              {formCopy.headline}
+              {formHeadline ?? formCopy.headline}
             </h2>
           </ScrollReveal>
           <ScrollReveal delay={1}>
-            <p className="request-quote__intro">{formCopy.intro}</p>
+            <p className="request-quote__intro">{formIntro ?? formCopy.intro}</p>
           </ScrollReveal>
 
           <nav className="request-quote__types" aria-label={formCopy.typesNavLabel}>
@@ -435,7 +443,7 @@ export default function RequestQuoteForm({ products = [] }: RequestQuoteFormProp
               {status === "error" && (
                 <p className="request-quote__feedback request-quote__feedback--error" role="alert">
                   {formCopy.errorPrefix}{" "}
-                  <a href={contactInfo.phoneHref}>{contactInfo.phone}</a>.
+                  <a href={contactInfo.phoneHref} dir="ltr">{contactInfo.phone}</a>.
                 </p>
               )}
             </div>

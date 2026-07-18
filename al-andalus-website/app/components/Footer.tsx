@@ -59,9 +59,10 @@ function FooterLink({
 
 type FooterProps = {
   socialLinks?: SiteSettingsContent["socialLinks"];
+  logoUrl?: string | null;
 };
 
-export default function Footer({ socialLinks }: FooterProps) {
+export default function Footer({ socialLinks, logoUrl }: FooterProps) {
   const { locale } = useLocale();
   const siteCopy = getSiteCopy(locale);
   const { footer } = siteCopy;
@@ -81,7 +82,7 @@ export default function Footer({ socialLinks }: FooterProps) {
       <div className="footer-new__top-content">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/footer-logo.png"
+          src={logoUrl || "/footer-logo.png"}
           alt="Al Andalus International Insurance"
           className="footer-new__logo-img"
         />

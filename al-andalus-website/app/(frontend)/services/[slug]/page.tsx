@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { getServices } from "@/lib/services";
-import Header from "../../../components/Header";
+import HeaderServer from "../../../components/HeaderServer";
 import FooterServer from "../../../components/FooterServer";
 import Loader from "../../../components/Loader";
 import SmoothScroll from "../../../components/SmoothScroll";
@@ -9,7 +9,7 @@ import GSAPAnimations from "../../../components/GSAPAnimations";
 import PageBanner from "../../../components/PageBanner";
 import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
-import ContactCta from "../../../components/ContactCta";
+import ContactCtaServer from "../../../components/ContactCtaServer";
 import Link from "next/link";
 import { getLocale } from "@/lib/locale";
 import { fetchProductBySlug } from "@/lib/cms/content";
@@ -89,7 +89,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <HeaderServer />
 
         <PageBanner title={title} subtitle={subtitle} showImage={false} />
 
@@ -141,7 +141,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        <ContactCta />
+        <ContactCtaServer />
 
         <FooterServer />
       </SmoothScroll>

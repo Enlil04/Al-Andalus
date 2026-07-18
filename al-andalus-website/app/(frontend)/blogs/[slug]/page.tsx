@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import Header from "../../../components/Header";
+import HeaderServer from "../../../components/HeaderServer";
 import FooterServer from "../../../components/FooterServer";
 import Loader from "../../../components/Loader";
 import SmoothScroll from "../../../components/SmoothScroll";
@@ -8,7 +8,7 @@ import GSAPAnimations from "../../../components/GSAPAnimations";
 import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
 import BlogPostHeading from "../../../components/BlogPostHeading";
-import ContactCta from "../../../components/ContactCta";
+import ContactCtaServer from "../../../components/ContactCtaServer";
 import Link from "next/link";
 import { getLocale } from "@/lib/locale";
 import { fetchNewsBySlug } from "@/lib/cms/content";
@@ -119,7 +119,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <HeaderServer />
 
         <article className="blog-post">
           <div className="about-grid">
@@ -177,7 +177,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
           </div>
         </article>
 
-        <ContactCta />
+        <ContactCtaServer />
 
         <FooterServer />
       </SmoothScroll>

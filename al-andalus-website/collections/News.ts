@@ -1,7 +1,7 @@
 import { CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
-import { bilingualLabel } from "../lib/cms/labels";
+import { bilingualLabel, mediaFieldHint } from "../lib/cms/labels";
 
 export const News: CollectionConfig = {
   slug: "news",
@@ -80,7 +80,16 @@ export const News: CollectionConfig = {
       name: "coverImage",
       type: "upload",
       relationTo: "media",
+      filterOptions: { mimeType: { contains: "image" } },
       label: bilingualLabel("Cover Image", "صورة الغلاف"),
+      admin: {
+        description: mediaFieldHint(
+          "this article's card in the news list and its detail-page cover",
+          "بطاقة هذا المقال في قائمة الأخبار وغلاف صفحة المقال",
+          "landscape image, 1600×900",
+          "صورة أفقية 1600×900",
+        ),
+      },
     },
     {
       name: "slug",

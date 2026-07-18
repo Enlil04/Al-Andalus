@@ -8,18 +8,14 @@ import AnimatedHeadline from "../../components/AnimatedHeadline";
 import PageBanner from "../../components/PageBanner";
 import FourDivisionsSection from "../../components/FourDivisionsSection";
 import VisionMission from "../../components/VisionMission";
-import ContactCta from "../../components/ContactCta";
+import ContactCtaServer from "../../components/ContactCtaServer";
 import {
   fetchAboutPageContent,
-  fetchHomepageContent,
   fetchSiteSettings,
 } from "@/lib/cms/content";
 import { getCMSPayload } from "@/lib/cms/payload";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
-
-const missionImage = "/al-and images/Misty Urban Development.png";
-const missionAccentImage = "/al-and images/ChatGPT Image Jul 15, 2026, 09_57_27 PM.png";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -32,31 +28,26 @@ export async function generateMetadata() {
 
 export default async function AboutPage() {
   const payload = await getCMSPayload();
-  const locale = await getLocale();
-  const siteCopy = getSiteCopy(locale);
-  const { aboutPage } = siteCopy;
-  const { mission } = aboutPage;
 
-  const [aboutContent, { contactCta }, siteSettings] = await Promise.all([
+  const [aboutContent, siteSettings] = await Promise.all([
     fetchAboutPageContent(payload),
-    fetchHomepageContent(payload),
     fetchSiteSettings(payload),
   ]);
-
-  const boardMemberLabel = locale === "ar" ? "أعضاء مجلس الإدارة" : "Board member";
-  const companyTitle = locale === "ar" ? "( الشركة )" : "( COMPANY )";
 
   return (
     <>
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <Header logoUrl={siteSettings.siteLogo} />
 
         <PageBanner
           title={aboutContent.bannerTitle}
           subtitle={aboutContent.bannerSubtitle}
-          imageSrc="/al-and images/ChatGPT Image Jul 15, 2026, 09_56_24 PM.png"
+          imageSrc={
+            aboutContent.heroImageUrl ??
+            "/al-and images/ChatGPT Image Jul 15, 2026, 09_56_24 PM.png"
+          }
         />
 
         {/* ═══════════════ 2–3. MISSION ═══════════════ */}
@@ -65,15 +56,15 @@ export default async function AboutPage() {
             <div className="about-mission__top about-grid__span-all">
               <div className="about-mission__top-left about-grid__cols-1-6">
                 <ScrollReveal>
-                  <span className="about-mission__label">{mission.label}</span>
+                  <span className="about-mission__label">{aboutContent.missionLabel}</span>
                 </ScrollReveal>
                 <AnimatedHeadline
-                  title={mission.headline}
+                  title={aboutContent.missionHeadline}
                   className="about-mission__headline"
                 />
                 <ScrollReveal delay={2}>
                   <p className="about-mission__subline">
-                    {mission.subline.split("\n").map((line, index) => (
+                    {aboutContent.missionSubline.split("\n").map((line, index) => (
                       <span key={line}>
                         {index > 0 ? <br /> : null}
                         {line}
@@ -88,7 +79,7 @@ export default async function AboutPage() {
                   <div
                     className="about-mission__image"
                     style={{
-                      backgroundImage: `url("${aboutContent.heroImageUrl ?? missionImage}")`,
+                      backgroundImage: `url("${aboutContent.missionImageUrl}")`,
                     }}
                     role="img"
                     aria-label="Urban development representing Iraq's growth"
@@ -100,14 +91,14 @@ export default async function AboutPage() {
             <div className="about-mission__bottom about-grid__span-all">
               <div
                 className="about-mission__bottom-image about-grid__cols-1-5"
-                style={{ backgroundImage: `url("${missionAccentImage}")` }}
+                style={{ backgroundImage: `url("${aboutContent.missionAccentImage}")` }}
                 role="img"
                 aria-label="Modern office interior"
               />
 
               <div className="about-mission__bottom-content about-grid__cols-7-12">
                 <AnimatedHeadline
-                  title={mission.bodyTitle}
+                  title={aboutContent.missionBodyTitle}
                   className="about-mission__bottom-title"
                   as="h3"
                 />
@@ -124,18 +115,15 @@ export default async function AboutPage() {
         </section>
 
         {/* ═══════════════ VISION & MISSION ═══════════════ */}
-        <VisionMission />
+        <VisionMission {...aboutContent.vision} />
 
         {/* ═══════════════ 4. WHY CHOOSE US ═══════════════ */}
-        <FourDivisionsSection />
+        <FourDivisionsSection {...aboutContent.whyChoose} />
 
         {/* ═══════════════ LEADERSHIP MESSAGES ═══════════════ */}
         {aboutContent.leadership.map((leader, index) => {
           const isMirrored = index % 2 !== 0;
           const sectionId = index === 0 ? "leadership" : `leadership-${index}`;
-          const title = index === 0 
-            ? aboutPage.leadership.ceo.title 
-            : (index === 1 ? aboutPage.leadership.md.title : `${leader.role} Message`);
 
           return (
             <section
@@ -163,11 +151,11 @@ export default async function AboutPage() {
                   <div className="about-message__panel">
                     <ScrollReveal>
                       <span className="about-message__label">
-                        {aboutPage.leadership.label}
+                        {aboutContent.leadershipLabel}
                       </span>
                     </ScrollReveal>
                     <AnimatedHeadline
-                      title={title}
+                      title={leader.messageTitle}
                       className="about-message__title"
                     />
                     <ScrollReveal delay={2}>
@@ -193,12 +181,12 @@ export default async function AboutPage() {
         <section className="about-company" id="company">
           <div className="about-grid">
             <AnimatedHeadline
-              title={companyTitle}
+              title={aboutContent.companyTitle}
               className="about-company__title about-grid__section-title"
             />
 
             <div className="about-company__list about-grid__span-all">
-              {aboutPage.companySnapshot.map((row) => (
+              {aboutContent.companyRows.map((row) => (
                 <div className="about-company__row" key={row.label}>
                   <span className="about-company__label">{row.label}</span>
                   <p className="about-company__value">{row.value}</p>
@@ -206,9 +194,9 @@ export default async function AboutPage() {
               ))}
 
               <div className="about-company__row">
-                <span className="about-company__label">{boardMemberLabel}</span>
+                <span className="about-company__label">{aboutContent.boardLabel}</span>
                 <div className="about-company__board">
-                  {aboutPage.boardMembers.map((member) => (
+                  {aboutContent.boardMembers.map((member) => (
                     <p className="about-company__board-entry" key={member.name}>
                       <strong>{member.role}:</strong> {member.name}
                     </p>
@@ -219,12 +207,7 @@ export default async function AboutPage() {
           </div>
         </section>
 
-        <ContactCta
-          headline={contactCta.headline}
-          lines={contactCta.lines}
-          cta={contactCta.cta}
-          ctaLink={contactCta.ctaLink}
-        />
+        <ContactCtaServer />
 
         <FooterServer />
       </SmoothScroll>

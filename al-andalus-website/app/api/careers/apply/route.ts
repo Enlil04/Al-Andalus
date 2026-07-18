@@ -58,11 +58,11 @@ export async function POST(request: Request) {
     }
 
     const buffer = Buffer.from(await cv.arrayBuffer());
-    const media = await payload.create({
-      collection: "media",
+    const document = await payload.create({
+      collection: "documents",
       overrideAccess: true,
       data: {
-        alt: `${String(fullName).slice(0, 100)} CV`,
+        title: `${String(fullName).slice(0, 100)} CV`,
       },
       file: {
         data: buffer,
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
         email: String(email).slice(0, 200),
         phone: String(phone).slice(0, 50),
         coverLetter: coverLetter ? String(coverLetter).slice(0, 5000) : "",
-        cv: media.id,
+        cv: document.id,
         status: "new",
       },
     });

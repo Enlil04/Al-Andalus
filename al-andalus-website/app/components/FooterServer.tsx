@@ -3,5 +3,5 @@ import Footer from "./Footer";
 
 export default async function FooterServer() {
   const settings = await fetchSiteSettings();
-  return <Footer socialLinks={settings.socialLinks} />;
+  return <Footer socialLinks={settings.socialLinks} logoUrl={settings.siteLogo} />;
 }

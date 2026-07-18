@@ -1,7 +1,11 @@
 import { CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
-import { bilingualFieldHint, bilingualLabel } from "../lib/cms/labels";
+import {
+  bilingualFieldHint,
+  bilingualLabel,
+  mediaFieldHint,
+} from "../lib/cms/labels";
 
 export const Partners: CollectionConfig = {
   slug: "partners",
@@ -43,8 +47,17 @@ export const Partners: CollectionConfig = {
       name: "logo",
       type: "upload",
       relationTo: "media",
+      filterOptions: { mimeType: { contains: "image" } },
       required: true,
       label: bilingualLabel("Logo", "الشعار"),
+      admin: {
+        description: mediaFieldHint(
+          "this partner's logo on the homepage and Partners page",
+          "شعار هذا الشريك في الصفحة الرئيسية وصفحة الشركاء",
+          "transparent PNG/SVG, wide format, at least 800px",
+          "PNG/SVG شفاف وعريض وبحجم لا يقل عن 800 بكسل",
+        ),
+      },
     },
     {
       name: "website",

@@ -7,7 +7,17 @@ import { getSiteCopy } from "@/lib/copy";
 import { useLocale } from "./LocaleProvider";
 import "./RequestQuote.css";
 
-export default function ContactForm() {
+type ContactFormProps = {
+  formLabel?: string;
+  formHeadline?: string;
+  formIntro?: string;
+};
+
+export default function ContactForm({
+  formLabel,
+  formHeadline,
+  formIntro,
+}: ContactFormProps) {
   const { locale } = useLocale();
   const siteCopy = getSiteCopy(locale);
   const { form: formCopy } = siteCopy.contactPage;
@@ -73,15 +83,15 @@ export default function ContactForm() {
       <div className="about-grid request-quote__grid">
         <aside className="request-quote__aside about-grid__cols-1-5">
           <ScrollReveal>
-            <span className="request-quote__label">({formCopy.label})</span>
+            <span className="request-quote__label">({formLabel ?? formCopy.label})</span>
           </ScrollReveal>
           <AnimatedHeadline
-            title={formCopy.headline}
+            title={formHeadline ?? formCopy.headline}
             className="request-quote__headline"
             as="h2"
           />
           <ScrollReveal delay={0.5}>
-            <p className="request-quote__intro">{formCopy.intro}</p>
+            <p className="request-quote__intro">{formIntro ?? formCopy.intro}</p>
           </ScrollReveal>
         </aside>
 

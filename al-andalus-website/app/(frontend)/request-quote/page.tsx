@@ -8,7 +8,11 @@ import RequestQuoteForm from "../../components/RequestQuoteForm";
 import RequestQuoteContact from "../../components/RequestQuoteContact";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
-import { fetchQuoteProducts } from "@/lib/cms/content";
+import {
+  fetchPagesContent,
+  fetchQuoteProducts,
+  fetchSiteSettings,
+} from "@/lib/cms/content";
 import FooterServer from "../../components/FooterServer";
 
 export async function generateMetadata() {
@@ -24,7 +28,12 @@ export default async function RequestQuotePage() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
   const { requestQuotePage } = siteCopy;
-  const products = await fetchQuoteProducts();
+  const [products, settings, pages] = await Promise.all([
+    fetchQuoteProducts(),
+    fetchSiteSettings(),
+    fetchPagesContent(),
+  ]);
+  const cms = pages.requestQuote;
 
   const loadingText = locale === "ar" ? "جاري تحميل نموذج طلب التسعيرة..." : "Loading Quote Form...";
 
@@ -33,19 +42,32 @@ export default async function RequestQuotePage() {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <Header logoUrl={settings.siteLogo} />
 
         <PageBanner
-          title={requestQuotePage.banner.title}
-          subtitle={requestQuotePage.banner.subtitle}
+          title={cms.bannerTitle || requestQuotePage.banner.title}
+          subtitle={cms.bannerSubtitle || requestQuotePage.banner.subtitle}
           showImage={false}
         />
 
         <Suspense fallback={<div className="request-quote__loading">{loadingText}</div>}>
-          <RequestQuoteForm products={products} />
+          <RequestQuoteForm
+            products={products}
+            formLabel={cms.formLabel}
+            formHeadline={cms.formHeadline}
+            formIntro={cms.formIntro}
+          />
         </Suspense>
 
-        <RequestQuoteContact />
+        <RequestQuoteContact
+          branches={settings.branches}
+          shortcode={settings.shortNumber}
+          phone={settings.phone}
+          phoneHref={`tel:${settings.phone.replace(/\s+/g, "")}`}
+          visitLabel={cms.visitLabel}
+          visitHeadline={cms.visitHeadline}
+          visitIntro={cms.visitIntro}
+        />
 
         <FooterServer />
       </SmoothScroll>

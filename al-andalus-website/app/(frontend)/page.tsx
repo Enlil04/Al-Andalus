@@ -20,6 +20,7 @@ import {
   fetchFaqs,
   fetchPublishedNews,
   fetchPartners,
+  fetchSiteSettings,
 } from "@/lib/cms/content";
 import CmsImage from "../components/CmsImage";
 import FooterServer from "../components/FooterServer";
@@ -47,13 +48,14 @@ export default async function Home() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
 
-  const [homepageContent, featuredServices, faqItems, newsItems, partners] =
+  const [homepageContent, featuredServices, faqItems, newsItems, partners, siteSettings] =
     await Promise.all([
       fetchHomepageContent(payload),
       fetchFeaturedProducts(payload),
       fetchFaqs(payload),
       fetchPublishedNews(payload, 5),
       fetchPartners(payload, 8),
+      fetchSiteSettings(payload),
     ]);
 
   const { hero, intro, story, aboutPreview, contactCta } = homepageContent;
@@ -66,7 +68,6 @@ export default async function Home() {
 
   const servicesHeadline = locale === "ar" ? "خدماتنا" : "OUR\nSERVICES";
   const viewAllServicesLabel = locale === "ar" ? "عرض جميع الخدمات" : "View all services";
-  const whyUsLabel = locale === "ar" ? "( لماذا الأندلس )" : "( WHY AL-ANDALUS )";
   const newsLabel = locale === "ar" ? "( الأخبار )" : "( News )";
   const newsTitle = locale === "ar" ? "أحدث الأخبار" : "Latest Updates";
   const viewAllLabel = locale === "ar" ? "عرض الكل" : "View All";
@@ -79,13 +80,13 @@ export default async function Home() {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <Header logoUrl={siteSettings.siteLogo} />
 
         {/* ═══════════════ HERO SECTION ═══════════════ */}
         <div className="hero-track" id="hero">
           <section className="hero">
             <div className="hero__media">
-              <HeroBackground />
+              <HeroBackground videoUrl={hero.videoUrl} imageUrl={hero.imageUrl} />
             </div>
             <div className="hero__content">
               <div className="hero__titles">
@@ -144,16 +145,18 @@ export default async function Home() {
         <section className="story" id="story">
           <div className="story__content">
             <div className="story__images">
-              <Image
-                src="/al-and images/IMG_6081.JPG"
+              <CmsImage
+                src={story.imageLargeUrl}
+                fallbackSrc="/al-and images/IMG_6081.JPG"
                 alt="Story large image"
                 width={640}
                 height={900}
                 className="story__image story__image--large"
                 style={{ objectFit: "cover" }}
               />
-              <Image
-                src="/al-and images/3cec34a2-2758-4570-910e-32a896e080de.jpg"
+              <CmsImage
+                src={story.imageSmallUrl}
+                fallbackSrc="/al-and images/3cec34a2-2758-4570-910e-32a896e080de.jpg"
                 alt="Story small image"
                 width={300}
                 height={280}
@@ -184,7 +187,14 @@ export default async function Home() {
 
         {/* ═══════════════ EXPANDING IMAGE ═══════════════ */}
         <section className="expanding-section" id="expanding-image">
-          <div className="expanding-image" />
+          <div
+            className="expanding-image"
+            style={
+              homepageContent.expandingImageUrl
+                ? { backgroundImage: `url("${homepageContent.expandingImageUrl}")` }
+                : undefined
+            }
+          />
         </section>
 
         {/* ═══════════════ ABOUT SECTION (PINNED) ═══════════════ */}
@@ -210,10 +220,22 @@ export default async function Home() {
           </div>
 
           <div className="about-pinned__images">
-            <div className="about-img about-img--1" />
-            <div className="about-img about-img--2" />
-            <div className="about-img about-img--3" />
-            <div className="about-img about-img--4" />
+            <div
+              className="about-img about-img--1"
+              style={aboutPreview.image1Url ? { backgroundImage: `url("${aboutPreview.image1Url}")` } : undefined}
+            />
+            <div
+              className="about-img about-img--2"
+              style={aboutPreview.image2Url ? { backgroundImage: `url("${aboutPreview.image2Url}")` } : undefined}
+            />
+            <div
+              className="about-img about-img--3"
+              style={aboutPreview.image3Url ? { backgroundImage: `url("${aboutPreview.image3Url}")` } : undefined}
+            />
+            <div
+              className="about-img about-img--4"
+              style={aboutPreview.image4Url ? { backgroundImage: `url("${aboutPreview.image4Url}")` } : undefined}
+            />
           </div>
         </section>
 
@@ -281,13 +303,13 @@ export default async function Home() {
         <section className="vs-section" id="why-us">
           <div className="vs-overlay">
             <div className="vs-overlay__sticky">
-              <span className="vs-overlay__label">{whyUsLabel}</span>
+              <span className="vs-overlay__label">{homepageContent.whyUs.label}</span>
               <AnimatedHeadline
-                title={siteCopy.whyUs.headline}
+                title={homepageContent.whyUs.headline}
                 className="vs-overlay__title"
               />
               <p className="vs-overlay__desc">
-                {siteCopy.whyUs.desc.split("\n").map((line, idx) => (
+                {homepageContent.whyUs.desc.split("\n").map((line, idx) => (
                   <span key={idx}>
                     {idx > 0 && <br />}
                     {line}
@@ -299,20 +321,22 @@ export default async function Home() {
 
           <div className="vs-grid">
             {[
-              "/al-and images/conference-1.jpg",
-              "/al-and images/conference-2.jpg",
-              "/al-and images/conference-3.jpg",
-              "/al-and images/conference-4.jpg",
-              "/al-and images/IMG_5713.JPG",
-              "/al-and images/IMG_6081.JPG",
-            ].map((src) => (
-              <div className="vs-card" key={src}>
-                <Image
-                  src={src}
+              { src: homepageContent.whyUs.img1Url, fallback: "/al-and images/conference-1.jpg" },
+              { src: homepageContent.whyUs.img2Url, fallback: "/al-and images/conference-2.jpg" },
+              { src: homepageContent.whyUs.img3Url, fallback: "/al-and images/conference-3.jpg" },
+              { src: homepageContent.whyUs.img4Url, fallback: "/al-and images/conference-4.jpg" },
+              { src: homepageContent.whyUs.img5Url, fallback: "/al-and images/IMG_5713.JPG" },
+              { src: homepageContent.whyUs.img6Url, fallback: "/al-and images/IMG_6081.JPG" },
+            ].map((img, idx) => (
+              <div className="vs-card" key={idx}>
+                <CmsImage
+                  src={img.src}
+                  fallbackSrc={img.fallback}
                   alt=""
                   fill
                   sizes="(max-width: 900px) 100vw, 50vw"
                   className="vs-card__image"
+                  style={{ objectFit: "cover" }}
                 />
                 <div className="vs-card__bg" aria-hidden="true" />
               </div>
@@ -518,6 +542,7 @@ export default async function Home() {
           lines={contactCta.lines}
           cta={contactCta.cta}
           ctaLink={contactCta.ctaLink}
+          backgroundImageUrl={contactCta.backgroundImageUrl}
         />
 
         <FooterServer />

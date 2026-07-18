@@ -1,4 +1,4 @@
-import Header from "../../components/Header";
+import HeaderServer from "../../components/HeaderServer";
 import FooterServer from "../../components/FooterServer";
 import Loader from "../../components/Loader";
 import SmoothScroll from "../../components/SmoothScroll";
@@ -6,11 +6,11 @@ import GSAPAnimations from "../../components/GSAPAnimations";
 import PageBanner from "../../components/PageBanner";
 import ScrollReveal from "../../components/ScrollReveal";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
-import ContactCta from "../../components/ContactCta";
+import ContactCtaServer from "../../components/ContactCtaServer";
 import CmsImage from "../../components/CmsImage";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
-import { fetchPartners } from "@/lib/cms/content";
+import { fetchPagesContent, fetchPartners } from "@/lib/cms/content";
 import { getMediaUrl } from "@/lib/cms/media";
 import "./Partners.css";
 
@@ -34,15 +34,19 @@ export async function generateMetadata() {
 
 export default async function PartnersPage() {
   const locale = await getLocale();
-  const partners = await fetchPartners(undefined, 100);
+  const [partners, pages] = await Promise.all([
+    fetchPartners(undefined, 100),
+    fetchPagesContent(),
+  ]);
+  const cms = pages.partners;
 
-  const bannerTitle = locale === "ar" ? "الشركاء" : "PARTNERS";
-  const bannerSubtitle = locale === "ar" ? "شبكتنا الموثوقة" : "Our Trusted Network";
-  const label = locale === "ar" ? "( الشبكة )" : "( Network )";
-  const headline = locale === "ar" ? "بناء الثقة في جميع أنحاء العراق" : "Building Trust Across Iraq";
-  const desc = locale === "ar" 
+  const bannerTitle = cms.bannerTitle || (locale === "ar" ? "الشركاء" : "PARTNERS");
+  const bannerSubtitle = cms.bannerSubtitle || (locale === "ar" ? "شبكتنا الموثوقة" : "Our Trusted Network");
+  const label = cms.introLabel || (locale === "ar" ? "( الشبكة )" : "( Network )");
+  const headline = cms.introHeadline || (locale === "ar" ? "بناء الثقة في جميع أنحاء العراق" : "Building Trust Across Iraq");
+  const desc = cms.introDescription || (locale === "ar" 
     ? "تعمل شركة الأندلس للتأمين الدولي جنباً إلى جنب مع كبرى المصارف، الشركات، المؤسسات الحكومية، وشركات القطاع الخاص في العراق. تعكس هذه الشراكات سنوات من الاكتتاب الموثوق، والالتزام المستمر بتسوية المطالبات، والمساهمة الفاعلة في النمو الاقتصادي." 
-    : "Al-Andalus Insurance works alongside leading banks, corporations, government institutions, and private businesses across Iraq. These partnerships reflect years of reliable underwriting, consistent claim settlement, and shared commitment to economic growth.";
+    : "Al-Andalus Insurance works alongside leading banks, corporations, government institutions, and private businesses across Iraq. These partnerships reflect years of reliable underwriting, consistent claim settlement, and shared commitment to economic growth.");
   const emptyLabel = locale === "ar" ? "لا يوجد شركاء مدرجون حالياً." : "No partners listed yet.";
 
   return (
@@ -50,9 +54,13 @@ export default async function PartnersPage() {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <HeaderServer />
 
-        <PageBanner title={bannerTitle} subtitle={bannerSubtitle} />
+        <PageBanner
+          title={bannerTitle}
+          subtitle={bannerSubtitle}
+          imageSrc={cms.bannerImageUrl ?? undefined}
+        />
 
         {/* ═══════════════ INTRO ═══════════════ */}
         <section className="partners-page__intro jobs-section">
@@ -143,7 +151,7 @@ export default async function PartnersPage() {
           </div>
         </section>
 
-        <ContactCta />
+        <ContactCtaServer />
 
         <FooterServer />
       </SmoothScroll>

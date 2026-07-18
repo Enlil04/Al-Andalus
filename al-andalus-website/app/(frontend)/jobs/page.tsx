@@ -1,4 +1,4 @@
-import Header from "../../components/Header";
+import HeaderServer from "../../components/HeaderServer";
 import Loader from "../../components/Loader";
 import SmoothScroll from "../../components/SmoothScroll";
 import GSAPAnimations from "../../components/GSAPAnimations";
@@ -6,10 +6,10 @@ import PageBanner from "../../components/PageBanner";
 import ScrollReveal from "../../components/ScrollReveal";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
 import JobsDescriptionList from "../../components/JobsDescriptionList";
-import ContactCta from "../../components/ContactCta";
+import ContactCtaServer from "../../components/ContactCtaServer";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
-import { fetchOpenJobs } from "@/lib/cms/content";
+import { fetchOpenJobs, fetchPagesContent } from "@/lib/cms/content";
 import FooterServer from "../../components/FooterServer";
 
 const challengeImage = "/al-and images/Misty Urban Development.png";
@@ -27,19 +27,26 @@ export default async function JobsPage() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
   const { jobsPage } = siteCopy;
-  const jobs = await fetchOpenJobs();
+  const [jobs, pages] = await Promise.all([
+    fetchOpenJobs(),
+    fetchPagesContent(),
+  ]);
+  const cms = pages.jobs;
 
   return (
     <>
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <HeaderServer />
 
         <PageBanner
-          title={jobsPage.banner.title}
-          subtitle={jobsPage.banner.subtitle}
-          imageSrc="/al-and images/businesspeople-open-hand-to-shaking-hands-in-offic-2026-03-13-01-59-19-utc.jpg"
+          title={cms.bannerTitle || jobsPage.banner.title}
+          subtitle={cms.bannerSubtitle || jobsPage.banner.subtitle}
+          imageSrc={
+            cms.bannerImageUrl ??
+            "/al-and images/businesspeople-open-hand-to-shaking-hands-in-offic-2026-03-13-01-59-19-utc.jpg"
+          }
         />
 
         {/* ═══════════════ 1. MESSAGE ═══════════════ */}
@@ -48,10 +55,10 @@ export default async function JobsPage() {
             <div className="jobs-challenge__top about-grid__span-all">
               <div className="jobs-challenge__left about-grid__cols-1-6">
                 <ScrollReveal>
-                  <span className="jobs-section__label">{jobsPage.message.label}</span>
+                  <span className="jobs-section__label">{cms.messageLabel}</span>
                 </ScrollReveal>
                 <AnimatedHeadline
-                  title={jobsPage.message.headline}
+                  title={cms.messageHeadline}
                   className="jobs-challenge__headline"
                 />
               </div>
@@ -60,7 +67,7 @@ export default async function JobsPage() {
                 <ScrollReveal delay={1}>
                   <div
                     className="jobs-challenge__image"
-                    style={{ backgroundImage: `url("${challengeImage}")` }}
+                    style={{ backgroundImage: `url("${cms.messageImageUrl ?? challengeImage}")` }}
                     role="img"
                     aria-label="Urban development representing growth across Iraq"
                   />
@@ -71,9 +78,13 @@ export default async function JobsPage() {
         </section>
 
         {/* ═══════════════ 2. DEPARTMENTS ═══════════════ */}
-        <JobsDescriptionList jobs={jobs} />
+        <JobsDescriptionList
+          jobs={jobs}
+          listingsEyebrow={cms.listingsEyebrow}
+          listingsTitle={cms.listingsTitle}
+        />
 
-        <ContactCta />
+        <ContactCtaServer />
 
         <FooterServer />
       </SmoothScroll>

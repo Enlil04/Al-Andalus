@@ -1,7 +1,7 @@
 import { CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
-import { bilingualLabel } from "../lib/cms/labels";
+import { bilingualLabel, mediaFieldHint } from "../lib/cms/labels";
 
 export const Products: CollectionConfig = {
   slug: "products",
@@ -82,13 +82,31 @@ export const Products: CollectionConfig = {
       name: "icon",
       type: "upload",
       relationTo: "media",
+      filterOptions: { mimeType: { contains: "image" } },
       label: bilingualLabel("Service Icon", "أيقونة الخدمة"),
+      admin: {
+        description: mediaFieldHint(
+          "this service's icon where icon-based service cards are used",
+          "أيقونة هذه الخدمة في بطاقات الخدمات التي تعرض الأيقونات",
+          "transparent square PNG/SVG, 512×512",
+          "PNG/SVG شفاف ومربع 512×512",
+        ),
+      },
     },
     {
       name: "thumbnail",
       type: "upload",
       relationTo: "media",
+      filterOptions: { mimeType: { contains: "image" } },
       label: bilingualLabel("Service Image", "صورة الخدمة"),
+      admin: {
+        description: mediaFieldHint(
+          "the service card and service detail page image",
+          "صورة بطاقة الخدمة وصفحة تفاصيل الخدمة",
+          "landscape image, 1600×1000",
+          "صورة أفقية 1600×1000",
+        ),
+      },
     },
     {
       name: "slug",

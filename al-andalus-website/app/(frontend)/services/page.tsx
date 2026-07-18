@@ -1,4 +1,4 @@
-import Header from "../../components/Header";
+import HeaderServer from "../../components/HeaderServer";
 import FooterServer from "../../components/FooterServer";
 import Loader from "../../components/Loader";
 import SmoothScroll from "../../components/SmoothScroll";
@@ -8,10 +8,10 @@ import ScrollReveal from "../../components/ScrollReveal";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
 import ServicesCardSection from "../../components/ServicesCardSection";
 import CultureSection from "../../components/CultureSection";
-import ContactCta from "../../components/ContactCta";
+import ContactCtaServer from "../../components/ContactCtaServer";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
-import { fetchAllProducts } from "@/lib/cms/content";
+import { fetchAllProducts, fetchPagesContent } from "@/lib/cms/content";
 
 const messageImage = "/al-and images/5f32f6eefa193becbdd238d11fdd52aa.jpg";
 const messageBottomImage = "/al-and images/Modern Office Interior.png";
@@ -30,19 +30,26 @@ export default async function ServicesPage() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
   const { servicesPage } = siteCopy;
-  const services = await fetchAllProducts();
+  const [services, pages] = await Promise.all([
+    fetchAllProducts(),
+    fetchPagesContent(),
+  ]);
+  const cms = pages.services;
 
   return (
     <>
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <HeaderServer />
 
         <PageBanner
-          title={servicesPage.banner.title}
-          subtitle={servicesPage.banner.subtitle}
-          imageSrc="/al-and images/extended-family-group-portrait-on-a-teal-sofa-2026-03-18-13-49-06-utc.jpg"
+          title={cms.bannerTitle || servicesPage.banner.title}
+          subtitle={cms.bannerSubtitle || servicesPage.banner.subtitle}
+          imageSrc={
+            cms.bannerImageUrl ??
+            "/al-and images/extended-family-group-portrait-on-a-teal-sofa-2026-03-18-13-49-06-utc.jpg"
+          }
         />
 
         {/* ═══════════════ 1. MESSAGE ═══════════════ */}
@@ -51,10 +58,10 @@ export default async function ServicesPage() {
             <div className="jobs-challenge__top about-grid__span-all">
               <div className="jobs-challenge__left about-grid__cols-1-6">
                 <ScrollReveal>
-                  <span className="jobs-section__label">{servicesPage.message.label}</span>
+                  <span className="jobs-section__label">{cms.messageLabel}</span>
                 </ScrollReveal>
                 <AnimatedHeadline
-                  title={servicesPage.message.headline}
+                  title={cms.messageHeadline}
                   className="jobs-challenge__headline"
                 />
               </div>
@@ -63,7 +70,7 @@ export default async function ServicesPage() {
                 <ScrollReveal delay={1}>
                   <div
                     className="jobs-challenge__image"
-                    style={{ backgroundImage: `url("${messageImage}")` }}
+                    style={{ backgroundImage: `url("${cms.messageImageUrl ?? messageImage}")` }}
                     role="img"
                     aria-label="Urban development representing growth and protection"
                   />
@@ -76,7 +83,7 @@ export default async function ServicesPage() {
                 <ScrollReveal>
                   <div
                     className="jobs-challenge__bottom-photo"
-                    style={{ backgroundImage: `url("${messageBottomImage}")` }}
+                    style={{ backgroundImage: `url("${cms.messageBottomImageUrl ?? messageBottomImage}")` }}
                     role="img"
                     aria-label="Modern office workspace"
                   />
@@ -85,13 +92,13 @@ export default async function ServicesPage() {
 
               <div className="jobs-challenge__body about-grid__cols-7-12">
                 <AnimatedHeadline
-                  title={servicesPage.message.bodyTitle}
+                  title={cms.messageBodyTitle}
                   className="jobs-challenge__body-title"
                   as="h3"
                 />
                 <ScrollReveal delay={1}>
                   <div className="jobs-challenge__body-text">
-                    {servicesPage.message.paragraphs.map((paragraph) => (
+                    {cms.messageParagraphs.map((paragraph) => (
                       <p key={paragraph}>{paragraph}</p>
                     ))}
                   </div>
@@ -107,10 +114,10 @@ export default async function ServicesPage() {
             <div className="jobs-voices__top about-grid__span-all">
               <div className="jobs-voices__left about-grid__cols-1-6">
                 <ScrollReveal>
-                  <span className="jobs-section__label">{servicesPage.industries.label}</span>
+                  <span className="jobs-section__label">{cms.industriesLabel}</span>
                 </ScrollReveal>
                 <AnimatedHeadline
-                  title={servicesPage.industries.headline}
+                  title={cms.industriesHeadline}
                   className="jobs-voices__headline"
                 />
               </div>
@@ -119,7 +126,7 @@ export default async function ServicesPage() {
                 <ScrollReveal delay={1}>
                   <div
                     className="jobs-voices__image jobs-voices__image--primary"
-                    style={{ backgroundImage: `url("${voicesImagePrimary}")` }}
+                    style={{ backgroundImage: `url("${cms.industriesImageUrl ?? voicesImagePrimary}")` }}
                     role="img"
                     aria-label="Urban skyline representing sectors served across Iraq"
                   />
@@ -133,9 +140,16 @@ export default async function ServicesPage() {
         <ServicesCardSection id="services-card-section" services={services} />
 
         {/* ═══════════════ 4. INDUSTRIES DIAGRAM ═══════════════ */}
-        <CultureSection />
+        <CultureSection
+          label={cms.industriesLabel}
+          headline={cms.industriesHeadline}
+          coreTitle={cms.industriesCoreTitle}
+          buttonText={cms.industriesButtonText}
+          buttonLink={cms.industriesButtonLink}
+          sectors={cms.sectors}
+        />
 
-        <ContactCta />
+        <ContactCtaServer />
 
         <FooterServer />
       </SmoothScroll>

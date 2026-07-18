@@ -8,23 +8,15 @@ const mediaDir = path.resolve(process.cwd(), "public/media");
 export const Media: CollectionConfig = {
   slug: "media",
   access: {
-    // Public can read images/videos for the marketing site.
-    // PDFs (CVs, proposals) require staff — serve proposals via /api/proposals/[token]/file.
-    read: ({ req }) => {
-      if (isAdminOrEditor({ req })) return true;
-      return {
-        or: [
-          { mimeType: { contains: "image/" } },
-          { mimeType: { contains: "video/" } },
-        ],
-      };
-    },
+    // Public marketing media only. Private files (CVs, proposal PDFs) live in
+    // the `documents` collection, stored outside `public/`.
+    read: () => true,
     create: isAdminOrEditor,
     update: isAdminOrEditor,
     delete: isAdminOrEditor,
   },
   upload: {
-    mimeTypes: ["image/*", "video/*", "application/pdf"],
+    mimeTypes: ["image/*", "video/*"],
     // Absolute path so Hostinger volume mounts resolve correctly regardless of cwd.
     staticDir: mediaDir,
     imageSizes: [

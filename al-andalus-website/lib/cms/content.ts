@@ -49,12 +49,18 @@ export type StoryContent = {
   paragraphs: string[];
   ctaText: string;
   ctaLink: string;
+  imageLargeUrl: string | null;
+  imageSmallUrl: string | null;
 };
 
 export type AboutPreviewContent = {
   label: string;
   headline: string;
   text: string;
+  image1Url: string | null;
+  image2Url: string | null;
+  image3Url: string | null;
+  image4Url: string | null;
 };
 
 export type ContactCtaContent = {
@@ -62,9 +68,23 @@ export type ContactCtaContent = {
   lines: readonly string[];
   cta: string;
   ctaLink: string;
+  backgroundImageUrl: string | null;
+};
+
+export type WhyUsContent = {
+  label: string;
+  headline: string;
+  desc: string;
+  img1Url: string | null;
+  img2Url: string | null;
+  img3Url: string | null;
+  img4Url: string | null;
+  img5Url: string | null;
+  img6Url: string | null;
 };
 
 export type LeadershipEntry = {
+  messageTitle: string;
   name: string;
   role: string;
   bioParagraphs: readonly string[];
@@ -75,10 +95,36 @@ export type AboutPageContent = {
   bannerTitle: string;
   bannerSubtitle: string;
   heroImageUrl: string | null;
+  missionLabel: string;
+  missionHeadline: string;
+  missionSubline: string;
+  missionBodyTitle: string;
+  missionImageUrl: string | null;
+  missionAccentImage: string | null;
   missionParagraphs: readonly string[];
-  visionParagraphs: readonly string[];
+  vision: {
+    label: string;
+    headline: string;
+    paragraphs: readonly string[];
+    imageUrl: string | null;
+    accentImageUrl: string | null;
+  };
+  whyChoose: {
+    label: string;
+    headline: string;
+    pillars: readonly {
+      id: string;
+      circleLabel: string;
+      title: string;
+      items: readonly string[];
+    }[];
+  };
+  leadershipLabel: string;
   leadership: readonly LeadershipEntry[];
-  historyEvents: readonly { year: string; event: string }[];
+  companyTitle: string;
+  companyRows: readonly { label: string; value: string }[];
+  boardLabel: string;
+  boardMembers: readonly { role: string; name: string }[];
 };
 
 export type SiteSettingsContent = {
@@ -88,6 +134,14 @@ export type SiteSettingsContent = {
   email: string;
   whatsapp: string;
   socialLinks: { label: string; href: string }[];
+  branches?: {
+    id: string;
+    label: string;
+    area: string;
+    mapEmbedUrl: string;
+    mapLinkUrl: string;
+  }[];
+  siteLogo: string | null;
 };
 
 function splitParagraphs(text: string): string[] {
@@ -185,7 +239,7 @@ export async function fetchHomepageContent(payload?: Payload) {
     string,
     unknown
   > | null;
-  const contactCtaGroup = (homepage.contactCta ?? null) as Record<
+  const contactCtaGroup = (siteSettings.contactCta ?? null) as Record<
     string,
     unknown
   > | null;
@@ -203,13 +257,14 @@ export async function fetchHomepageContent(payload?: Payload) {
       siteCopy.hero.headlineRight,
       currentLocale,
     ),
-    scrollLabel: siteCopy.hero.scrollLabel,
-    videoUrl:
-      getMediaUrl(heroSlide?.video as Parameters<typeof getMediaUrl>[0]) ??
-      getMediaUrl(siteSettings.heroVideo),
-    imageUrl:
-      getMediaUrl(heroSlide?.image as Parameters<typeof getMediaUrl>[0]) ??
-      getMediaUrl(siteSettings.heroImage),
+    scrollLabel: pickLocaleText(
+      heroSlide,
+      "scrollLabel",
+      currentLocale,
+      siteCopy.hero.scrollLabel,
+    ),
+    videoUrl: getMediaUrl(siteSettings.heroVideo),
+    imageUrl: getMediaUrl(siteSettings.heroImage),
   };
 
   const introLines = siteCopy.intro.headline;
@@ -233,10 +288,14 @@ export async function fetchHomepageContent(payload?: Payload) {
     paragraphs: splitParagraphs(storyDescription),
     ctaText: pickLocaleText(story, "ctaText", currentLocale, siteCopy.story.cta),
     ctaLink: normalizeCmsText(story?.ctaLink) || "#about",
+    imageLargeUrl: getMediaUrl(story?.storyImageLarge as Parameters<typeof getMediaUrl>[0]) || "/al-and images/IMG_6081.JPG",
+    imageSmallUrl: getMediaUrl(story?.storyImageSmall as Parameters<typeof getMediaUrl>[0]) || "/al-and images/3cec34a2-2758-4570-910e-32a896e080de.jpg",
   };
 
   const aboutPreview: AboutPreviewContent = {
-    label: siteCopy.aboutPinned.label,
+    label:
+      pickLocaleText(aboutPreviewGroup, "label", currentLocale) ||
+      siteCopy.aboutPinned.label,
     headline:
       pickLocaleText(
         aboutPreviewGroup,
@@ -246,7 +305,34 @@ export async function fetchHomepageContent(payload?: Payload) {
     text:
       pickLocaleText(aboutPreviewGroup, "description", currentLocale) ||
       siteCopy.aboutPinned.text,
+    image1Url: getMediaUrl(aboutPreviewGroup?.aboutImg1 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-4.jpg",
+    image2Url: getMediaUrl(aboutPreviewGroup?.aboutImg2 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-3.jpg",
+    image3Url: getMediaUrl(aboutPreviewGroup?.aboutImg3 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-2.jpg",
+    image4Url: getMediaUrl(aboutPreviewGroup?.aboutImg4 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-1.jpg",
   };
+
+  const whyUsGroup = (homepage.whyUs ?? null) as Record<string, unknown> | null;
+  const whyUs: WhyUsContent = {
+    label:
+      pickLocaleText(whyUsGroup, "label", currentLocale) ||
+      siteCopy.whyUs.label,
+    headline:
+      pickLocaleText(whyUsGroup, "title", currentLocale).replace(/\\n/g, "\n") ||
+      siteCopy.whyUs.headline,
+    desc:
+      pickLocaleText(whyUsGroup, "description", currentLocale) ||
+      siteCopy.whyUs.desc,
+    img1Url: getMediaUrl(whyUsGroup?.img1 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-1.jpg",
+    img2Url: getMediaUrl(whyUsGroup?.img2 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-2.jpg",
+    img3Url: getMediaUrl(whyUsGroup?.img3 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-3.jpg",
+    img4Url: getMediaUrl(whyUsGroup?.img4 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-4.jpg",
+    img5Url: getMediaUrl(whyUsGroup?.img5 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/IMG_5713.JPG",
+    img6Url: getMediaUrl(whyUsGroup?.img6 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/IMG_6081.JPG",
+  };
+
+  const expandingImageUrl =
+    getMediaUrl(homepage.expandingImage as Parameters<typeof getMediaUrl>[0]) ||
+    "/al-and images/insurance-policy-terms-and-conditions-with-magnify-2026-01-07-01-38-53-utc.jpg";
 
   const contactDescription = pickLocaleText(
     contactCtaGroup,
@@ -265,14 +351,390 @@ export async function fetchHomepageContent(payload?: Payload) {
       siteCopy.contact.cta,
     ctaLink:
       normalizeCmsText(contactCtaGroup?.buttonLink) || "/request-quote",
+    backgroundImageUrl: getMediaUrl(contactCtaGroup?.backgroundImage as Parameters<typeof getMediaUrl>[0]),
   };
 
   return {
     hero,
     intro: introContent,
     story: storyContent,
+    expandingImageUrl,
     aboutPreview,
+    whyUs,
     contactCta,
+  };
+}
+
+export type PagesContent = {
+  services: {
+    bannerTitle: string;
+    bannerSubtitle: string;
+    bannerImageUrl: string | null;
+    messageLabel: string;
+    messageHeadline: string;
+    messageBodyTitle: string;
+    messageParagraphs: readonly string[];
+    messageImageUrl: string | null;
+    messageBottomImageUrl: string | null;
+    industriesLabel: string;
+    industriesHeadline: string;
+    industriesCoreTitle: string;
+    industriesButtonText: string;
+    industriesButtonLink: string;
+    industriesImageUrl: string | null;
+    sectors: readonly { title: string; desc: string }[];
+  };
+  jobs: {
+    bannerTitle: string;
+    bannerSubtitle: string;
+    bannerImageUrl: string | null;
+    messageLabel: string;
+    messageHeadline: string;
+    messageImageUrl: string | null;
+    listingsEyebrow: string;
+    listingsTitle: string;
+  };
+  blogs: {
+    bannerTitle: string;
+    bannerSubtitle: string;
+    bannerImageUrl: string | null;
+    sectionLabel: string;
+    sectionTitle: string;
+  };
+  partners: {
+    bannerTitle: string;
+    bannerSubtitle: string;
+    bannerImageUrl: string | null;
+    introLabel: string;
+    introHeadline: string;
+    introDescription: string;
+  };
+  contact: {
+    bannerTitle: string;
+    bannerSubtitle: string;
+    bannerImageUrl: string | null;
+    formLabel: string;
+    formHeadline: string;
+    formIntro: string;
+    visitLabel: string;
+    visitHeadline: string;
+    visitIntro: string;
+  };
+  requestQuote: {
+    bannerTitle: string;
+    bannerSubtitle: string;
+    formLabel: string;
+    formHeadline: string;
+    formIntro: string;
+    visitLabel: string;
+    visitHeadline: string;
+    visitIntro: string;
+  };
+  application: {
+    bannerTitle: string;
+    bannerSubtitle: string;
+    title: string;
+    paragraphs: readonly string[];
+    imageUrl: string | null;
+    downloads: readonly { label: string; url: string }[];
+  };
+  privacy: {
+    bannerTitle: string;
+    bannerSubtitle: string;
+    sections: readonly {
+      title: string;
+      paragraphs: readonly string[];
+      list: readonly string[];
+    }[];
+  };
+};
+
+/** Banner/section content for secondary pages; empty values fall back to static copy. */
+export async function fetchPagesContent(payload?: Payload): Promise<PagesContent> {
+  const cms = payload ?? (await getCMSPayload());
+  const currentLocale = await getLocale();
+  const siteCopy = getSiteCopy(currentLocale);
+  const pages = (await cms.findGlobal({ slug: "pages" })) as Record<
+    string,
+    unknown
+  >;
+
+  const group = (name: string) =>
+    (pages[name] ?? null) as Record<string, unknown> | null;
+  const services = group("services");
+  const jobs = group("jobs");
+  const blogs = group("blogs");
+  const partners = group("partners");
+  const contact = group("contact");
+  const requestQuote = group("requestQuote");
+  const application = group("application");
+  const privacy = group("privacy");
+
+  const banner = (record: Record<string, unknown> | null) => ({
+    bannerTitle: pickLocaleText(record, "bannerTitle", currentLocale),
+    bannerSubtitle: pickLocaleText(record, "bannerSubtitle", currentLocale),
+    bannerImageUrl: getMediaUrl(
+      record?.bannerImage as Parameters<typeof getMediaUrl>[0],
+    ),
+  });
+
+  const staticSectors = [
+    ...siteCopy.servicesPage.industries.coreItems,
+    ...siteCopy.servicesPage.industries.nodes,
+  ];
+  const sectors = [1, 2, 3, 4, 5].map((number, index) => {
+    const sector = (services?.[`sector${number}`] ?? null) as Record<
+      string,
+      unknown
+    > | null;
+    const fallback = staticSectors[index];
+    return {
+      title: pickLocaleText(sector, "title", currentLocale) || fallback.title,
+      desc: pickLocaleText(sector, "desc", currentLocale) || fallback.desc,
+    };
+  });
+
+  const privacySectionsCms = privacy?.sections as
+    | Array<Record<string, unknown>>
+    | null
+    | undefined;
+
+  return {
+    services: {
+      ...banner(services),
+      messageLabel:
+        pickLocaleText(services, "messageLabel", currentLocale) ||
+        siteCopy.servicesPage.message.label,
+      messageHeadline:
+        pickLocaleText(services, "messageHeadline", currentLocale) ||
+        siteCopy.servicesPage.message.headline,
+      messageBodyTitle:
+        pickLocaleText(services, "messageBodyTitle", currentLocale) ||
+        siteCopy.servicesPage.message.bodyTitle,
+      messageParagraphs: (() => {
+        const body = pickLocaleText(services, "messageBody", currentLocale);
+        return body
+          ? splitParagraphs(body)
+          : [...siteCopy.servicesPage.message.paragraphs];
+      })(),
+      messageImageUrl:
+        getMediaUrl(services?.messageImage as Parameters<typeof getMediaUrl>[0]) ||
+        "/al-and images/5f32f6eefa193becbdd238d11fdd52aa.jpg",
+      messageBottomImageUrl:
+        getMediaUrl(
+          services?.messageBottomImage as Parameters<typeof getMediaUrl>[0],
+        ) || "/al-and images/Modern Office Interior.png",
+      industriesLabel:
+        pickLocaleText(services, "industriesLabel", currentLocale) ||
+        siteCopy.servicesPage.industries.label,
+      industriesHeadline:
+        pickLocaleText(services, "industriesHeadline", currentLocale) ||
+        siteCopy.servicesPage.industries.headline,
+      industriesCoreTitle:
+        pickLocaleText(services, "industriesCoreTitle", currentLocale) ||
+        siteCopy.servicesPage.industries.coreTitle,
+      industriesButtonText:
+        pickLocaleText(services, "industriesButtonText", currentLocale) ||
+        (currentLocale === "ar" ? "اقرأ المزيد" : "Read more"),
+      industriesButtonLink:
+        normalizeCmsText(services?.industriesButtonLink) || "/request-quote",
+      industriesImageUrl:
+        getMediaUrl(
+          services?.industriesImage as Parameters<typeof getMediaUrl>[0],
+        ) || "/al-and images/Urban Skyline Under Blue Sky.png",
+      sectors,
+    },
+    jobs: {
+      ...banner(jobs),
+      messageLabel:
+        pickLocaleText(jobs, "messageLabel", currentLocale) ||
+        siteCopy.jobsPage.message.label,
+      messageHeadline:
+        pickLocaleText(jobs, "messageHeadline", currentLocale) ||
+        siteCopy.jobsPage.message.headline,
+      messageImageUrl:
+        getMediaUrl(jobs?.messageImage as Parameters<typeof getMediaUrl>[0]) ||
+        "/al-and images/Misty Urban Development.png",
+      listingsEyebrow:
+        pickLocaleText(jobs, "listingsEyebrow", currentLocale) ||
+        siteCopy.jobsPage.listings.eyebrow,
+      listingsTitle:
+        pickLocaleText(jobs, "listingsTitle", currentLocale) ||
+        siteCopy.jobsPage.listings.title,
+    },
+    blogs: {
+      ...banner(blogs),
+      sectionLabel:
+        pickLocaleText(blogs, "sectionLabel", currentLocale) ||
+        siteCopy.blogsPage.section.label,
+      sectionTitle:
+        pickLocaleText(blogs, "sectionTitle", currentLocale) ||
+        siteCopy.blogsPage.section.title,
+    },
+    partners: {
+      ...banner(partners),
+      introLabel:
+        pickLocaleText(partners, "introLabel", currentLocale) ||
+        (currentLocale === "ar" ? "( الشبكة )" : "( Network )"),
+      introHeadline:
+        pickLocaleText(partners, "introHeadline", currentLocale) ||
+        (currentLocale === "ar"
+          ? "بناء الثقة في جميع أنحاء العراق"
+          : "Building Trust Across Iraq"),
+      introDescription:
+        pickLocaleText(partners, "introDescription", currentLocale) ||
+        (currentLocale === "ar"
+          ? "تعمل شركة الأندلس للتأمين الدولي جنباً إلى جنب مع كبرى المصارف، الشركات، المؤسسات الحكومية، وشركات القطاع الخاص في العراق. تعكس هذه الشراكات سنوات من الاكتتاب الموثوق، والالتزام المستمر بتسوية المطالبات، والمساهمة الفاعلة في النمو الاقتصادي."
+          : "Al-Andalus Insurance works alongside leading banks, corporations, government institutions, and private businesses across Iraq. These partnerships reflect years of reliable underwriting, consistent claim settlement, and shared commitment to economic growth."),
+    },
+    contact: {
+      ...banner(contact),
+      formLabel:
+        pickLocaleText(contact, "formLabel", currentLocale) ||
+        siteCopy.contactPage.form.label,
+      formHeadline:
+        pickLocaleText(contact, "formHeadline", currentLocale) ||
+        siteCopy.contactPage.form.headline,
+      formIntro:
+        pickLocaleText(contact, "formIntro", currentLocale) ||
+        siteCopy.contactPage.form.intro,
+      visitLabel:
+        pickLocaleText(contact, "visitLabel", currentLocale) ||
+        siteCopy.requestQuotePage.contact.label,
+      visitHeadline:
+        pickLocaleText(contact, "visitHeadline", currentLocale) ||
+        siteCopy.requestQuotePage.contact.headline,
+      visitIntro:
+        pickLocaleText(contact, "visitIntro", currentLocale) ||
+        siteCopy.requestQuotePage.contact.intro,
+    },
+    requestQuote: {
+      bannerTitle:
+        pickLocaleText(requestQuote, "bannerTitle", currentLocale) ||
+        siteCopy.requestQuotePage.banner.title,
+      bannerSubtitle:
+        pickLocaleText(requestQuote, "bannerSubtitle", currentLocale) ||
+        siteCopy.requestQuotePage.banner.subtitle,
+      formLabel:
+        pickLocaleText(requestQuote, "formLabel", currentLocale) ||
+        siteCopy.requestQuotePage.form.label,
+      formHeadline:
+        pickLocaleText(requestQuote, "formHeadline", currentLocale) ||
+        siteCopy.requestQuotePage.form.headline,
+      formIntro:
+        pickLocaleText(requestQuote, "formIntro", currentLocale) ||
+        siteCopy.requestQuotePage.form.intro,
+      visitLabel:
+        pickLocaleText(requestQuote, "visitLabel", currentLocale) ||
+        siteCopy.requestQuotePage.contact.label,
+      visitHeadline:
+        pickLocaleText(requestQuote, "visitHeadline", currentLocale) ||
+        siteCopy.requestQuotePage.contact.headline,
+      visitIntro:
+        pickLocaleText(requestQuote, "visitIntro", currentLocale) ||
+        siteCopy.requestQuotePage.contact.intro,
+    },
+    application: {
+      bannerTitle:
+        pickLocaleText(application, "bannerTitle", currentLocale) ||
+        (currentLocale === "ar" ? "تطبيق الأندلس" : "Al-Andalus App"),
+      bannerSubtitle:
+        pickLocaleText(application, "bannerSubtitle", currentLocale) ||
+        (currentLocale === "ar"
+          ? "التأمين في جيبك"
+          : "Insurance in your pocket"),
+      title:
+        pickLocaleText(application, "title", currentLocale) ||
+        (currentLocale === "ar"
+          ? "تطبيق الأندلس للتأمين"
+          : "Al-Andalus Insurance App"),
+      paragraphs: (() => {
+        const body = pickLocaleText(application, "description", currentLocale);
+        if (body) return splitParagraphs(body);
+        return currentLocale === "ar"
+          ? [
+              "أول منصة لتأمين السيارات في العراق. أصدر وثيقتك، تابع مطالباتك، وأدر تأمينك بالكامل من هاتفك — بأمان وراحة.",
+              "حمّل التطبيق الآن وابدأ رحلتك التأمينية بكل سهولة.",
+            ]
+          : [
+              "The first motor insurance platform in Iraq. Issue your policy, track your claims, and manage your entire insurance from your phone — safely and comfortably.",
+              "Download the app now and start your insurance journey with ease.",
+            ];
+      })(),
+      imageUrl:
+        getMediaUrl(application?.appImage as Parameters<typeof getMediaUrl>[0]) ||
+        "/al-and images/application.jpeg",
+      downloads: (
+        [
+          ["downloadIos", currentLocale === "ar" ? "آب ستور" : "App Store"],
+          ["downloadAndroid", currentLocale === "ar" ? "جوجل بلاي" : "Google Play"],
+          ["downloadDirect", currentLocale === "ar" ? "تحميل مباشر" : "Direct Download"],
+        ] as const
+      ).map(([key, fallbackLabel]) => {
+        const button = (application?.[key] ?? null) as Record<
+          string,
+          unknown
+        > | null;
+        return {
+          label: pickLocaleText(button, "label", currentLocale) || fallbackLabel,
+          url: normalizeCmsText(button?.url) || "",
+        };
+      }),
+    },
+    privacy: {
+      bannerTitle:
+        pickLocaleText(privacy, "bannerTitle", currentLocale) ||
+        (currentLocale === "ar" ? "سياسة الخصوصية" : "Privacy Policy"),
+      bannerSubtitle:
+        pickLocaleText(privacy, "bannerSubtitle", currentLocale) ||
+        (currentLocale === "ar"
+          ? "كيفية حماية بياناتك"
+          : "How we protect your data"),
+      sections:
+        privacySectionsCms && privacySectionsCms.length > 0
+          ? privacySectionsCms.map((section) => ({
+              title: pickLocaleText(section, "title", currentLocale),
+              paragraphs: splitParagraphs(
+                pickLocaleText(section, "body", currentLocale),
+              ),
+              list: splitLines(pickLocaleText(section, "list", currentLocale)),
+            }))
+          : [],
+    },
+  };
+}
+
+export async function fetchContactCtaContent(
+  payload?: Payload,
+): Promise<ContactCtaContent> {
+  const cms = payload ?? (await getCMSPayload());
+  const currentLocale = await getLocale();
+  const siteCopy = getSiteCopy(currentLocale);
+  const siteSettings = await cms.findGlobal({ slug: "site-settings" });
+  const contactCtaGroup = (siteSettings.contactCta ?? null) as Record<
+    string,
+    unknown
+  > | null;
+  const contactDescription = pickLocaleText(
+    contactCtaGroup,
+    "description",
+    currentLocale,
+  );
+
+  return {
+    headline:
+      pickLocaleText(contactCtaGroup, "title", currentLocale) ||
+      siteCopy.contact.headline,
+    lines: contactDescription
+      ? splitLines(contactDescription)
+      : [...siteCopy.contact.lines],
+    cta:
+      pickLocaleText(contactCtaGroup, "buttonText", currentLocale) ||
+      siteCopy.contact.cta,
+    ctaLink: normalizeCmsText(contactCtaGroup?.buttonLink) || "/request-quote",
+    backgroundImageUrl: getMediaUrl(
+      contactCtaGroup?.backgroundImage as Parameters<typeof getMediaUrl>[0],
+    ),
   };
 }
 
@@ -285,29 +747,8 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
   })) as Record<string, unknown>;
 
   const fallback = siteCopy.aboutPage;
-  const missionDoc = pickLocaleValue(about, "mission", currentLocale);
-  const missionText = missionDoc ? serializeLexical(missionDoc) : "";
-  const missionParagraphs =
-    missionText.length > 0
-      ? splitParagraphs(missionText)
-      : [...fallback.mission.paragraphs];
-
-  const visionDoc = pickLocaleValue(about, "vision", currentLocale);
-  const visionText = visionDoc ? serializeLexical(visionDoc) : "";
-  const visionParagraphs =
-    visionText.length > 0
-      ? splitParagraphs(visionText)
-      : [...fallback.vision.paragraphs];
-
-  const historyDoc = pickLocaleValue(about, "history", currentLocale);
-  const historyText = historyDoc ? serializeLexical(historyDoc) : "";
-  const historyEvents =
-    historyText.length > 0
-      ? splitParagraphs(historyText).map((event, index) => ({
-          year: fallback.history[index]?.year ?? String(index + 1),
-          event,
-        }))
-      : [...fallback.history];
+  const missionBody = pickLocaleText(about, "missionBody", currentLocale);
+  const visionBody = pickLocaleText(about, "visionBody", currentLocale);
 
   const cmsLeaders = about.leadership as Array<Record<string, unknown>> | null;
   const leadership: readonly LeadershipEntry[] =
@@ -317,6 +758,9 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
             index === 0 ? fallback.leadership.ceo : fallback.leadership.md;
           const bio = pickLocaleText(cmsLeader, "bio", currentLocale);
           return {
+            messageTitle:
+              pickLocaleText(cmsLeader, "messageTitle", currentLocale) ||
+              fallbackLeader.title,
             name:
               pickLocaleText(cmsLeader, "name", currentLocale) ||
               fallbackLeader.signoff,
@@ -328,11 +772,14 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
               : [...fallbackLeader.paragraphs],
             photoUrl: getMediaUrl(
               cmsLeader.photo as Parameters<typeof getMediaUrl>[0],
-            ),
+            ) || (index === 0
+              ? "/al-and images/ChatGPT Image Jul 9, 2026, 05_09_09 PM.png"
+              : "/al-and images/ChatGPT Image Jul 15, 2026, 10_41_41 PM.png"),
           };
         })
       : [
           {
+            messageTitle: fallback.leadership.ceo.title,
             name: fallback.leadership.ceo.signoff,
             role: fallback.leadership.ceo.role,
             bioParagraphs: fallback.leadership.ceo.paragraphs,
@@ -340,6 +787,7 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
               "/al-and images/ChatGPT Image Jul 9, 2026, 05_09_09 PM.png",
           },
           {
+            messageTitle: fallback.leadership.md.title,
             name: fallback.leadership.md.signoff,
             role: fallback.leadership.md.role,
             bioParagraphs: fallback.leadership.md.paragraphs,
@@ -348,18 +796,121 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
           },
         ];
 
+  const pillarIds = ["licensed", "capital", "branches", "services"];
+  const whyPillars = pillarIds.map((id, index) => {
+    const group = (about[`whyPillar${index + 1}`] ?? null) as Record<
+      string,
+      unknown
+    > | null;
+    const staticPillar = siteCopy.whyChoosePillars[index];
+    const staticCircle =
+      siteCopy.whyChooseSection.circleLabels[
+        id as keyof typeof siteCopy.whyChooseSection.circleLabels
+      ];
+    return {
+      id,
+      circleLabel:
+        pickLocaleText(group, "circleLabel", currentLocale) || staticCircle,
+      title: pickLocaleText(group, "title", currentLocale) || staticPillar.title,
+      items: splitLines(
+        pickLocaleText(group, "items", currentLocale) ||
+          staticPillar.items.join("\n"),
+      ),
+    };
+  });
+
+  const companyRows = fallback.companySnapshot.map((staticRow, index) => {
+    const group = (about[`companyRow${index + 1}`] ?? null) as Record<
+      string,
+      unknown
+    > | null;
+    return {
+      label: pickLocaleText(group, "label", currentLocale) || staticRow.label,
+      value: pickLocaleText(group, "value", currentLocale) || staticRow.value,
+    };
+  });
+
+  const boardMembers = fallback.boardMembers.map((staticMember, index) => {
+    const group = (about[`boardMember${index + 1}`] ?? null) as Record<
+      string,
+      unknown
+    > | null;
+    return {
+      role: pickLocaleText(group, "role", currentLocale) || staticMember.role,
+      name: pickLocaleText(group, "name", currentLocale) || staticMember.name,
+    };
+  });
+
   return {
     bannerTitle:
       pickLocaleText(about, "heroTitle", currentLocale) ||
       fallback.banner.title,
-    bannerSubtitle: fallback.banner.subtitle,
+    bannerSubtitle:
+      pickLocaleText(about, "heroSubtitle", currentLocale) ||
+      fallback.banner.subtitle,
     heroImageUrl: getMediaUrl(
       about.heroImage as Parameters<typeof getMediaUrl>[0],
     ),
-    missionParagraphs,
-    visionParagraphs,
+    missionLabel:
+      pickLocaleText(about, "missionLabel", currentLocale) ||
+      fallback.mission.label,
+    missionHeadline:
+      pickLocaleText(about, "missionHeadline", currentLocale) ||
+      fallback.mission.headline,
+    missionSubline:
+      pickLocaleText(about, "missionSubline", currentLocale) ||
+      fallback.mission.subline,
+    missionBodyTitle:
+      pickLocaleText(about, "missionBodyTitle", currentLocale) ||
+      fallback.mission.bodyTitle,
+    missionImageUrl: getMediaUrl(
+      about.missionImage as Parameters<typeof getMediaUrl>[0],
+    ) || "/al-and images/Misty Urban Development.png",
+    missionAccentImage: getMediaUrl(
+      about.missionAccentImage as Parameters<typeof getMediaUrl>[0],
+    ) || "/al-and images/ChatGPT Image Jul 15, 2026, 09_57_27 PM.png",
+    missionParagraphs: missionBody
+      ? splitParagraphs(missionBody)
+      : [...fallback.mission.paragraphs],
+    vision: {
+      label:
+        pickLocaleText(about, "visionLabel", currentLocale) ||
+        fallback.vision.label,
+      headline:
+        pickLocaleText(about, "visionHeadline", currentLocale) ||
+        fallback.vision.headline,
+      paragraphs: visionBody
+        ? splitParagraphs(visionBody)
+        : [...fallback.vision.paragraphs],
+      imageUrl:
+        getMediaUrl(about.visionImage as Parameters<typeof getMediaUrl>[0]) ||
+        "/al-and images/empty-conference-room-with-city-view-2026-01-09-10-22-57-utc.jpg",
+      accentImageUrl:
+        getMediaUrl(
+          about.visionAccentImage as Parameters<typeof getMediaUrl>[0],
+        ) || "/al-and images/8aa6ff11-0f2d-4242-8d20-2ffab6670122.png",
+    },
+    whyChoose: {
+      label:
+        pickLocaleText(about, "whyLabel", currentLocale) ||
+        siteCopy.whyChooseSection.label,
+      headline:
+        pickLocaleText(about, "whyHeadline", currentLocale) ||
+        siteCopy.whyChooseSection.headline,
+      pillars: whyPillars,
+    },
+    leadershipLabel:
+      pickLocaleText(about, "leadershipLabel", currentLocale) ||
+      fallback.leadership.label,
     leadership,
-    historyEvents,
+    companyTitle:
+      pickLocaleText(about, "companyTitle", currentLocale) ||
+      (currentLocale === "ar" ? "( الشركة )" : "( COMPANY )"),
+    companyRows,
+    boardLabel:
+      pickLocaleText(about, "boardLabel", currentLocale) ||
+      (currentLocale === "ar" ? "أعضاء مجلس الإدارة" : "Board member"),
+    boardMembers,
   };
 }
 
@@ -390,6 +941,14 @@ export async function fetchSiteSettings(payload?: Payload): Promise<SiteSettings
       settings.companyNameAr ||
       "Al-Andalus International Insurance";
 
+  const branches = settings.branches?.map((b: any) => ({
+    id: b.branchId,
+    label: useArabic ? b.labelAr : b.labelEn,
+    area: useArabic ? b.areaAr : b.areaEn,
+    mapEmbedUrl: b.mapEmbedUrl,
+    mapLinkUrl: b.mapLinkUrl,
+  }));
+
   return {
     companyName,
     phone: settings.contact?.phone ?? "+9647710006000",
@@ -397,6 +956,8 @@ export async function fetchSiteSettings(payload?: Payload): Promise<SiteSettings
     email: settings.contact?.email ?? "info@alandalus-iq.com",
     whatsapp: settings.contact?.whatsapp ?? "+9647710006000",
     socialLinks,
+    branches,
+    siteLogo: getMediaUrl(settings.siteLogo as Parameters<typeof getMediaUrl>[0]) || "/1.png",
   };
 }
 

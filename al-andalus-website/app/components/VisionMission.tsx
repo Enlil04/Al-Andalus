@@ -3,21 +3,25 @@
 import React from "react";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
-import { getSiteCopy } from "@/lib/copy";
-import { useLocale } from "./LocaleProvider";
 import "./VisionMission.css";
 
-const visionImage =
-  "/al-and images/empty-conference-room-with-city-view-2026-01-09-10-22-57-utc.jpg";
-const visionAccentImage = "/al-and images/8aa6ff11-0f2d-4242-8d20-2ffab6670122.png";
+type VisionMissionProps = {
+  label: string;
+  headline: string;
+  paragraphs: readonly string[];
+  imageUrl: string | null;
+  accentImageUrl: string | null;
+};
 
-export default function VisionMission() {
-  const { locale } = useLocale();
-  const siteCopy = getSiteCopy(locale);
-  const { vision } = siteCopy.aboutPage;
-
-  const firstHeadline = locale === "ar" ? "الرؤية و" : "VISION &";
-  const secondHeadline = locale === "ar" ? "الرسالة" : "MISSION";
+export default function VisionMission({
+  label,
+  headline,
+  paragraphs,
+  imageUrl,
+  accentImageUrl,
+}: VisionMissionProps) {
+  const [firstHeadline, ...remainingHeadline] = headline.split("\n");
+  const secondHeadline = remainingHeadline.join("\n");
 
   return (
     <section className="vision-mission" id="vision-mission">
@@ -34,7 +38,7 @@ export default function VisionMission() {
         {/* Left: Title Area */}
         <div className="vision-mission__left about-grid__cols-1-6">
           <ScrollReveal>
-            <span className="vision-mission__label">{vision.label}</span>
+            <span className="vision-mission__label">{label}</span>
           </ScrollReveal>
           <AnimatedHeadline
             title={firstHeadline}
@@ -55,7 +59,7 @@ export default function VisionMission() {
             <ScrollReveal delay={0.5}>
               <div
                 className="vision-mission__img-card vision-mission__img-card--main"
-                style={{ backgroundImage: `url("${visionImage}")` }}
+                style={{ backgroundImage: `url("${imageUrl}")` }}
                 role="img"
                 aria-label="Conference room with city view representing business growth"
               />
@@ -63,7 +67,7 @@ export default function VisionMission() {
             <ScrollReveal delay={0.8}>
               <div
                 className="vision-mission__img-card vision-mission__img-card--accent"
-                style={{ backgroundImage: `url("${visionAccentImage}")` }}
+                style={{ backgroundImage: `url("${accentImageUrl}")` }}
                 role="img"
                 aria-label="Modern office interior representing business focus"
               />
@@ -78,7 +82,7 @@ export default function VisionMission() {
               <div className="vision-mission__grid-card">
                 <span className="vision-mission__card-num">( ٠١ )</span>
                 <p className="vision-mission__card-text">
-                  {vision.paragraphs[0]}
+                  {paragraphs[0]}
                 </p>
               </div>
             </ScrollReveal>
@@ -87,7 +91,7 @@ export default function VisionMission() {
               <div className="vision-mission__grid-card">
                 <span className="vision-mission__card-num">( ٠٢ )</span>
                 <p className="vision-mission__card-text">
-                  {vision.paragraphs[1]}
+                  {paragraphs[1]}
                 </p>
               </div>
             </ScrollReveal>
@@ -96,7 +100,7 @@ export default function VisionMission() {
               <div className="vision-mission__grid-card">
                 <span className="vision-mission__card-num">( ٠٣ )</span>
                 <p className="vision-mission__card-text">
-                  {vision.paragraphs[2]}
+                  {paragraphs[2]}
                 </p>
               </div>
             </ScrollReveal>

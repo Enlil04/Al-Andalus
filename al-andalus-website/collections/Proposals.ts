@@ -53,7 +53,7 @@ export const Proposals: CollectionConfig = {
     {
       name: "pdf",
       type: "upload",
-      relationTo: "media",
+      relationTo: "documents",
       required: true,
       label: bilingualLabel("Proposal PDF Document", "ملف العرض (PDF)"),
     },

@@ -8,6 +8,7 @@ type ContactCtaProps = {
   lines?: readonly string[];
   cta?: string;
   ctaLink?: string;
+  backgroundImageUrl?: string | null;
 };
 
 export default async function ContactCta({
@@ -15,6 +16,7 @@ export default async function ContactCta({
   lines,
   cta,
   ctaLink = "/contact",
+  backgroundImageUrl,
 }: ContactCtaProps) {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
@@ -25,7 +27,18 @@ export default async function ContactCta({
 
   return (
     <section className="contact-cta" id="contact">
-      <div className="contact-cta__bg" />
+      <div
+        className="contact-cta__bg"
+        style={
+          backgroundImageUrl
+            ? {
+                // Keep the gradient as a lower layer so a missing CMS file
+                // never leaves the section blank.
+                backgroundImage: `url("${backgroundImageUrl}"), linear-gradient(to top, var(--navy-900), var(--navy-700))`,
+              }
+            : undefined
+        }
+      />
 
       <div className="contact-cta__content">
         <div className="contact-cta__hero">

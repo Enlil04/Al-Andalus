@@ -11,6 +11,7 @@ import { fileURLToPath } from "url";
 // Collections
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
+import { Documents } from "./collections/Documents";
 import { Products } from "./collections/Products";
 import { News } from "./collections/News";
 import { BlogCategories } from "./collections/BlogCategories";
@@ -26,6 +27,7 @@ import { Proposals } from "./collections/Proposals";
 import { SiteSettings } from "./globals/SiteSettings";
 import { Homepage } from "./globals/Homepage";
 import { AboutPage } from "./globals/AboutPage";
+import { Pages } from "./globals/Pages";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -110,6 +112,7 @@ export default buildConfig({
   collections: [
     Users,
     Media,
+    Documents,
     Products,
     InsuranceRequests,
     News,
@@ -122,7 +125,7 @@ export default buildConfig({
     Proposals,
   ],
 
-  globals: [SiteSettings, Homepage, AboutPage],
+  globals: [SiteSettings, Homepage, AboutPage, Pages],
 
   localization: {
     locales: [

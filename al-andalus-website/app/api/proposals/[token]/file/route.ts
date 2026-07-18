@@ -48,7 +48,7 @@ export async function GET(_request: Request, { params }: Params) {
       return NextResponse.json({ error: "No document" }, { status: 404 });
     }
 
-    const filePath = path.join(process.cwd(), "public", "media", filename);
+    const filePath = path.join(process.cwd(), "private-media", filename);
     const data = await fs.readFile(filePath);
 
     return new NextResponse(data, {

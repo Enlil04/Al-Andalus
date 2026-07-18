@@ -3,8 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
-import { getSiteCopy } from "@/lib/copy";
-import { useLocale } from "./LocaleProvider";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { waitForPageReady } from "@/lib/pageReady";
@@ -17,12 +15,22 @@ const CIRCLE_POSITIONS = [
   "circle-coollaser",
 ] as const;
 
-export default function FourDivisionsSection() {
-  const { locale } = useLocale();
-  const siteCopy = getSiteCopy(locale);
-  const pillars = siteCopy.whyChoosePillars;
-  const { whyChooseSection } = siteCopy;
+type FourDivisionsSectionProps = {
+  label: string;
+  headline: string;
+  pillars: readonly {
+    id: string;
+    circleLabel: string;
+    title: string;
+    items: readonly string[];
+  }[];
+};
 
+export default function FourDivisionsSection({
+  label,
+  headline,
+  pillars,
+}: FourDivisionsSectionProps) {
   const [activeId, setActiveId] = useState<string>(pillars[0]?.id ?? "licensed");
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -62,10 +70,10 @@ export default function FourDivisionsSection() {
         <div className="four-divisions__sticky">
           <div className="four-divisions__header">
             <ScrollReveal>
-              <span className="four-divisions__label">{whyChooseSection.label}</span>
+              <span className="four-divisions__label">{label}</span>
             </ScrollReveal>
             <AnimatedHeadline
-              title={whyChooseSection.headline}
+              title={headline}
               className="four-divisions__headline"
               as="h2"
             />
@@ -74,11 +82,6 @@ export default function FourDivisionsSection() {
           <div className="four-divisions__diagram-wrapper">
             <div className="four-divisions__diagram">
               {pillars.map((pillar, index) => {
-                const circleLabel =
-                  whyChooseSection.circleLabels[
-                    pillar.id as keyof typeof whyChooseSection.circleLabels
-                  ];
-
                 return (
                   <div
                     key={pillar.id}
@@ -88,7 +91,7 @@ export default function FourDivisionsSection() {
                   >
                     <div className="circle-content">
                       <span className="circle-dot"></span>
-                      <span className="circle-title">{circleLabel}</span>
+                      <span className="circle-title">{pillar.circleLabel}</span>
                     </div>
                   </div>
                 );

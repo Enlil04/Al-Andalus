@@ -4,14 +4,14 @@ import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
 import { fetchJobBySlug } from "@/lib/cms/content";
 import FooterServer from "../../../components/FooterServer";
-import Header from "../../../components/Header";
+import HeaderServer from "../../../components/HeaderServer";
 import Loader from "../../../components/Loader";
 import SmoothScroll from "../../../components/SmoothScroll";
 import GSAPAnimations from "../../../components/GSAPAnimations";
 import PageBanner from "../../../components/PageBanner";
 import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
-import ContactCta from "../../../components/ContactCta";
+import ContactCtaServer from "../../../components/ContactCtaServer";
 import Link from "next/link";
 import "./JobDetail.css";
 
@@ -282,7 +282,7 @@ export default async function JobDetailPage({ params }: PageProps) {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <HeaderServer />
 
         <PageBanner title={title} subtitle={category} showImage={false} />
 
@@ -351,7 +351,7 @@ export default async function JobDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        <ContactCta />
+        <ContactCtaServer />
 
         <FooterServer />
       </SmoothScroll>

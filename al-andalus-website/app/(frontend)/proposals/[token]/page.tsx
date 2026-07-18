@@ -2,7 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
-import Header from "../../../components/Header";
+import HeaderServer from "../../../components/HeaderServer";
 import FooterServer from "../../../components/FooterServer";
 import Loader from "../../../components/Loader";
 import SmoothScroll from "../../../components/SmoothScroll";
@@ -79,7 +79,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header />
+        <HeaderServer />
 
         <PageBanner
           title={bannerTitle}

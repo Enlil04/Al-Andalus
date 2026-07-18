@@ -16,3 +16,15 @@ export const bilingualFieldHint = {
   en: "Use the language switcher (English / العربية) at the top to enter both English and Arabic.",
   ar: "استخدم مبدّل اللغة (English / العربية) أعلى الصفحة لإدخال المحتوى بالإنجليزية والعربية.",
 } as const;
+
+export function mediaFieldHint(
+  locationEn: string,
+  locationAr: string,
+  recommendationEn: string,
+  recommendationAr: string,
+) {
+  return {
+    en: `Changes: ${locationEn}. Recommended: ${recommendationEn}. The selected file preview appears in this field.`,
+    ar: `يغيّر: ${locationAr}. المقاس المقترح: ${recommendationAr}. تظهر معاينة الملف المختار في هذا الحقل.`,
+  };
+}
