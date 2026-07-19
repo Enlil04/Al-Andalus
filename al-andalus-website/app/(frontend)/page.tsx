@@ -1,4 +1,4 @@
-import Header from "../components/Header";
+import HeaderServer from "../components/HeaderServer";
 import Loader from "../components/Loader";
 import ScrollReveal from "../components/ScrollReveal";
 import SmoothScroll from "../components/SmoothScroll";
@@ -6,8 +6,7 @@ import GSAPAnimations from "../components/GSAPAnimations";
 import AnimatedHeadline from "../components/AnimatedHeadline";
 import NewsList from "../components/NewsList";
 import FAQ from "../components/FAQ";
-import ContactCta from "../components/ContactCta";
-import Image from "next/image";
+import ContactCtaServer from "../components/ContactCtaServer";
 import Link from "next/link";
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
@@ -20,7 +19,6 @@ import {
   fetchFaqs,
   fetchPublishedNews,
   fetchPartners,
-  fetchSiteSettings,
 } from "@/lib/cms/content";
 import CmsImage from "../components/CmsImage";
 import FooterServer from "../components/FooterServer";
@@ -48,17 +46,16 @@ export default async function Home() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
 
-  const [homepageContent, featuredServices, faqItems, newsItems, partners, siteSettings] =
+  const [homepageContent, featuredServices, faqItems, newsItems, partners] =
     await Promise.all([
       fetchHomepageContent(payload),
       fetchFeaturedProducts(payload),
       fetchFaqs(payload),
       fetchPublishedNews(payload, 5),
       fetchPartners(payload, 8),
-      fetchSiteSettings(payload),
     ]);
 
-  const { hero, intro, story, aboutPreview, contactCta } = homepageContent;
+  const { hero, intro, story, aboutPreview } = homepageContent;
 
   const firstRowPartners = partners.slice(0, 2);
   const secondRowPartners = partners.slice(2, 5);
@@ -80,7 +77,7 @@ export default async function Home() {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header logoUrl={siteSettings.siteLogo} />
+        <HeaderServer />
 
         {/* ═══════════════ HERO SECTION ═══════════════ */}
         <div className="hero-track" id="hero">
@@ -537,13 +534,7 @@ export default async function Home() {
         {/* ═══════════════ FAQ ═══════════════ */}
         <FAQ items={faqItems} />
 
-        <ContactCta
-          headline={contactCta.headline}
-          lines={contactCta.lines}
-          cta={contactCta.cta}
-          ctaLink={contactCta.ctaLink}
-          backgroundImageUrl={contactCta.backgroundImageUrl}
-        />
+        <ContactCtaServer />
 
         <FooterServer />
       </SmoothScroll>

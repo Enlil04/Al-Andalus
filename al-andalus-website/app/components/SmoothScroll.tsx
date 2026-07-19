@@ -94,8 +94,26 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     window.dispatchEvent(new CustomEvent(SCROLL_READY_EVENT));
     ScrollTrigger.refresh();
 
-    const onLoaderComplete = () => ScrollTrigger.refresh();
+    const scrollToHash = (hash: string, immediate = false) => {
+      if (!hash || hash === "#") return;
+      const id = hash.startsWith("#") ? hash.slice(1) : hash;
+      const target = document.getElementById(id);
+      if (!target) return;
+      lenis.scrollTo(target, { offset: -20, immediate, duration: 1.1 });
+    };
+
+    // Honor deep links like /#faq after the page (and loader) are ready.
+    const onLoaderComplete = () => {
+      ScrollTrigger.refresh();
+      if (window.location.hash) {
+        requestAnimationFrame(() => scrollToHash(window.location.hash));
+      }
+    };
     window.addEventListener("app:loader-complete", onLoaderComplete);
+    if (window.location.hash) {
+      // Fallback when the loader is already gone (e.g. soft navigations).
+      requestAnimationFrame(() => scrollToHash(window.location.hash, true));
+    }
 
     // Kill ScrollTriggers *before* React tears down the old page DOM.
     const onDocumentClick = (event: MouseEvent) => {
@@ -104,6 +122,24 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
 
       const anchor = (event.target as Element | null)?.closest?.("a[href]");
       if (!(anchor instanceof HTMLAnchorElement)) return;
+
+      try {
+        const url = new URL(anchor.href, window.location.href);
+        if (
+          url.origin === window.location.origin &&
+          url.pathname === window.location.pathname &&
+          url.search === window.location.search &&
+          url.hash
+        ) {
+          event.preventDefault();
+          history.pushState(null, "", url.hash);
+          scrollToHash(url.hash);
+          return;
+        }
+      } catch {
+        // fall through
+      }
+
       if (!isInternalNavigation(anchor)) return;
 
       killScrollTriggers();

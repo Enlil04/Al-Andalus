@@ -41,7 +41,8 @@ export async function POST(request: Request) {
         where: {
           or: [
             { slug: { equals: insuranceServiceId } },
-            { title: { equals: insuranceServiceId } },
+            { titleEn: { equals: insuranceServiceId } },
+            { titleAr: { equals: insuranceServiceId } },
           ],
         },
       });

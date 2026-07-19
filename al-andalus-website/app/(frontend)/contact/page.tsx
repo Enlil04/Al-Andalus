@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Header from "../../components/Header";
+import HeaderServer from "../../components/HeaderServer";
 import FooterServer from "../../components/FooterServer";
 import Loader from "../../components/Loader";
 import SmoothScroll from "../../components/SmoothScroll";
@@ -37,7 +37,7 @@ export default async function ContactPage() {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header logoUrl={settings.siteLogo} />
+        <HeaderServer />
 
         <PageBanner
           title={cms.bannerTitle || contactPage.banner.title}

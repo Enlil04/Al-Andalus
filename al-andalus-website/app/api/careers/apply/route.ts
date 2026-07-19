@@ -50,7 +50,15 @@ export async function POST(request: Request) {
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
-    if (cv.type && !allowedTypes.includes(cv.type)) {
+    const allowedExtensions = [".pdf", ".doc", ".docx"];
+    const lowerName = cv.name.toLowerCase();
+    const hasAllowedExtension = allowedExtensions.some((ext) =>
+      lowerName.endsWith(ext),
+    );
+    const hasAllowedMime = !cv.type || allowedTypes.includes(cv.type);
+    // Require a known extension; MIME alone is easy to spoof and empty MIME
+    // previously bypassed validation entirely.
+    if (!hasAllowedExtension || !hasAllowedMime) {
       return NextResponse.json(
         { error: "CV must be a PDF or Word document." },
         { status: 400 },

@@ -22,6 +22,23 @@ function escapeCsv(value: string) {
   return value;
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function serviceTitle(service: unknown): string {
+  if (typeof service === "object" && service) {
+    const record = service as { titleEn?: string; titleAr?: string; title?: string };
+    return record.titleEn || record.titleAr || record.title || "";
+  }
+  return String(service || "");
+}
+
 async function fetchRequests(req: PayloadRequest) {
   const { payload } = req;
   const url = new URL(req.url || "", "http://localhost");
@@ -57,17 +74,12 @@ export const exportInsuranceRequestsCSV: PayloadHandler = async (req) => {
   ];
 
   const rows = docs.map((doc) => {
-    const service =
-      typeof doc.insuranceService === "object" && doc.insuranceService
-        ? (doc.insuranceService as { title?: string }).title || ""
-        : String(doc.insuranceService || "");
-
     return [
       doc.referenceNumber || "",
       doc.fullName || "",
       doc.email || "",
       doc.phone || "",
-      service,
+      serviceTitle(doc.insuranceService),
       doc.city || "",
       doc.status || "",
       doc.details || "",
@@ -94,22 +106,16 @@ export const exportInsuranceRequestsPDF: PayloadHandler = async (req) => {
 
   const rows = docs
     .map((doc) => {
-      const service =
-        typeof doc.insuranceService === "object" && doc.insuranceService
-          ? (doc.insuranceService as { title?: string }).title || ""
-          : String(doc.insuranceService || "");
-
-      return `
-        <tr>
-          <td>${doc.referenceNumber || ""}</td>
-          <td>${doc.fullName || ""}</td>
-          <td>${doc.email || ""}</td>
-          <td>${doc.phone || ""}</td>
-          <td>${service}</td>
-          <td>${doc.status || ""}</td>
-          <td>${doc.createdAt ? new Date(doc.createdAt).toLocaleDateString() : ""}</td>
-        </tr>
-      `;
+      const cells = [
+        doc.referenceNumber || "",
+        doc.fullName || "",
+        doc.email || "",
+        doc.phone || "",
+        serviceTitle(doc.insuranceService),
+        doc.status || "",
+        doc.createdAt ? new Date(doc.createdAt).toLocaleDateString() : "",
+      ];
+      return `<tr>${cells.map((cell) => `<td>${escapeHtml(String(cell))}</td>`).join("")}</tr>`;
     })
     .join("");
 

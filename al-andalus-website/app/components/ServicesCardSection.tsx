@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import ScrollReveal from "./ScrollReveal";
 import {
   getServiceCategories,
   getServicesByCategory,
+  getServices,
   type ServiceCategoryId,
   type Service,
 } from "@/lib/services";
@@ -73,15 +74,37 @@ export default function ServicesCardSection({
 }: Props) {
   const { locale } = useLocale();
   const [activeCategory, setActiveCategory] = useState<ServiceCategoryId>("personal");
-  const filteredServices = services
-    ? filterServicesByCategory(services, activeCategory)
-    : getServicesByCategory(activeCategory, locale);
+  const allServices = services ?? getServices(locale);
+  const filteredServices = filterServicesByCategory(allServices, activeCategory);
   const serviceCategories = getServiceCategories(locale);
+
+  // Footer / deep links like /services#fire need the matching tab open first
+  // so the target card is actually in the DOM.
+  useEffect(() => {
+    const openHashTarget = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (!hash) return;
+      const catalog = services ?? getServices(locale);
+      const match = catalog.find((service) => service.slug === hash);
+      if (!match) return;
+      setActiveCategory(match.category);
+      requestAnimationFrame(() => {
+        document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    };
+
+    openHashTarget();
+    window.addEventListener("hashchange", openHashTarget);
+    return () => window.removeEventListener("hashchange", openHashTarget);
+  }, [services, locale]);
 
   return (
     <section className="services-card-section" id={id}>
       <div className="services-card-section__container">
-        <nav className="services-card-section__tabs" aria-label="Service categories">
+        <nav
+          className="services-card-section__tabs"
+          aria-label={locale === "ar" ? "فئات الخدمات" : "Service categories"}
+        >
           {serviceCategories.map((category) => (
             <button
               key={category.id}

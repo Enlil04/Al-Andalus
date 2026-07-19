@@ -1,4 +1,4 @@
-import Header from "../../components/Header";
+import HeaderServer from "../../components/HeaderServer";
 import FooterServer from "../../components/FooterServer";
 import Loader from "../../components/Loader";
 import ScrollReveal from "../../components/ScrollReveal";
@@ -9,11 +9,7 @@ import PageBanner from "../../components/PageBanner";
 import FourDivisionsSection from "../../components/FourDivisionsSection";
 import VisionMission from "../../components/VisionMission";
 import ContactCtaServer from "../../components/ContactCtaServer";
-import {
-  fetchAboutPageContent,
-  fetchSiteSettings,
-} from "@/lib/cms/content";
-import { getCMSPayload } from "@/lib/cms/payload";
+import { fetchAboutPageContent } from "@/lib/cms/content";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
 
@@ -27,19 +23,14 @@ export async function generateMetadata() {
 }
 
 export default async function AboutPage() {
-  const payload = await getCMSPayload();
-
-  const [aboutContent, siteSettings] = await Promise.all([
-    fetchAboutPageContent(payload),
-    fetchSiteSettings(payload),
-  ]);
+  const aboutContent = await fetchAboutPageContent();
 
   return (
     <>
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header logoUrl={siteSettings.siteLogo} />
+        <HeaderServer />
 
         <PageBanner
           title={aboutContent.bannerTitle}

@@ -14,9 +14,16 @@ export const Users: CollectionConfig = {
     },
   },
   access: {
+    // Editors may read the users list (dashboard UI), but only admins can
+    // create/delete accounts. Updates: admins can edit anyone; editors may
+    // only edit their own profile — never another user's email/password.
     read: isAdminOrEditor,
     create: isAdmin,
-    update: isAdminOrEditor,
+    update: ({ req: { user } }) => {
+      if (!user) return false;
+      if ((user as { role?: string }).role === "admin") return true;
+      return { id: { equals: user.id } };
+    },
     delete: isAdmin,
   },
   fields: [

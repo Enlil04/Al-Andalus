@@ -184,6 +184,31 @@ const STATIC_JOB_DETAILS_AR: Record<
   },
 };
 
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const locale = await getLocale();
+  const siteCopy = getSiteCopy(locale);
+  const dbJob = await fetchJobBySlug(slug);
+  const staticJob = siteCopy.jobsPage.listings.jobs.find(
+    (j) => slugify(j.title) === slug,
+  );
+  const title = (dbJob?.title as string | undefined) || staticJob?.title;
+  if (!title) {
+    return {
+      title:
+        locale === "ar"
+          ? "الوظيفة غير موجودة | الأندلس للتأمين"
+          : "Job not found | Al-Andalus Insurance",
+    };
+  }
+  return {
+    title:
+      locale === "ar"
+        ? `${title} | وظائف الأندلس`
+        : `${title} | Al-Andalus Careers`,
+  };
+}
+
 export default async function JobDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const locale = await getLocale();

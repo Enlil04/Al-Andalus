@@ -21,6 +21,29 @@ interface PageProps {
   }>;
 }
 
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const locale = await getLocale();
+  const post = await fetchNewsBySlug(slug);
+  if (!post) {
+    return {
+      title:
+        locale === "ar"
+          ? "المقال غير موجود | الأندلس للتأمين"
+          : "Post not found | Al-Andalus Insurance",
+    };
+  }
+  const title = (post.title as string) || slug;
+  const excerpt = (post.excerpt as string) || "";
+  return {
+    title:
+      locale === "ar"
+        ? `${title} | أخبار الأندلس`
+        : `${title} | Al-Andalus News`,
+    description: excerpt || undefined,
+  };
+}
+
 const CATEGORY_LABELS_EN: Record<string, string> = {
   company: "Company News",
   motor: "Motor Insurance",

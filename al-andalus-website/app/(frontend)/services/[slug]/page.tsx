@@ -23,6 +23,31 @@ interface PageProps {
   }>;
 }
 
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const locale = await getLocale();
+  const productDoc = await fetchProductBySlug(slug);
+  const staticService = getServices(locale).find((s) => s.slug === slug);
+  const title = (productDoc?.title as string) || staticService?.title;
+  if (!title) {
+    return {
+      title:
+        locale === "ar"
+          ? "الخدمة غير موجودة | الأندلس للتأمين"
+          : "Service not found | Al-Andalus Insurance",
+    };
+  }
+  const description =
+    (productDoc?.shortDescription as string) || staticService?.description || "";
+  return {
+    title:
+      locale === "ar"
+        ? `${title} | خدمات الأندلس`
+        : `${title} | Al-Andalus Services`,
+    description: description || undefined,
+  };
+}
+
 const SERVICE_IMAGES: Record<string, string> = {
   cargo: "/al-and images/cargo-insurance.png",
   engineering: "/al-and images/engineering-insurance.png",

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Header from "../../components/Header";
+import HeaderServer from "../../components/HeaderServer";
 import Loader from "../../components/Loader";
 import SmoothScroll from "../../components/SmoothScroll";
 import GSAPAnimations from "../../components/GSAPAnimations";
@@ -42,7 +42,7 @@ export default async function RequestQuotePage() {
       <Loader />
       <SmoothScroll>
         <GSAPAnimations />
-        <Header logoUrl={settings.siteLogo} />
+        <HeaderServer />
 
         <PageBanner
           title={cms.bannerTitle || requestQuotePage.banner.title}
