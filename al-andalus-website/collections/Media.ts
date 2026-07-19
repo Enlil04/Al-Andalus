@@ -24,6 +24,14 @@ export const Media: CollectionConfig = {
     // blocked by the SSRF safe-fetch check and the upload fails. Only
     // authenticated editors can upload, so skipping the check is acceptable.
     skipSafeFetch: true,
+    // Downscale huge uploads (e.g. 6000px camera photos) at upload time.
+    // The frontend serves the original file directly, so it must stay small.
+    resizeOptions: {
+      width: 2560,
+      height: 2560,
+      fit: "inside",
+      withoutEnlargement: true,
+    },
     imageSizes: [
       {
         name: "thumbnail",

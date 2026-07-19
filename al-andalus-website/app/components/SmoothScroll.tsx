@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SCROLL_EVENT, SCROLL_READY_EVENT } from "@/lib/pageReady";
+import { SCROLL_EVENT, SCROLL_READY_EVENT } from "@/lib/scrollEvents";
 
 gsap.registerPlugin(ScrollTrigger);
 

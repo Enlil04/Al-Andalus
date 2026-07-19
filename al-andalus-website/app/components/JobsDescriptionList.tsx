@@ -9,15 +9,7 @@ import { getSiteCopy } from "@/lib/copy";
 import { useLocale } from "./LocaleProvider";
 import Link from "next/link";
 import type { JobListItem } from "@/lib/cms/content";
-
-function slugify(text: string) {
-  // Replace custom characters to match URL format
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\u0600-\u06FF]+/g, "-") // Support Arabic chars in slug if any, else fallback
-    .replace(/[^a-z0-9]+/g, "-") // Standard URL clean
-    .replace(/(^-|-$)+/g, "");
-}
+import { slugify } from "@/lib/cms/format";
 
 function ChevronIcon({ isRtl }: { isRtl: boolean }) {
   return (
@@ -135,7 +127,10 @@ export default function JobsDescriptionList({
         </div>
 
         <div className="jobs-description__layout about-grid__span-all">
-          <nav className="jobs-description__filters" aria-label="Job categories">
+          <nav
+            className="jobs-description__filters"
+            aria-label={locale === "ar" ? "فئات الوظائف" : "Job categories"}
+          >
             {categories.map((category) => (
               <button
                 key={category}

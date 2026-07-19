@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { SCROLL_EVENT, type ScrollEventDetail } from "@/lib/pageReady";
+import { SCROLL_EVENT, type ScrollEventDetail } from "@/lib/scrollEvents";
 
 import { useLocale } from "@/app/components/LocaleProvider";
 
@@ -125,13 +125,17 @@ export default function Header({ logoUrl }: { logoUrl?: string | null }) {
         </div>
       </nav>
 
-      <Link href="/" className="header__logo" aria-label="Al Andalus International Insurance">
+      <Link
+        href="/"
+        className="header__logo"
+        aria-label={
+          locale === "ar"
+            ? "شركة الأندلس للتأمين الدولي"
+            : "Al Andalus International Insurance"
+        }
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={logoUrl || "/1.png"}
-          alt="Al-Andalus International Insurance"
-          className="header__logo-img"
-        />
+        <img src={logoUrl || "/1.png"} alt="" className="header__logo-img" />
         <span className="header__logo-text">
           {locale === "ar" ? "الرئيسية" : "Homepage"}
         </span>
@@ -153,7 +157,7 @@ export default function Header({ logoUrl }: { logoUrl?: string | null }) {
         <button
           className="header__menu-btn"
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
+          aria-label={locale === "ar" ? "فتح القائمة" : "Toggle menu"}
           aria-expanded={menuOpen}
         >
           <span></span>

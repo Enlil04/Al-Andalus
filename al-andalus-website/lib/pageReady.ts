@@ -1,14 +1,21 @@
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  LOADER_COMPLETE_EVENT,
+  SCROLL_READY_EVENT,
+} from "@/lib/scrollEvents";
 
-export const LOADER_COMPLETE_EVENT = "app:loader-complete";
-export const SCROLL_READY_EVENT = "app:scroll-ready";
-export const SCROLL_EVENT = "app:scroll";
+export {
+  LOADER_COMPLETE_EVENT,
+  SCROLL_READY_EVENT,
+  SCROLL_EVENT,
+  type ScrollEventDetail,
+} from "@/lib/scrollEvents";
 
-export type ScrollEventDetail = {
-  scroll: number;
-  direction: number;
-};
-
+/**
+ * Runs `callback` once the intro loader has finished and Lenis has signaled
+ * that smooth scrolling is ready. Also refreshes ScrollTrigger so layout
+ * measurements are accurate after the loader unmounts.
+ */
 export function waitForPageReady(callback: () => void): () => void {
   let loaderDone = false;
   let scrollReady = false;

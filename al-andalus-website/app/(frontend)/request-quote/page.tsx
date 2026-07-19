@@ -1,8 +1,5 @@
 import { Suspense } from "react";
-import HeaderServer from "../../components/HeaderServer";
-import Loader from "../../components/Loader";
-import SmoothScroll from "../../components/SmoothScroll";
-import GSAPAnimations from "../../components/GSAPAnimations";
+import PageShell from "../../components/PageShell";
 import PageBanner from "../../components/PageBanner";
 import RequestQuoteForm from "../../components/RequestQuoteForm";
 import RequestQuoteContact from "../../components/RequestQuoteContact";
@@ -13,7 +10,6 @@ import {
   fetchQuoteProducts,
   fetchSiteSettings,
 } from "@/lib/cms/content";
-import FooterServer from "../../components/FooterServer";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -38,12 +34,7 @@ export default async function RequestQuotePage() {
   const loadingText = locale === "ar" ? "جاري تحميل نموذج طلب التسعيرة..." : "Loading Quote Form...";
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell showContactCta={false}>
         <PageBanner
           title={cms.bannerTitle || requestQuotePage.banner.title}
           subtitle={cms.bannerSubtitle || requestQuotePage.banner.subtitle}
@@ -68,9 +59,6 @@ export default async function RequestQuotePage() {
           visitHeadline={cms.visitHeadline}
           visitIntro={cms.visitIntro}
         />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

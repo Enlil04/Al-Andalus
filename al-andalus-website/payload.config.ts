@@ -37,7 +37,18 @@ const smtpFromAddress =
   process.env.SMTP_FROM_ADDRESS || "info@alandalus-iq.com";
 const smtpFromName = process.env.SMTP_FROM_NAME || "Al-Andalus Insurance";
 
+// Public origin of the deployed site (e.g. https://alandalus-iq.com).
+// Used for CSRF/CORS whitelisting of the admin panel and REST API.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+
 export default buildConfig({
+  ...(siteUrl
+    ? {
+        serverURL: siteUrl,
+        cors: [siteUrl],
+        csrf: [siteUrl],
+      }
+    : {}),
   admin: {
     user: Users.slug,
     theme: "light",

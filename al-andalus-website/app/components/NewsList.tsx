@@ -3,39 +3,15 @@
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import BlogCard from "@/app/components/ui/blog-cards";
+import { formatNewsDate } from "@/lib/cms/format";
+import type { NewsListItem } from "@/lib/cms/content";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  company: "Company",
-  motor: "Motor",
-  health: "Health",
-  travel: "Travel",
-  fire: "Fire",
-  general: "General",
-};
-
-export type NewsListItem = {
-  id: string | number;
-  title: string;
-  slug: string;
-  publishedDate?: string | null;
-  category?: string | null;
-  excerpt?: string | null;
-  imageUrl?: string | null;
-};
+export type { NewsListItem };
 
 type NewsListProps = {
   items: NewsListItem[];
   itemBasePath?: string;
 };
-
-function formatNewsDate(date?: string | null) {
-  if (!date) return "";
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}.${month}.${day}`;
-}
 
 export default function NewsList({
   items,
@@ -53,9 +29,7 @@ export default function NewsList({
   }, []);
 
   if (items.length === 0) {
-    return (
-      <p className="news__empty">No recent news articles.</p>
-    );
+    return <p className="news__empty">No recent news articles.</p>;
   }
 
   return (
@@ -66,24 +40,21 @@ export default function NewsList({
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
-        {items.map((item) => {
-          return (
-            <Link
-              key={item.id}
-              href={`${itemBasePath}/${item.slug}`}
-              className="block"
-            >
-              <BlogCard
-                title={item.title}
-                date={formatNewsDate(item.publishedDate)}
-                description={item.excerpt || ""}
-                imageUrl={item.imageUrl}
-              />
-            </Link>
-          );
-        })}
+        {items.map((item) => (
+          <Link
+            key={item.id}
+            href={`${itemBasePath}/${item.slug}`}
+            className="block"
+          >
+            <BlogCard
+              title={item.title}
+              date={formatNewsDate(item.publishedDate)}
+              description={item.excerpt || ""}
+              imageUrl={item.imageUrl}
+            />
+          </Link>
+        ))}
       </div>
-
       <div
         className={`news-cursor${cursor.visible ? " news-cursor--visible" : ""}`}
         style={{

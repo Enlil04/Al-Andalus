@@ -3,15 +3,12 @@ import { notFound } from "next/navigation";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
 import { fetchJobBySlug } from "@/lib/cms/content";
-import FooterServer from "../../../components/FooterServer";
-import HeaderServer from "../../../components/HeaderServer";
-import Loader from "../../../components/Loader";
-import SmoothScroll from "../../../components/SmoothScroll";
-import GSAPAnimations from "../../../components/GSAPAnimations";
+import { serializeLexical } from "@/lib/cms/lexical";
+import { slugify } from "@/lib/cms/format";
+import PageShell from "../../../components/PageShell";
 import PageBanner from "../../../components/PageBanner";
 import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
-import ContactCtaServer from "../../../components/ContactCtaServer";
 import Link from "next/link";
 import "./JobDetail.css";
 
@@ -19,25 +16,6 @@ interface PageProps {
   params: Promise<{
     slug: string;
   }>;
-}
-
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
-}
-
-function serializeLexical(richTextObj: any): string {
-  if (!richTextObj || !richTextObj.root || !richTextObj.root.children) return "";
-  return richTextObj.root.children
-    .map((node: any) => {
-      if (node.children) {
-        return node.children.map((child: any) => child.text || "").join("");
-      }
-      return "";
-    })
-    .join("\n\n");
 }
 
 // English Fallback
@@ -303,12 +281,7 @@ export default async function JobDetailPage({ params }: PageProps) {
   const reqsLabel = locale === "ar" ? "الشروط والمؤهلات" : "Requirements & Qualifications";
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         <PageBanner title={title} subtitle={category} showImage={false} />
 
         <section className="job-detail jobs-section">
@@ -375,11 +348,6 @@ export default async function JobDetailPage({ params }: PageProps) {
             </div>
           </div>
         </section>
-
-        <ContactCtaServer />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

@@ -1,9 +1,4 @@
-import { Suspense } from "react";
-import HeaderServer from "../../components/HeaderServer";
-import FooterServer from "../../components/FooterServer";
-import Loader from "../../components/Loader";
-import SmoothScroll from "../../components/SmoothScroll";
-import GSAPAnimations from "../../components/GSAPAnimations";
+import PageShell from "../../components/PageShell";
 import PageBanner from "../../components/PageBanner";
 import { getLocale } from "@/lib/locale";
 import { fetchPagesContent } from "@/lib/cms/content";
@@ -191,12 +186,7 @@ export default async function PrivacyPolicyPage() {
   }[] = cms.sections.length > 0 ? cms.sections : copy.sections;
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         <PageBanner
           title={cms.bannerTitle || copy.bannerTitle}
           subtitle={cms.bannerSubtitle || copy.bannerSubtitle}
@@ -222,9 +212,6 @@ export default async function PrivacyPolicyPage() {
             </section>
           ))}
         </main>
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

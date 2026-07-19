@@ -1,21 +1,13 @@
-import HeaderServer from "../../components/HeaderServer";
-import FooterServer from "../../components/FooterServer";
-import Loader from "../../components/Loader";
-import SmoothScroll from "../../components/SmoothScroll";
-import GSAPAnimations from "../../components/GSAPAnimations";
+import PageShell from "../../components/PageShell";
 import PageBanner from "../../components/PageBanner";
 import ScrollReveal from "../../components/ScrollReveal";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
 import ServicesCardSection from "../../components/ServicesCardSection";
 import CultureSection from "../../components/CultureSection";
-import ContactCtaServer from "../../components/ContactCtaServer";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
 import { fetchAllProducts, fetchPagesContent } from "@/lib/cms/content";
-
-const messageImage = "/al-and images/5f32f6eefa193becbdd238d11fdd52aa.jpg";
-const messageBottomImage = "/al-and images/Modern Office Interior.png";
-const voicesImagePrimary = "/al-and images/Urban Skyline Under Blue Sky.png";
+import { IMAGE_FALLBACKS } from "@/lib/cms/fallbacks";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -37,12 +29,7 @@ export default async function ServicesPage() {
   const cms = pages.services;
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         <PageBanner
           title={cms.bannerTitle || servicesPage.banner.title}
           subtitle={cms.bannerSubtitle || servicesPage.banner.subtitle}
@@ -70,9 +57,8 @@ export default async function ServicesPage() {
                 <ScrollReveal delay={1}>
                   <div
                     className="jobs-challenge__image"
-                    style={{ backgroundImage: `url("${cms.messageImageUrl ?? messageImage}")` }}
-                    role="img"
-                    aria-label="Urban development representing growth and protection"
+                    style={{ backgroundImage: `url("${cms.messageImageUrl ?? IMAGE_FALLBACKS.servicesMessage}")` }}
+                    aria-hidden="true"
                   />
                 </ScrollReveal>
               </div>
@@ -83,9 +69,8 @@ export default async function ServicesPage() {
                 <ScrollReveal>
                   <div
                     className="jobs-challenge__bottom-photo"
-                    style={{ backgroundImage: `url("${cms.messageBottomImageUrl ?? messageBottomImage}")` }}
-                    role="img"
-                    aria-label="Modern office workspace"
+                    style={{ backgroundImage: `url("${cms.messageBottomImageUrl ?? IMAGE_FALLBACKS.servicesMessageBottom}")` }}
+                    aria-hidden="true"
                   />
                 </ScrollReveal>
               </div>
@@ -126,9 +111,8 @@ export default async function ServicesPage() {
                 <ScrollReveal delay={1}>
                   <div
                     className="jobs-voices__image jobs-voices__image--primary"
-                    style={{ backgroundImage: `url("${cms.industriesImageUrl ?? voicesImagePrimary}")` }}
-                    role="img"
-                    aria-label="Urban skyline representing sectors served across Iraq"
+                    style={{ backgroundImage: `url("${cms.industriesImageUrl ?? IMAGE_FALLBACKS.servicesIndustries}")` }}
+                    aria-hidden="true"
                   />
                 </ScrollReveal>
               </div>
@@ -148,11 +132,6 @@ export default async function ServicesPage() {
           buttonLink={cms.industriesButtonLink}
           sectors={cms.sectors}
         />
-
-        <ContactCtaServer />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

@@ -1,9 +1,5 @@
 import { Suspense } from "react";
-import HeaderServer from "../../components/HeaderServer";
-import FooterServer from "../../components/FooterServer";
-import Loader from "../../components/Loader";
-import SmoothScroll from "../../components/SmoothScroll";
-import GSAPAnimations from "../../components/GSAPAnimations";
+import PageShell from "../../components/PageShell";
 import PageBanner from "../../components/PageBanner";
 import ContactForm from "../../components/ContactForm";
 import RequestQuoteContact from "../../components/RequestQuoteContact";
@@ -33,12 +29,7 @@ export default async function ContactPage() {
   const loadingText = locale === "ar" ? "جاري تحميل نموذج الاتصال..." : "Loading Contact Form...";
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell showContactCta={false}>
         <PageBanner
           title={cms.bannerTitle || contactPage.banner.title}
           subtitle={cms.bannerSubtitle || contactPage.banner.subtitle}
@@ -62,9 +53,6 @@ export default async function ContactPage() {
           visitHeadline={cms.visitHeadline}
           visitIntro={cms.visitIntro}
         />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

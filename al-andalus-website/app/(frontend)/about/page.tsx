@@ -1,14 +1,9 @@
-import HeaderServer from "../../components/HeaderServer";
-import FooterServer from "../../components/FooterServer";
-import Loader from "../../components/Loader";
+import PageShell from "../../components/PageShell";
 import ScrollReveal from "../../components/ScrollReveal";
-import SmoothScroll from "../../components/SmoothScroll";
-import GSAPAnimations from "../../components/GSAPAnimations";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
 import PageBanner from "../../components/PageBanner";
 import FourDivisionsSection from "../../components/FourDivisionsSection";
 import VisionMission from "../../components/VisionMission";
-import ContactCtaServer from "../../components/ContactCtaServer";
 import { fetchAboutPageContent } from "@/lib/cms/content";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
@@ -26,12 +21,7 @@ export default async function AboutPage() {
   const aboutContent = await fetchAboutPageContent();
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         <PageBanner
           title={aboutContent.bannerTitle}
           subtitle={aboutContent.bannerSubtitle}
@@ -72,8 +62,7 @@ export default async function AboutPage() {
                     style={{
                       backgroundImage: `url("${aboutContent.missionImageUrl}")`,
                     }}
-                    role="img"
-                    aria-label="Urban development representing Iraq's growth"
+                    aria-hidden="true"
                   />
                 </ScrollReveal>
               </div>
@@ -83,8 +72,7 @@ export default async function AboutPage() {
               <div
                 className="about-mission__bottom-image about-grid__cols-1-5"
                 style={{ backgroundImage: `url("${aboutContent.missionAccentImage}")` }}
-                role="img"
-                aria-label="Modern office interior"
+                aria-hidden="true"
               />
 
               <div className="about-mission__bottom-content about-grid__cols-7-12">
@@ -197,11 +185,6 @@ export default async function AboutPage() {
             </div>
           </div>
         </section>
-
-        <ContactCtaServer />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

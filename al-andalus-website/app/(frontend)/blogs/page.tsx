@@ -1,16 +1,11 @@
-import HeaderServer from "../../components/HeaderServer";
-import Loader from "../../components/Loader";
+import PageShell from "../../components/PageShell";
 import ScrollReveal from "../../components/ScrollReveal";
-import SmoothScroll from "../../components/SmoothScroll";
-import GSAPAnimations from "../../components/GSAPAnimations";
 import PageBanner from "../../components/PageBanner";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
 import NewsGrid from "../../components/NewsGrid";
-import ContactCtaServer from "../../components/ContactCtaServer";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
 import { fetchPagesContent, fetchPublishedNews } from "@/lib/cms/content";
-import FooterServer from "../../components/FooterServer";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -33,12 +28,7 @@ export default async function BlogsPage() {
   const cms = pages.blogs;
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         <PageBanner
           title={cms.bannerTitle || blogsPage.banner.title}
           subtitle={cms.bannerSubtitle || blogsPage.banner.subtitle}
@@ -63,11 +53,6 @@ export default async function BlogsPage() {
             items={blogItems}
           />
         </section>
-
-        <ContactCtaServer />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

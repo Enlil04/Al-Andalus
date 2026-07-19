@@ -3,15 +3,17 @@ type MediaDoc = {
   filename?: string | null;
 };
 
+function isMediaDoc(value: unknown): value is MediaDoc {
+  return !!value && typeof value === "object";
+}
+
 /**
  * Prefer the public static path (`/media/...`) so Next can serve files
  * without going through Payload's file API (which 500s when the volume
  * is missing the file, and breaks `next/image` optimization).
  */
-export function getMediaUrl(
-  media: string | MediaDoc | null | undefined,
-): string | null {
-  if (!media || typeof media === "string") return null;
+export function getMediaUrl(media: unknown): string | null {
+  if (!isMediaDoc(media)) return null;
 
   if (media.filename) {
     return `/media/${encodeURIComponent(media.filename).replace(/%2F/gi, "/")}`;

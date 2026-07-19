@@ -1,15 +1,10 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { getServices } from "@/lib/services";
-import HeaderServer from "../../../components/HeaderServer";
-import FooterServer from "../../../components/FooterServer";
-import Loader from "../../../components/Loader";
-import SmoothScroll from "../../../components/SmoothScroll";
-import GSAPAnimations from "../../../components/GSAPAnimations";
+import PageShell from "../../../components/PageShell";
 import PageBanner from "../../../components/PageBanner";
 import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
-import ContactCtaServer from "../../../components/ContactCtaServer";
 import Link from "next/link";
 import { getLocale } from "@/lib/locale";
 import { fetchProductBySlug } from "@/lib/cms/content";
@@ -110,12 +105,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
   const quoteButtonLabel = locale === "ar" ? "طلب تسعيرة" : "Request a Quote";
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         <PageBanner title={title} subtitle={subtitle} showImage={false} />
 
         <section className="service-detail__intro jobs-section">
@@ -165,11 +155,6 @@ export default async function ServiceDetailPage({ params }: PageProps) {
             </div>
           </div>
         </section>
-
-        <ContactCtaServer />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

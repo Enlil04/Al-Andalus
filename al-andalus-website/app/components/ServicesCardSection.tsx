@@ -49,7 +49,9 @@ function ServiceCard({ service, locale }: { service: Service; locale: string }) 
           <Link
             href={`/services/${service.slug}`}
             className="services-card-section__action"
-            aria-label={`View ${service.title}`}
+            aria-label={
+              locale === "ar" ? `عرض ${service.title}` : `View ${service.title}`
+            }
           >
             <svg
               viewBox="0 0 14 14"

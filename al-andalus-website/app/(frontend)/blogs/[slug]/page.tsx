@@ -1,18 +1,14 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import HeaderServer from "../../../components/HeaderServer";
-import FooterServer from "../../../components/FooterServer";
-import Loader from "../../../components/Loader";
-import SmoothScroll from "../../../components/SmoothScroll";
-import GSAPAnimations from "../../../components/GSAPAnimations";
+import PageShell from "../../../components/PageShell";
 import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
 import BlogPostHeading from "../../../components/BlogPostHeading";
-import ContactCtaServer from "../../../components/ContactCtaServer";
 import Link from "next/link";
 import { getLocale } from "@/lib/locale";
 import { fetchNewsBySlug } from "@/lib/cms/content";
 import { getMediaUrl } from "@/lib/cms/media";
+import { formatNewsDate, getNewsCategoryLabel } from "@/lib/cms/format";
 import "./BlogDetail.css";
 
 interface PageProps {
@@ -42,33 +38,6 @@ export async function generateMetadata({ params }: PageProps) {
         : `${title} | Al-Andalus News`,
     description: excerpt || undefined,
   };
-}
-
-const CATEGORY_LABELS_EN: Record<string, string> = {
-  company: "Company News",
-  motor: "Motor Insurance",
-  health: "Health Insurance",
-  travel: "Travel Insurance",
-  fire: "Fire Insurance",
-  general: "General News",
-};
-
-const CATEGORY_LABELS_AR: Record<string, string> = {
-  company: "أخبار الشركة",
-  motor: "تأمين السيارات",
-  health: "التأمين الصحي",
-  travel: "تأمين السفر",
-  fire: "تأمين الحريق",
-  general: "أخبار عامة",
-};
-
-function formatNewsDate(date?: string | null) {
-  if (!date) return "";
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}.${month}.${day}`;
 }
 
 function serializeLexicalHTML(richTextObj: any): React.ReactNode[] {
@@ -124,11 +93,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const categoryLabels = locale === "ar" ? CATEGORY_LABELS_AR : CATEGORY_LABELS_EN;
-  const categoryLabel = String(
-    (post.category && categoryLabels[post.category as string]) ||
-      (locale === "ar" ? "أخبار عامة" : "General News"),
-  );
+  const categoryLabel = getNewsCategoryLabel(post.category as string | null, locale);
   const publishedDateFormatted = formatNewsDate(post.publishedDate as string);
 
   const coverImageUrl = getMediaUrl(
@@ -138,12 +103,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
   const backLabel = locale === "ar" ? "العودة إلى المقالات" : "Back to Articles";
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         <article className="blog-post">
           <div className="about-grid">
             <div className="about-grid__span-all">
@@ -199,11 +159,6 @@ export default async function BlogDetailPage({ params }: PageProps) {
             </div>
           </div>
         </article>
-
-        <ContactCtaServer />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

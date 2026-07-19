@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Payload } from "payload";
 import { getSiteCopy } from "@/lib/copy";
 import { getFaqItems, type FaqItem } from "@/lib/faq";
@@ -10,9 +11,11 @@ import {
   type ServiceCategoryId,
 } from "@/lib/services";
 import { getLocale } from "../locale";
+import { IMAGE_FALLBACKS } from "./fallbacks";
 import { serializeLexical } from "./lexical";
 import { getMediaUrl } from "./media";
 import { getCMSPayload } from "./payload";
+import { slugify } from "./format";
 
 const SERVICE_CATEGORIES = new Set<ServiceCategoryId>([
   "personal",
@@ -212,7 +215,7 @@ function pickLocaleText(
   return normalizeCmsText(value) || fallback;
 }
 
-export async function fetchHomepageContent(payload?: Payload) {
+export const fetchHomepageContent = cache(async function fetchHomepageContent(payload?: Payload) {
   const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
   const siteCopy = getSiteCopy(currentLocale);
@@ -236,10 +239,6 @@ export async function fetchHomepageContent(payload?: Payload) {
   const intro = (homepage.intro ?? null) as Record<string, unknown> | null;
   const story = (homepage.story ?? null) as Record<string, unknown> | null;
   const aboutPreviewGroup = (homepage.aboutPreview ?? null) as Record<
-    string,
-    unknown
-  > | null;
-  const contactCtaGroup = (siteSettings.contactCta ?? null) as Record<
     string,
     unknown
   > | null;
@@ -275,7 +274,7 @@ export async function fetchHomepageContent(payload?: Payload) {
       pickLocaleText(intro, "titleLine3", currentLocale, introLines[2]),
     ],
     lead: pickLocaleText(intro, "lead", currentLocale, siteCopy.intro.lead),
-    imageUrl: getMediaUrl(intro?.image as Parameters<typeof getMediaUrl>[0]),
+    imageUrl: getMediaUrl(intro?.image),
   };
 
   const storyDescription = pickLocaleText(
@@ -288,8 +287,10 @@ export async function fetchHomepageContent(payload?: Payload) {
     paragraphs: splitParagraphs(storyDescription),
     ctaText: pickLocaleText(story, "ctaText", currentLocale, siteCopy.story.cta),
     ctaLink: normalizeCmsText(story?.ctaLink) || "#about",
-    imageLargeUrl: getMediaUrl(story?.storyImageLarge as Parameters<typeof getMediaUrl>[0]) || "/al-and images/IMG_6081.JPG",
-    imageSmallUrl: getMediaUrl(story?.storyImageSmall as Parameters<typeof getMediaUrl>[0]) || "/al-and images/3cec34a2-2758-4570-910e-32a896e080de.jpg",
+    imageLargeUrl:
+      getMediaUrl(story?.storyImageLarge) || IMAGE_FALLBACKS.storyLarge,
+    imageSmallUrl:
+      getMediaUrl(story?.storyImageSmall) || IMAGE_FALLBACKS.storySmall,
   };
 
   const aboutPreview: AboutPreviewContent = {
@@ -305,10 +306,14 @@ export async function fetchHomepageContent(payload?: Payload) {
     text:
       pickLocaleText(aboutPreviewGroup, "description", currentLocale) ||
       siteCopy.aboutPinned.text,
-    image1Url: getMediaUrl(aboutPreviewGroup?.aboutImg1 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-4.jpg",
-    image2Url: getMediaUrl(aboutPreviewGroup?.aboutImg2 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-3.jpg",
-    image3Url: getMediaUrl(aboutPreviewGroup?.aboutImg3 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-2.jpg",
-    image4Url: getMediaUrl(aboutPreviewGroup?.aboutImg4 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-1.jpg",
+    image1Url:
+      getMediaUrl(aboutPreviewGroup?.aboutImg1) || IMAGE_FALLBACKS.aboutPinned1,
+    image2Url:
+      getMediaUrl(aboutPreviewGroup?.aboutImg2) || IMAGE_FALLBACKS.aboutPinned2,
+    image3Url:
+      getMediaUrl(aboutPreviewGroup?.aboutImg3) || IMAGE_FALLBACKS.aboutPinned3,
+    image4Url:
+      getMediaUrl(aboutPreviewGroup?.aboutImg4) || IMAGE_FALLBACKS.aboutPinned4,
   };
 
   const whyUsGroup = (homepage.whyUs ?? null) as Record<string, unknown> | null;
@@ -322,37 +327,16 @@ export async function fetchHomepageContent(payload?: Payload) {
     desc:
       pickLocaleText(whyUsGroup, "description", currentLocale) ||
       siteCopy.whyUs.desc,
-    img1Url: getMediaUrl(whyUsGroup?.img1 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-1.jpg",
-    img2Url: getMediaUrl(whyUsGroup?.img2 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-2.jpg",
-    img3Url: getMediaUrl(whyUsGroup?.img3 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-3.jpg",
-    img4Url: getMediaUrl(whyUsGroup?.img4 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/conference-4.jpg",
-    img5Url: getMediaUrl(whyUsGroup?.img5 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/IMG_5713.JPG",
-    img6Url: getMediaUrl(whyUsGroup?.img6 as Parameters<typeof getMediaUrl>[0]) || "/al-and images/IMG_6081.JPG",
+    img1Url: getMediaUrl(whyUsGroup?.img1) || IMAGE_FALLBACKS.whyUs1,
+    img2Url: getMediaUrl(whyUsGroup?.img2) || IMAGE_FALLBACKS.whyUs2,
+    img3Url: getMediaUrl(whyUsGroup?.img3) || IMAGE_FALLBACKS.whyUs3,
+    img4Url: getMediaUrl(whyUsGroup?.img4) || IMAGE_FALLBACKS.whyUs4,
+    img5Url: getMediaUrl(whyUsGroup?.img5) || IMAGE_FALLBACKS.whyUs5,
+    img6Url: getMediaUrl(whyUsGroup?.img6) || IMAGE_FALLBACKS.whyUs6,
   };
 
   const expandingImageUrl =
-    getMediaUrl(homepage.expandingImage as Parameters<typeof getMediaUrl>[0]) ||
-    "/al-and images/insurance-policy-terms-and-conditions-with-magnify-2026-01-07-01-38-53-utc.jpg";
-
-  const contactDescription = pickLocaleText(
-    contactCtaGroup,
-    "description",
-    currentLocale,
-  );
-  const contactCta: ContactCtaContent = {
-    headline:
-      pickLocaleText(contactCtaGroup, "title", currentLocale) ||
-      siteCopy.contact.headline,
-    lines: contactDescription
-      ? splitLines(contactDescription)
-      : [...siteCopy.contact.lines],
-    cta:
-      pickLocaleText(contactCtaGroup, "buttonText", currentLocale) ||
-      siteCopy.contact.cta,
-    ctaLink:
-      normalizeCmsText(contactCtaGroup?.buttonLink) || "/request-quote",
-    backgroundImageUrl: getMediaUrl(contactCtaGroup?.backgroundImage as Parameters<typeof getMediaUrl>[0]),
-  };
+    getMediaUrl(homepage.expandingImage) || IMAGE_FALLBACKS.heroExpanding;
 
   return {
     hero,
@@ -361,9 +345,8 @@ export async function fetchHomepageContent(payload?: Payload) {
     expandingImageUrl,
     aboutPreview,
     whyUs,
-    contactCta,
   };
-}
+})
 
 export type PagesContent = {
   services: {
@@ -450,7 +433,7 @@ export type PagesContent = {
 };
 
 /** Banner/section content for secondary pages; empty values fall back to static copy. */
-export async function fetchPagesContent(payload?: Payload): Promise<PagesContent> {
+export const fetchPagesContent = cache(async function fetchPagesContent(payload?: Payload): Promise<PagesContent> {
   const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
   const siteCopy = getSiteCopy(currentLocale);
@@ -474,7 +457,7 @@ export async function fetchPagesContent(payload?: Payload): Promise<PagesContent
     bannerTitle: pickLocaleText(record, "bannerTitle", currentLocale),
     bannerSubtitle: pickLocaleText(record, "bannerSubtitle", currentLocale),
     bannerImageUrl: getMediaUrl(
-      record?.bannerImage as Parameters<typeof getMediaUrl>[0],
+      record?.bannerImage,
     ),
   });
 
@@ -518,11 +501,11 @@ export async function fetchPagesContent(payload?: Payload): Promise<PagesContent
           : [...siteCopy.servicesPage.message.paragraphs];
       })(),
       messageImageUrl:
-        getMediaUrl(services?.messageImage as Parameters<typeof getMediaUrl>[0]) ||
+        getMediaUrl(services?.messageImage) ||
         "/al-and images/5f32f6eefa193becbdd238d11fdd52aa.jpg",
       messageBottomImageUrl:
         getMediaUrl(
-          services?.messageBottomImage as Parameters<typeof getMediaUrl>[0],
+          services?.messageBottomImage,
         ) || "/al-and images/Modern Office Interior.png",
       industriesLabel:
         pickLocaleText(services, "industriesLabel", currentLocale) ||
@@ -540,7 +523,7 @@ export async function fetchPagesContent(payload?: Payload): Promise<PagesContent
         normalizeCmsText(services?.industriesButtonLink) || "/request-quote",
       industriesImageUrl:
         getMediaUrl(
-          services?.industriesImage as Parameters<typeof getMediaUrl>[0],
+          services?.industriesImage,
         ) || "/al-and images/Urban Skyline Under Blue Sky.png",
       sectors,
     },
@@ -553,7 +536,7 @@ export async function fetchPagesContent(payload?: Payload): Promise<PagesContent
         pickLocaleText(jobs, "messageHeadline", currentLocale) ||
         siteCopy.jobsPage.message.headline,
       messageImageUrl:
-        getMediaUrl(jobs?.messageImage as Parameters<typeof getMediaUrl>[0]) ||
+        getMediaUrl(jobs?.messageImage) ||
         "/al-and images/Misty Urban Development.png",
       listingsEyebrow:
         pickLocaleText(jobs, "listingsEyebrow", currentLocale) ||
@@ -662,7 +645,7 @@ export async function fetchPagesContent(payload?: Payload): Promise<PagesContent
             ];
       })(),
       imageUrl:
-        getMediaUrl(application?.appImage as Parameters<typeof getMediaUrl>[0]) ||
+        getMediaUrl(application?.appImage) ||
         "/al-and images/application.jpeg",
       downloads: (
         [
@@ -690,21 +673,26 @@ export async function fetchPagesContent(payload?: Payload): Promise<PagesContent
         (currentLocale === "ar"
           ? "كيفية حماية بياناتك"
           : "How we protect your data"),
-      sections:
-        privacySectionsCms && privacySectionsCms.length > 0
-          ? privacySectionsCms.map((section) => ({
-              title: pickLocaleText(section, "title", currentLocale),
-              paragraphs: splitParagraphs(
-                pickLocaleText(section, "body", currentLocale),
-              ),
-              list: splitLines(pickLocaleText(section, "list", currentLocale)),
-            }))
-          : [],
+      sections: (privacySectionsCms ?? [])
+        .map((section) => ({
+          title: pickLocaleText(section, "title", currentLocale),
+          paragraphs: splitParagraphs(
+            pickLocaleText(section, "body", currentLocale),
+          ),
+          list: splitLines(pickLocaleText(section, "list", currentLocale)),
+        }))
+        // Skip half-filled rows so a blank CMS entry can't hide the
+        // static bilingual fallback copy.
+        .filter(
+          (section) =>
+            section.title &&
+            (section.paragraphs.length > 0 || section.list.length > 0),
+        ),
     },
   };
-}
+})
 
-export async function fetchContactCtaContent(
+export const fetchContactCtaContent = cache(async function fetchContactCtaContent(
   payload?: Payload,
 ): Promise<ContactCtaContent> {
   const cms = payload ?? (await getCMSPayload());
@@ -733,12 +721,12 @@ export async function fetchContactCtaContent(
       siteCopy.contact.cta,
     ctaLink: normalizeCmsText(contactCtaGroup?.buttonLink) || "/request-quote",
     backgroundImageUrl: getMediaUrl(
-      contactCtaGroup?.backgroundImage as Parameters<typeof getMediaUrl>[0],
+      contactCtaGroup?.backgroundImage,
     ),
   };
-}
+})
 
-export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPageContent> {
+export const fetchAboutPageContent = cache(async function fetchAboutPageContent(payload?: Payload): Promise<AboutPageContent> {
   const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
   const siteCopy = getSiteCopy(currentLocale);
@@ -771,7 +759,7 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
               ? splitParagraphs(bio)
               : [...fallbackLeader.paragraphs],
             photoUrl: getMediaUrl(
-              cmsLeader.photo as Parameters<typeof getMediaUrl>[0],
+              cmsLeader.photo,
             ) || (index === 0
               ? "/al-and images/ChatGPT Image Jul 9, 2026, 05_09_09 PM.png"
               : "/al-and images/ChatGPT Image Jul 15, 2026, 10_41_41 PM.png"),
@@ -849,7 +837,7 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
       pickLocaleText(about, "heroSubtitle", currentLocale) ||
       fallback.banner.subtitle,
     heroImageUrl: getMediaUrl(
-      about.heroImage as Parameters<typeof getMediaUrl>[0],
+      about.heroImage,
     ),
     missionLabel:
       pickLocaleText(about, "missionLabel", currentLocale) ||
@@ -864,10 +852,10 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
       pickLocaleText(about, "missionBodyTitle", currentLocale) ||
       fallback.mission.bodyTitle,
     missionImageUrl: getMediaUrl(
-      about.missionImage as Parameters<typeof getMediaUrl>[0],
+      about.missionImage,
     ) || "/al-and images/Misty Urban Development.png",
     missionAccentImage: getMediaUrl(
-      about.missionAccentImage as Parameters<typeof getMediaUrl>[0],
+      about.missionAccentImage,
     ) || "/al-and images/ChatGPT Image Jul 15, 2026, 09_57_27 PM.png",
     missionParagraphs: missionBody
       ? splitParagraphs(missionBody)
@@ -883,11 +871,11 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
         ? splitParagraphs(visionBody)
         : [...fallback.vision.paragraphs],
       imageUrl:
-        getMediaUrl(about.visionImage as Parameters<typeof getMediaUrl>[0]) ||
+        getMediaUrl(about.visionImage) ||
         "/al-and images/empty-conference-room-with-city-view-2026-01-09-10-22-57-utc.jpg",
       accentImageUrl:
         getMediaUrl(
-          about.visionAccentImage as Parameters<typeof getMediaUrl>[0],
+          about.visionAccentImage,
         ) || "/al-and images/8aa6ff11-0f2d-4242-8d20-2ffab6670122.png",
     },
     whyChoose: {
@@ -912,9 +900,9 @@ export async function fetchAboutPageContent(payload?: Payload): Promise<AboutPag
       (currentLocale === "ar" ? "أعضاء مجلس الإدارة" : "Board member"),
     boardMembers,
   };
-}
+})
 
-export async function fetchSiteSettings(payload?: Payload): Promise<SiteSettingsContent> {
+export const fetchSiteSettings = cache(async function fetchSiteSettings(payload?: Payload): Promise<SiteSettingsContent> {
   const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
   const siteCopy = getSiteCopy(currentLocale);
@@ -941,13 +929,17 @@ export async function fetchSiteSettings(payload?: Payload): Promise<SiteSettings
       settings.companyNameAr ||
       "Al-Andalus International Insurance";
 
-  const branches = settings.branches?.map((b: any) => ({
-    id: b.branchId,
-    label: useArabic ? b.labelAr : b.labelEn,
-    area: useArabic ? b.areaAr : b.areaEn,
-    mapEmbedUrl: b.mapEmbedUrl,
-    mapLinkUrl: b.mapLinkUrl,
-  }));
+  const mappedBranches = settings.branches
+    ?.map((b: any) => ({
+      id: b.branchId,
+      label: useArabic ? b.labelAr || b.labelEn : b.labelEn || b.labelAr,
+      area: useArabic ? b.areaAr || b.areaEn : b.areaEn || b.areaAr,
+      mapEmbedUrl: b.mapEmbedUrl,
+      mapLinkUrl: b.mapLinkUrl,
+    }))
+    // Incomplete rows (no label or no map) fall back to static branches.
+    .filter((b: { label?: string; mapEmbedUrl?: string }) => b.label && b.mapEmbedUrl);
+  const branches = mappedBranches?.length ? mappedBranches : undefined;
 
   return {
     companyName,
@@ -957,11 +949,11 @@ export async function fetchSiteSettings(payload?: Payload): Promise<SiteSettings
     whatsapp: settings.contact?.whatsapp ?? "+9647710006000",
     socialLinks,
     branches,
-    siteLogo: getMediaUrl(settings.siteLogo as Parameters<typeof getMediaUrl>[0]) || "/1.png",
+    siteLogo: getMediaUrl(settings.siteLogo) || IMAGE_FALLBACKS.siteLogo,
   };
-}
+})
 
-export async function fetchFeaturedProducts(payload?: Payload): Promise<Service[]> {
+export const fetchFeaturedProducts = cache(async function fetchFeaturedProducts(payload?: Payload): Promise<Service[]> {
   const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
   const allServices = await fetchAllProducts(cms);
@@ -997,9 +989,9 @@ export async function fetchFeaturedProducts(payload?: Payload): Promise<Service[
   return getFeaturedServices(currentLocale).map(
     (featured) => bySlug.get(featured.slug) ?? featured,
   );
-}
+})
 
-export async function fetchFaqs(payload?: Payload): Promise<FaqItem[]> {
+export const fetchFaqs = cache(async function fetchFaqs(payload?: Payload): Promise<FaqItem[]> {
   const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
   const { docs } = await cms.find({
@@ -1029,7 +1021,7 @@ export async function fetchFaqs(payload?: Payload): Promise<FaqItem[]> {
       answer: serializeLexical(answerDoc),
     };
   });
-}
+})
 
 export type NewsListItem = {
   id: string | number;
@@ -1106,7 +1098,7 @@ function mergeWithStaticServices(
   return [...merged, ...cmsOnly];
 }
 
-export async function fetchAllProducts(payload?: Payload): Promise<Service[]> {
+export const fetchAllProducts = cache(async function fetchAllProducts(payload?: Payload): Promise<Service[]> {
   const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
   const { docs } = await cms.find({
@@ -1131,7 +1123,7 @@ export async function fetchAllProducts(payload?: Payload): Promise<Service[]> {
   );
 
   return mergeWithStaticServices(cmsServices, currentLocale);
-}
+})
 
 export async function fetchProductBySlug(
   slug: string,
@@ -1163,7 +1155,7 @@ export async function fetchProductBySlug(
   };
 }
 
-export async function fetchPublishedNews(
+export const fetchPublishedNews = cache(async function fetchPublishedNews(
   payload?: Payload,
   limit = 50,
 ): Promise<NewsListItem[]> {
@@ -1187,10 +1179,10 @@ export async function fetchPublishedNews(
       publishedDate: (item.publishedDate as string) ?? null,
       category: (item.category as string) ?? null,
       excerpt: pickLocaleText(record, "excerpt", currentLocale) || null,
-      imageUrl: getMediaUrl(item.coverImage as Parameters<typeof getMediaUrl>[0]),
+      imageUrl: getMediaUrl(item.coverImage),
     };
   });
-}
+})
 
 export async function fetchNewsBySlug(
   slug: string,
@@ -1222,7 +1214,7 @@ export async function fetchNewsBySlug(
   };
 }
 
-export async function fetchPartners(
+export const fetchPartners = cache(async function fetchPartners(
   payload?: Payload,
   limit = 100,
 ): Promise<Record<string, unknown>[]> {
@@ -1237,9 +1229,9 @@ export async function fetchPartners(
     overrideAccess: true,
   });
   return docs as Record<string, unknown>[];
-}
+})
 
-export async function fetchOpenJobs(
+export const fetchOpenJobs = cache(async function fetchOpenJobs(
   payload?: Payload,
 ): Promise<JobListItem[]> {
   const cms = payload ?? (await getCMSPayload());
@@ -1255,10 +1247,7 @@ export async function fetchOpenJobs(
   if (docs.length === 0) {
     const siteCopy = getSiteCopy(currentLocale);
     return siteCopy.jobsPage.listings.jobs.map((job) => ({
-      slug: job.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, ""),
+      slug: slugify(job.title),
       title: job.title,
       department: job.category,
     }));
@@ -1272,7 +1261,7 @@ export async function fetchOpenJobs(
       department: pickLocaleText(record, "department", currentLocale),
     };
   });
-}
+})
 
 export async function fetchJobBySlug(
   slug: string,
@@ -1305,7 +1294,7 @@ export async function fetchJobBySlug(
   };
 }
 
-export async function fetchQuoteProducts(
+export const fetchQuoteProducts = cache(async function fetchQuoteProducts(
   payload?: Payload,
 ): Promise<QuoteProduct[]> {
   const cms = payload ?? (await getCMSPayload());
@@ -1326,4 +1315,4 @@ export async function fetchQuoteProducts(
       title: pickLocaleText(record, "title", currentLocale),
     };
   });
-}
+})

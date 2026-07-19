@@ -1,5 +1,3 @@
-"use client";
-
 type LogoSVGProps = {
   progress?: number;
   variant?: "light" | "dark";

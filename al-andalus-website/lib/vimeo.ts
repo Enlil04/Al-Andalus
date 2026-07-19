@@ -1,4 +1,4 @@
-export const DEFAULT_HERO_VIMEO_ID = "1210447316";
+export const DEFAULT_HERO_VIMEO_ID = "1211023032";
 
 export function getVimeoVideoId(url: string): string | null {
   const match = url.match(

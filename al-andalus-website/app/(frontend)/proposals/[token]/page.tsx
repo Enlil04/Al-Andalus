@@ -2,11 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
-import HeaderServer from "../../../components/HeaderServer";
-import FooterServer from "../../../components/FooterServer";
-import Loader from "../../../components/Loader";
-import SmoothScroll from "../../../components/SmoothScroll";
-import GSAPAnimations from "../../../components/GSAPAnimations";
+import PageShell from "../../../components/PageShell";
 import PageBanner from "../../../components/PageBanner";
 import ScrollReveal from "../../../components/ScrollReveal";
 import AnimatedHeadline from "../../../components/AnimatedHeadline";
@@ -75,12 +71,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
   const noDocumentLabel = locale === "ar" ? "لا يوجد مستند مرفق بهذا العرض حالياً." : "No document is attached to this proposal yet.";
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell showContactCta={false}>
         <PageBanner
           title={bannerTitle}
           subtitle={bannerSubtitle}
@@ -147,9 +138,6 @@ export default async function ProposalDetailPage({ params }: PageProps) {
             </div>
           </div>
         </section>
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

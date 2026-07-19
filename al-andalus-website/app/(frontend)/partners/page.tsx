@@ -1,12 +1,7 @@
-import HeaderServer from "../../components/HeaderServer";
-import FooterServer from "../../components/FooterServer";
-import Loader from "../../components/Loader";
-import SmoothScroll from "../../components/SmoothScroll";
-import GSAPAnimations from "../../components/GSAPAnimations";
+import PageShell from "../../components/PageShell";
 import PageBanner from "../../components/PageBanner";
 import ScrollReveal from "../../components/ScrollReveal";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
-import ContactCtaServer from "../../components/ContactCtaServer";
 import CmsImage from "../../components/CmsImage";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
@@ -50,12 +45,7 @@ export default async function PartnersPage() {
   const emptyLabel = locale === "ar" ? "لا يوجد شركاء مدرجون حالياً." : "No partners listed yet.";
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         <PageBanner
           title={bannerTitle}
           subtitle={bannerSubtitle}
@@ -150,11 +140,6 @@ export default async function PartnersPage() {
             </div>
           </div>
         </section>
-
-        <ContactCtaServer />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

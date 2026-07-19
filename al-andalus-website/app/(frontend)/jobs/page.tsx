@@ -1,18 +1,12 @@
-import HeaderServer from "../../components/HeaderServer";
-import Loader from "../../components/Loader";
-import SmoothScroll from "../../components/SmoothScroll";
-import GSAPAnimations from "../../components/GSAPAnimations";
+import PageShell from "../../components/PageShell";
 import PageBanner from "../../components/PageBanner";
 import ScrollReveal from "../../components/ScrollReveal";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
 import JobsDescriptionList from "../../components/JobsDescriptionList";
-import ContactCtaServer from "../../components/ContactCtaServer";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
 import { fetchOpenJobs, fetchPagesContent } from "@/lib/cms/content";
-import FooterServer from "../../components/FooterServer";
-
-const challengeImage = "/al-and images/Misty Urban Development.png";
+import { IMAGE_FALLBACKS } from "@/lib/cms/fallbacks";
 
 export async function generateMetadata() {
   const locale = await getLocale();
@@ -34,12 +28,7 @@ export default async function JobsPage() {
   const cms = pages.jobs;
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         <PageBanner
           title={cms.bannerTitle || jobsPage.banner.title}
           subtitle={cms.bannerSubtitle || jobsPage.banner.subtitle}
@@ -67,9 +56,8 @@ export default async function JobsPage() {
                 <ScrollReveal delay={1}>
                   <div
                     className="jobs-challenge__image"
-                    style={{ backgroundImage: `url("${cms.messageImageUrl ?? challengeImage}")` }}
-                    role="img"
-                    aria-label="Urban development representing growth across Iraq"
+                    style={{ backgroundImage: `url("${cms.messageImageUrl ?? IMAGE_FALLBACKS.jobsMessage}")` }}
+                    aria-hidden="true"
                   />
                 </ScrollReveal>
               </div>
@@ -83,11 +71,6 @@ export default async function JobsPage() {
           listingsEyebrow={cms.listingsEyebrow}
           listingsTitle={cms.listingsTitle}
         />
-
-        <ContactCtaServer />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+    </PageShell>
   );
 }

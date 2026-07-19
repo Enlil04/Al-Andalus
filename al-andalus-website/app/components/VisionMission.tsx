@@ -1,6 +1,3 @@
-"use client";
-
-import React from "react";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
 import "./VisionMission.css";
@@ -60,16 +57,14 @@ export default function VisionMission({
               <div
                 className="vision-mission__img-card vision-mission__img-card--main"
                 style={{ backgroundImage: `url("${imageUrl}")` }}
-                role="img"
-                aria-label="Conference room with city view representing business growth"
+                aria-hidden="true"
               />
             </ScrollReveal>
             <ScrollReveal delay={0.8}>
               <div
                 className="vision-mission__img-card vision-mission__img-card--accent"
                 style={{ backgroundImage: `url("${accentImageUrl}")` }}
-                role="img"
-                aria-label="Modern office interior representing business focus"
+                aria-hidden="true"
               />
             </ScrollReveal>
           </div>

@@ -1,18 +1,15 @@
-import HeaderServer from "../components/HeaderServer";
-import Loader from "../components/Loader";
+import PageShell from "../components/PageShell";
 import ScrollReveal from "../components/ScrollReveal";
-import SmoothScroll from "../components/SmoothScroll";
-import GSAPAnimations from "../components/GSAPAnimations";
 import AnimatedHeadline from "../components/AnimatedHeadline";
 import NewsList from "../components/NewsList";
 import FAQ from "../components/FAQ";
-import ContactCtaServer from "../components/ContactCtaServer";
+import ApplicationSection from "../components/ApplicationSection";
 import Link from "next/link";
-import { getPayload } from "payload";
-import configPromise from "@/payload.config";
+import { getCMSPayload } from "@/lib/cms/payload";
 import { getLocale } from "@/lib/locale";
 import { getSiteCopy } from "@/lib/copy";
 import { getMediaUrl } from "@/lib/cms/media";
+import { IMAGE_FALLBACKS } from "@/lib/cms/fallbacks";
 import {
   fetchHomepageContent,
   fetchFeaturedProducts,
@@ -21,15 +18,10 @@ import {
   fetchPartners,
 } from "@/lib/cms/content";
 import CmsImage from "../components/CmsImage";
-import FooterServer from "../components/FooterServer";
 import HeroBackground from "../components/HeroBackground";
 
 function getPartnerLogoUrl(partner: Record<string, unknown>): string | null {
-  const logo = partner.logo;
-  if (!logo || typeof logo === "string" || typeof logo === "number") {
-    return null;
-  }
-  return getMediaUrl(logo as Parameters<typeof getMediaUrl>[0]);
+  return getMediaUrl(partner.logo);
 }
 
 export async function generateMetadata() {
@@ -42,9 +34,8 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
-  const payload = await getPayload({ config: configPromise });
+  const payload = await getCMSPayload();
   const locale = await getLocale();
-  const siteCopy = getSiteCopy(locale);
 
   const [homepageContent, featuredServices, faqItems, newsItems, partners] =
     await Promise.all([
@@ -61,8 +52,6 @@ export default async function Home() {
   const secondRowPartners = partners.slice(2, 5);
   const thirdRowPartners = partners.slice(5, 8);
 
-  const defaultIntroImage = "/al-and images/close-up-glass-water-pen.jpg";
-
   const servicesHeadline = locale === "ar" ? "خدماتنا" : "OUR\nSERVICES";
   const viewAllServicesLabel = locale === "ar" ? "عرض جميع الخدمات" : "View all services";
   const newsLabel = locale === "ar" ? "( الأخبار )" : "( News )";
@@ -73,12 +62,7 @@ export default async function Home() {
   const viewAllPartnersLabel = locale === "ar" ? "عرض جميع الشركاء" : "View all partners";
 
   return (
-    <>
-      <Loader />
-      <SmoothScroll>
-        <GSAPAnimations />
-        <HeaderServer />
-
+    <PageShell>
         {/* ═══════════════ HERO SECTION ═══════════════ */}
         <div className="hero-track" id="hero">
           <section className="hero">
@@ -125,7 +109,7 @@ export default async function Home() {
               <ScrollReveal delay={2}>
                 <CmsImage
                   src={intro.imageUrl}
-                  fallbackSrc={defaultIntroImage}
+                  fallbackSrc={IMAGE_FALLBACKS.intro}
                   alt="Al Andalus"
                   width={300}
                   height={188}
@@ -144,7 +128,7 @@ export default async function Home() {
             <div className="story__images">
               <CmsImage
                 src={story.imageLargeUrl}
-                fallbackSrc="/al-and images/IMG_6081.JPG"
+                fallbackSrc={IMAGE_FALLBACKS.storyLarge}
                 alt="Story large image"
                 width={640}
                 height={900}
@@ -153,7 +137,7 @@ export default async function Home() {
               />
               <CmsImage
                 src={story.imageSmallUrl}
-                fallbackSrc="/al-and images/3cec34a2-2758-4570-910e-32a896e080de.jpg"
+                fallbackSrc={IMAGE_FALLBACKS.storySmall}
                 alt="Story small image"
                 width={300}
                 height={280}
@@ -318,12 +302,12 @@ export default async function Home() {
 
           <div className="vs-grid">
             {[
-              { src: homepageContent.whyUs.img1Url, fallback: "/al-and images/conference-1.jpg" },
-              { src: homepageContent.whyUs.img2Url, fallback: "/al-and images/conference-2.jpg" },
-              { src: homepageContent.whyUs.img3Url, fallback: "/al-and images/conference-3.jpg" },
-              { src: homepageContent.whyUs.img4Url, fallback: "/al-and images/conference-4.jpg" },
-              { src: homepageContent.whyUs.img5Url, fallback: "/al-and images/IMG_5713.JPG" },
-              { src: homepageContent.whyUs.img6Url, fallback: "/al-and images/IMG_6081.JPG" },
+              { src: homepageContent.whyUs.img1Url, fallback: IMAGE_FALLBACKS.whyUs1 },
+              { src: homepageContent.whyUs.img2Url, fallback: IMAGE_FALLBACKS.whyUs2 },
+              { src: homepageContent.whyUs.img3Url, fallback: IMAGE_FALLBACKS.whyUs3 },
+              { src: homepageContent.whyUs.img4Url, fallback: IMAGE_FALLBACKS.whyUs4 },
+              { src: homepageContent.whyUs.img5Url, fallback: IMAGE_FALLBACKS.whyUs5 },
+              { src: homepageContent.whyUs.img6Url, fallback: IMAGE_FALLBACKS.whyUs6 },
             ].map((img, idx) => (
               <div className="vs-card" key={idx}>
                 <CmsImage
@@ -534,10 +518,7 @@ export default async function Home() {
         {/* ═══════════════ FAQ ═══════════════ */}
         <FAQ items={faqItems} />
 
-        <ContactCtaServer />
-
-        <FooterServer />
-      </SmoothScroll>
-    </>
+        <ApplicationSection isHomepage />
+    </PageShell>
   );
 }
