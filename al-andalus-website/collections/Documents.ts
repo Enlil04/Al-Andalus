@@ -28,6 +28,8 @@ export const Documents: CollectionConfig = {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ],
     staticDir: documentsDir,
+    // Same proxy-related safe-fetch issue as Media; see comment there.
+    skipSafeFetch: true,
   },
   admin: {
     useAsTitle: "title",

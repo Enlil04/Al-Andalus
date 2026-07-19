@@ -19,6 +19,11 @@ export const Media: CollectionConfig = {
     mimeTypes: ["image/*", "video/*"],
     // Absolute path so Hostinger volume mounts resolve correctly regardless of cwd.
     staticDir: mediaDir,
+    // Replacing the file of an existing media doc makes Payload re-fetch the
+    // current file from its own URL; behind Hostinger's proxy that request is
+    // blocked by the SSRF safe-fetch check and the upload fails. Only
+    // authenticated editors can upload, so skipping the check is acceptable.
+    skipSafeFetch: true,
     imageSizes: [
       {
         name: "thumbnail",
