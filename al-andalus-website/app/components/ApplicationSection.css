@@ -1,30 +1,29 @@
 /* ═══════════════ APPLICATION APP-DOWNLOAD BANNER ═══════════════ */
 
 .application-page__section {
-  padding: calc(var(--header-height) + var(--space-16)) var(--space-6) var(--space-24);
+  padding: calc(var(--header-height) + var(--space-12)) var(--space-6) var(--space-16);
   background: var(--white);
   position: relative;
   overflow: visible;
 }
 
 .application-page__section.is-homepage {
-  padding: var(--space-24) var(--space-6) var(--space-20);
+  padding: var(--space-16) var(--space-6) var(--space-16);
 }
 
 @media (max-width: 900px) {
   .application-page__section.is-homepage {
-    padding: var(--space-16) var(--space-4);
+    padding: var(--space-12) var(--space-4);
   }
 }
 
-/* Rounded brand-navy banner. Overflow stays visible so the phones can
-   bleed past the rounded edge like the reference layout. */
+/* Compact horizontal navy banner — phones may bleed past the edges */
 .app-banner {
   position: relative;
   max-width: var(--max-width, 1200px);
   margin: 0 auto;
-  border-radius: 36px;
-  padding: clamp(2.5rem, 5vw, 4.5rem) clamp(1.75rem, 5vw, 5rem);
+  border-radius: 28px;
+  padding: clamp(1.75rem, 3.2vw, 2.5rem) clamp(1.5rem, 4vw, 3.25rem);
   overflow: visible;
 }
 
@@ -55,7 +54,7 @@ html[dir="rtl"] .app-banner__pattern {
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  column-gap: var(--space-10);
+  column-gap: var(--space-8);
   align-items: center;
 }
 
@@ -65,12 +64,12 @@ html[dir="rtl"] .app-banner__pattern {
   grid-column: 1 / span 7;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-3);
 }
 
 .app-banner__eyebrow {
   font-size: 12px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--gold-400);
   font-weight: 800;
@@ -82,7 +81,7 @@ html[dir="rtl"] .app-banner__eyebrow {
 }
 
 .app-banner__title {
-  font-size: clamp(2.25rem, 4.2vw, 3.75rem);
+  font-size: clamp(2.1rem, 3.6vw, 3.15rem);
   line-height: 1.12;
   font-weight: 700;
   color: var(--white);
@@ -97,15 +96,15 @@ html[dir="rtl"] .app-banner__title {
 .app-banner__title .ah-word {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
-  padding-top: 0.15em !important;
-  padding-bottom: 0.15em !important;
+  padding-top: 0.1em !important;
+  padding-bottom: 0.1em !important;
 }
 
 .app-banner__desc {
   font-size: var(--text-base);
-  line-height: 1.75;
+  line-height: 1.65;
   color: rgba(221, 228, 236, 0.78);
-  max-width: 46ch;
+  max-width: 44ch;
 }
 
 /* ═══════════════ ACTIONS: BUTTONS + QR ═══════════════ */
@@ -114,8 +113,8 @@ html[dir="rtl"] .app-banner__title {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-6);
-  margin-top: var(--space-8);
+  gap: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 .app-banner__buttons {
@@ -125,19 +124,19 @@ html[dir="rtl"] .app-banner__title {
 }
 
 .app-store-badge {
-  border-radius: 14px;
-  padding: 11px 20px;
+  border-radius: 12px;
+  padding: 8px 16px;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   text-decoration: none;
   border: 1px solid rgba(255, 255, 255, 0.55);
   background: var(--white);
   color: var(--navy-900);
-  box-shadow: 0 10px 28px rgba(4, 12, 22, 0.18);
+  box-shadow: 0 8px 22px rgba(4, 12, 22, 0.16);
   transition: all var(--duration-normal) var(--ease-out-expo);
   cursor: pointer;
-  min-width: 168px;
+  min-width: 148px;
 }
 
 .app-store-badge:hover {
@@ -176,7 +175,7 @@ html[dir="rtl"] .app-badge-text {
 }
 
 .app-badge-main {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
   color: var(--navy-900);
@@ -193,17 +192,17 @@ html[dir="rtl"] .app-badge-text {
 .app-qr-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
-  border-radius: 14px;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.55);
   background: var(--white);
   color: var(--navy-900);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 28px rgba(4, 12, 22, 0.18);
+  box-shadow: 0 8px 22px rgba(4, 12, 22, 0.16);
   transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
@@ -303,12 +302,11 @@ html[dir="rtl"] .app-badge-text {
 
 .iphone-stage {
   position: relative;
-  width: min(340px, 34vw);
-  /* Bleed above and below the navy card */
-  margin-top: calc(clamp(2.5rem, 5vw, 4.5rem) * -1 - 2.5rem);
-  margin-bottom: calc(clamp(2.5rem, 5vw, 4.5rem) * -1 - 2rem);
-  /* Nudge toward the outer edge of the banner */
-  margin-inline-start: 1rem;
+  /* Sized so the navy card stays compact while phones still overflow */
+  width: min(250px, 24vw);
+  margin-top: calc(clamp(1.75rem, 3.2vw, 2.5rem) * -1 - 1.75rem);
+  margin-bottom: calc(clamp(1.75rem, 3.2vw, 2.5rem) * -1 - 1.5rem);
+  margin-inline-start: 0.5rem;
 }
 
 .iphone {
@@ -593,17 +591,17 @@ html[dir="rtl"] .iphone {
   }
 
   .iphone-stage {
-    width: min(300px, 32vw);
+    width: min(230px, 26vw);
   }
 }
 
 @media (max-width: 900px) {
   .application-page__section {
-    padding: calc(var(--header-height) + var(--space-8)) var(--space-4) var(--space-16);
+    padding: calc(var(--header-height) + var(--space-8)) var(--space-4) var(--space-12);
   }
 
   .app-banner {
-    padding: clamp(2rem, 6vw, 3rem) clamp(1.25rem, 5vw, 2.5rem) 0;
+    padding: clamp(1.5rem, 4vw, 2rem) clamp(1.15rem, 4vw, 1.75rem) 0;
   }
 
   .app-banner__grid {
@@ -612,20 +610,20 @@ html[dir="rtl"] .iphone {
 
   .app-banner__content {
     grid-column: 1 / -1;
-    gap: var(--space-5);
+    gap: var(--space-3);
   }
 
   .app-banner__media {
     grid-column: 1 / -1;
-    margin-top: var(--space-12);
+    margin-top: var(--space-8);
   }
 
   .iphone-stage {
     margin-top: 0;
     margin-bottom: 0;
     margin-inline-start: 0;
-    width: min(260px, 72vw);
-    transform: translateY(clamp(1.5rem, 5vw, 2.5rem));
+    width: min(220px, 58vw);
+    transform: translateY(clamp(1rem, 4vw, 1.75rem));
   }
 
   .app-banner__actions {
@@ -655,7 +653,7 @@ html[dir="rtl"] .iphone {
   }
 
   .iphone-stage {
-    width: min(230px, 68vw);
+    width: min(200px, 60vw);
   }
 
   .iphone--front {
