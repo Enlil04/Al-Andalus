@@ -1,21 +1,59 @@
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
 import CmsImage from "./CmsImage";
+import AppDownloadQrButton from "./AppDownloadQrButton";
 import { getLocale } from "@/lib/locale";
 import { fetchPagesContent } from "@/lib/cms/content";
+import { generateAppDownloadQrDataUrl } from "@/lib/appDownloadQr";
 import "./ApplicationSection.css";
 
 interface ApplicationSectionProps {
   isHomepage?: boolean;
 }
 
+function IosStatusBar() {
+  return (
+    <div className="ios-status-bar" aria-hidden="true">
+      <span className="ios-status-bar__time">9:41</span>
+      <div className="ios-status-bar__icons">
+        <svg className="ios-status-bar__signal" viewBox="0 0 17 12" fill="currentColor">
+          <rect x="0" y="7.5" width="3" height="4.5" rx="0.5" />
+          <rect x="4.5" y="5" width="3" height="7" rx="0.5" />
+          <rect x="9" y="2.5" width="3" height="9.5" rx="0.5" />
+          <rect x="13.5" y="0" width="3" height="12" rx="0.5" />
+        </svg>
+        <svg className="ios-status-bar__wifi" viewBox="0 0 16 12" fill="currentColor">
+          <path d="M8 9.55a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Zm0-3.55c1.55 0 2.95.58 4.05 1.55l-1.2 1.25A4 4 0 0 0 8 7.7c-.95 0-1.8.32-2.5.9L4.3 7.35A5.6 5.6 0 0 1 8 6Zm0-3.35c2.4 0 4.55.9 6.25 2.4L13.1 6.2A7.3 7.3 0 0 0 8 4.35c-2 0-3.8.7-5.2 1.85L1.65 4.95A9.3 9.3 0 0 1 8 2.65Z" />
+        </svg>
+        <div className="ios-status-bar__battery" title="100%">
+          <div className="ios-status-bar__battery-body">
+            <div className="ios-status-bar__battery-level" />
+          </div>
+          <div className="ios-status-bar__battery-cap" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function ApplicationSection({ isHomepage = false }: ApplicationSectionProps) {
   const locale = await getLocale();
   const pages = await fetchPagesContent();
   const cms = pages.application;
+  const qrDataUrl = await generateAppDownloadQrDataUrl();
 
   const eyebrow =
     locale === "ar" ? "متوفر الآن على جميع المتاجر" : "NOW AVAILABLE ON ALL STORES";
+
+  const qrButtonLabel =
+    locale === "ar" ? "مسح رمز QR" : "Scan QR code";
+  const qrModalTitle =
+    locale === "ar" ? "امسح للتحميل" : "Scan to download";
+  const qrModalHint =
+    locale === "ar"
+      ? "يفتح متجر جهازك تلقائياً — App Store أو Google Play أو AppGallery"
+      : "Opens your device store automatically — App Store, Google Play, or AppGallery";
+  const closeLabel = locale === "ar" ? "إغلاق" : "Close";
 
   const descriptionText = cms.paragraphs[0] || (
     locale === "ar"
@@ -45,33 +83,43 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
           </svg>
         )
       };
-    } else {
-      return {
-        sub: isAr ? "استكشفه على" : "Explore it on",
-        main: downloadLabel,
-        icon: (
-          <svg className="app-badge-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2.2c-.4 1.8-1.7 3.3-3.4 4.1 1.7.8 3 2.3 3.4 4.1.4-1.8 1.7-3.3 3.4-4.1-1.7-.8-3-2.3-3.4-4.1zm0 11.4c-.4 1.8-1.7 3.3-3.4 4.1 1.7.8 3 2.3 3.4 4.1.4-1.8 1.7-3.3 3.4-4.1-1.7-.8-3-2.3-3.4-4.1zM5.5 8.3c-1.9.1-3.6 1.2-4.4 2.9 1.7.8 2.8 2.4 2.9 4.3.8-1.7 2.4-2.8 4.3-2.9-1.7-.8-2.8-2.5-2.8-4.3zm13 0c0 1.8-1.1 3.5-2.8 4.3 1.9.1 3.5 1.2 4.3 2.9.1-1.9 1.2-3.5 2.9-4.3-.8-1.7-2.5-2.8-4.4-2.9zM5.5 15.7c0-1.8 1.1-3.5 2.8-4.3-1.9-.1-3.5-1.2-4.3-2.9-.1 1.9-1.2 3.5-2.9 4.3.8 1.7 2.5 2.8 4.4 2.9zm13 0c1.9-.1 3.6-1.2 4.4-2.9-1.7-.8-2.8-2.4-2.9-4.3-.8 1.7-2.4 2.8-4.3 2.9 1.7.8 2.8 2.5 2.8 4.3z" />
-          </svg>
-        )
-      };
     }
+
+    return {
+      sub: isAr ? "استكشفه على" : "Explore it on",
+      main: downloadLabel,
+      icon: (
+        <svg className="app-badge-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2.2c-.4 1.8-1.7 3.3-3.4 4.1 1.7.8 3 2.3 3.4 4.1.4-1.8 1.7-3.3 3.4-4.1-1.7-.8-3-2.3-3.4-4.1zm0 11.4c-.4 1.8-1.7 3.3-3.4 4.1 1.7.8 3 2.3 3.4 4.1.4-1.8 1.7-3.3 3.4-4.1-1.7-.8-3-2.3-3.4-4.1zM5.5 8.3c-1.9.1-3.6 1.2-4.4 2.9 1.7.8 2.8 2.4 2.9 4.3.8-1.7 2.4-2.8 4.3-2.9-1.7-.8-2.8-2.5-2.8-4.3zm13 0c0 1.8-1.1 3.5-2.8 4.3 1.9.1 3.5 1.2 4.3 2.9.1-1.9 1.2-3.5 2.9-4.3-.8-1.7-2.5-2.8-4.4-2.9zM5.5 15.7c0-1.8 1.1-3.5 2.8-4.3-1.9-.1-3.5-1.2-4.3-2.9-.1 1.9-1.2 3.5-2.9 4.3.8 1.7 2.5 2.8 4.4 2.9zm13 0c1.9-.1 3.6-1.2 4.4-2.9-1.7-.8-2.8-2.4-2.9-4.3-.8 1.7-2.4 2.8-4.3 2.9 1.7.8 2.8 2.5 2.8 4.3z" />
+        </svg>
+      )
+    };
   };
 
   const renderPhone = (variant: "front" | "back") => (
-    <div className={`app-phone-mockup app-phone-mockup--${variant}`}>
-      <div className="app-phone-speaker" />
-      <div className="app-phone-notch" />
-      <div className="app-phone-reflection" />
-      <div className="app-phone-screen">
-        <CmsImage
-          src={cms.imageUrl ?? "/al-and images/application.jpeg"}
-          fallbackSrc="/al-and images/application.jpeg"
-          alt={cms.title}
-          width={460}
-          height={1024}
-          priority={!isHomepage && variant === "front"}
-        />
+    <div className={`iphone iphone--${variant}`}>
+      <div className="iphone__btn iphone__btn--silent" aria-hidden="true" />
+      <div className="iphone__btn iphone__btn--vol-up" aria-hidden="true" />
+      <div className="iphone__btn iphone__btn--vol-down" aria-hidden="true" />
+      <div className="iphone__btn iphone__btn--power" aria-hidden="true" />
+      <div className="iphone__frame">
+        <div className="iphone__screen">
+          <div className="iphone__island" aria-hidden="true">
+            <span className="iphone__island-lens" />
+          </div>
+          <IosStatusBar />
+          <div className="iphone__app">
+            <CmsImage
+              src={cms.imageUrl ?? "/al-and images/application.jpeg"}
+              fallbackSrc="/al-and images/application.jpeg"
+              alt={cms.title}
+              width={460}
+              height={1024}
+              priority={!isHomepage && variant === "front"}
+            />
+          </div>
+          <div className="iphone__home-bar" aria-hidden="true" />
+        </div>
       </div>
     </div>
   );
@@ -79,7 +127,6 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
   return (
     <section className={`application-page__section ${isHomepage ? "is-homepage" : ""}`.trim()}>
       <div className="app-banner">
-        {/* Clipped background layer: brand navy + arabesque pattern */}
         <div className="app-banner__bg" aria-hidden="true">
           <svg className="app-banner__pattern" viewBox="0 0 500 500" fill="none" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="1">
             <circle cx="250" cy="250" r="240" />
@@ -94,7 +141,6 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
         </div>
 
         <div className="app-banner__grid">
-          {/* Text column */}
           <div className="app-banner__content">
             <ScrollReveal>
               <span className="app-banner__eyebrow">{eyebrow}</span>
@@ -111,52 +157,58 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
               <p className="app-banner__desc">{descriptionText}</p>
             </ScrollReveal>
 
-            <div className="app-banner__buttons">
-              {cms.downloads.map((download, index) => {
-                const badge = getBadgeDetails(index, download.label);
-                const variantClass = index === 0 ? "app-store-badge--solid-red" : "app-store-badge--outline-light";
+            <div className="app-banner__actions">
+              <div className="app-banner__buttons">
+                {cms.downloads.map((download, index) => {
+                  const badge = getBadgeDetails(index, download.label);
 
-                return download.url ? (
-                  <ScrollReveal key={download.label} delay={3 + index}>
-                    <a
-                      href={download.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`app-store-badge ${variantClass}`}
-                    >
-                      {badge.icon}
-                      <div className="app-badge-text">
-                        <span className="app-badge-sub">{badge.sub}</span>
-                        <span className="app-badge-main">{badge.main}</span>
-                      </div>
-                    </a>
-                  </ScrollReveal>
-                ) : (
-                  <ScrollReveal key={download.label} delay={3 + index}>
-                    <span
-                      className={`app-store-badge ${variantClass} app-store-badge--disabled`}
-                      aria-disabled="true"
-                    >
-                      {badge.icon}
-                      <div className="app-badge-text">
-                        <span className="app-badge-sub">{badge.sub}</span>
-                        <span className="app-badge-main">{badge.main}</span>
-                      </div>
-                    </span>
-                  </ScrollReveal>
-                );
-              })}
+                  return download.url ? (
+                    <ScrollReveal key={download.label} delay={3 + index}>
+                      <a
+                        href={download.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="app-store-badge"
+                      >
+                        {badge.icon}
+                        <div className="app-badge-text">
+                          <span className="app-badge-sub">{badge.sub}</span>
+                          <span className="app-badge-main">{badge.main}</span>
+                        </div>
+                      </a>
+                    </ScrollReveal>
+                  ) : (
+                    <ScrollReveal key={download.label} delay={3 + index}>
+                      <span
+                        className="app-store-badge app-store-badge--disabled"
+                        aria-disabled="true"
+                      >
+                        {badge.icon}
+                        <div className="app-badge-text">
+                          <span className="app-badge-sub">{badge.sub}</span>
+                          <span className="app-badge-main">{badge.main}</span>
+                        </div>
+                      </span>
+                    </ScrollReveal>
+                  );
+                })}
+              </div>
+
+              <AppDownloadQrButton
+                qrDataUrl={qrDataUrl}
+                buttonLabel={qrButtonLabel}
+                modalTitle={qrModalTitle}
+                modalHint={qrModalHint}
+                closeLabel={closeLabel}
+              />
             </div>
           </div>
 
-          {/* Media column: two overlapping phones bleeding out of the banner */}
           <div className="app-banner__media">
-            <ScrollReveal delay={1.5}>
-              <div className="app-phone-duo">
-                {renderPhone("back")}
-                {renderPhone("front")}
-              </div>
-            </ScrollReveal>
+            <div className="iphone-stage">
+              {renderPhone("back")}
+              {renderPhone("front")}
+            </div>
           </div>
         </div>
       </div>
