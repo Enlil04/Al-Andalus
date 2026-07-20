@@ -434,7 +434,10 @@ export const Pages: GlobalConfig = {
                 {
                   type: "group",
                   name: "downloadDirect",
-                  label: { en: "Download Button 3 (Direct)", ar: "زر التحميل 3 (مباشر)" },
+                  label: {
+                    en: "Download Button 3 (Huawei AppGallery)",
+                    ar: "زر التحميل 3 (هواوي آب غاليري)",
+                  },
                   fields: [
                     languageTabs(
                       [{ name: "labelEn", type: "text", label: "Button Label" }],
@@ -443,11 +446,11 @@ export const Pages: GlobalConfig = {
                     {
                       name: "url",
                       type: "text",
-                      label: { en: "Download Link", ar: "رابط التحميل" },
+                      label: { en: "AppGallery Link", ar: "رابط آب غاليري" },
                       admin: {
                         description: {
-                          en: "Leave empty to hide this button.",
-                          ar: "اتركه فارغاً لإخفاء هذا الزر.",
+                          en: "Huawei AppGallery store URL. Leave empty to show as Coming Soon.",
+                          ar: "رابط متجر هواوي آب غاليري. اتركه فارغاً لإظهار الزر كـ «قريباً».",
                         },
                       },
                     },

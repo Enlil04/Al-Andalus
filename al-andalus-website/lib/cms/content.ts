@@ -651,7 +651,7 @@ export const fetchPagesContent = cache(async function fetchPagesContent(payload?
         [
           ["downloadIos", currentLocale === "ar" ? "آب ستور" : "App Store"],
           ["downloadAndroid", currentLocale === "ar" ? "جوجل بلاي" : "Google Play"],
-          ["downloadDirect", currentLocale === "ar" ? "تحميل مباشر" : "Direct Download"],
+          ["downloadDirect", currentLocale === "ar" ? "آب غاليري" : "AppGallery"],
         ] as const
       ).map(([key, fallbackLabel]) => {
         const button = (application?.[key] ?? null) as Record<

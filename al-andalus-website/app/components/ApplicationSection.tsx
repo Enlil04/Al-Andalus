@@ -1,7 +1,6 @@
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
 import CmsImage from "./CmsImage";
-import LogoSVG from "./LogoSVG";
 import { getLocale } from "@/lib/locale";
 import { fetchPagesContent } from "@/lib/cms/content";
 import "./ApplicationSection.css";
@@ -15,9 +14,8 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
   const pages = await fetchPagesContent();
   const cms = pages.application;
 
-  const eyebrow = locale === "ar" ? "تغطية ذكية. راحة بال تامة." : "SMART COVER. TOTAL PEACE OF MIND.";
-  const downloadLabel = locale === "ar" ? "تحميل التطبيق" : "DOWNLOAD THE APPLICATION";
-  const comingSoon = locale === "ar" ? "قريباً" : "Soon";
+  const eyebrow =
+    locale === "ar" ? "متوفر الآن على جميع المتاجر" : "NOW AVAILABLE ON ALL STORES";
 
   const descriptionText = cms.paragraphs[0] || (
     locale === "ar"
@@ -25,66 +23,6 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
       : "Manage your car insurance with ease. Get instant quotes, file claims in minutes, and drive with confidence."
   );
 
-  // Trust badges details (checkmark shield, customer support headset, licensed padlock shield)
-  const trustItems = locale === "ar" ? [
-    {
-      label: "موثوق من الآلاف",
-      icon: (
-        <svg className="app-trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          <polyline points="9 11 11 13 15 9" />
-        </svg>
-      )
-    },
-    {
-      label: "دعم فني 24/7",
-      icon: (
-        <svg className="app-trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-          <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-        </svg>
-      )
-    },
-    {
-      label: "مرخص لحمايتك",
-      icon: (
-        <svg className="app-trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
-      )
-    }
-  ] : [
-    {
-      label: "Trusted by thousands",
-      icon: (
-        <svg className="app-trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          <polyline points="9 11 11 13 15 9" />
-        </svg>
-      )
-    },
-    {
-      label: "24/7 Customer support",
-      icon: (
-        <svg className="app-trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-          <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-        </svg>
-      )
-    },
-    {
-      label: "Licensed & regulated for your protection",
-      icon: (
-        <svg className="app-trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
-      )
-    }
-  ];
-
-  // Helper function to render store badges
   const getBadgeDetails = (index: number, downloadLabel: string) => {
     const isAr = locale === "ar";
     if (index === 0) {
@@ -109,78 +47,77 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
       };
     } else {
       return {
-        sub: isAr ? "تنزيل مباشر" : "Direct APK",
+        sub: isAr ? "استكشفه على" : "Explore it on",
         main: downloadLabel,
         icon: (
-          <svg className="app-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
+          <svg className="app-badge-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.2c-.4 1.8-1.7 3.3-3.4 4.1 1.7.8 3 2.3 3.4 4.1.4-1.8 1.7-3.3 3.4-4.1-1.7-.8-3-2.3-3.4-4.1zm0 11.4c-.4 1.8-1.7 3.3-3.4 4.1 1.7.8 3 2.3 3.4 4.1.4-1.8 1.7-3.3 3.4-4.1-1.7-.8-3-2.3-3.4-4.1zM5.5 8.3c-1.9.1-3.6 1.2-4.4 2.9 1.7.8 2.8 2.4 2.9 4.3.8-1.7 2.4-2.8 4.3-2.9-1.7-.8-2.8-2.5-2.8-4.3zm13 0c0 1.8-1.1 3.5-2.8 4.3 1.9.1 3.5 1.2 4.3 2.9.1-1.9 1.2-3.5 2.9-4.3-.8-1.7-2.5-2.8-4.4-2.9zM5.5 15.7c0-1.8 1.1-3.5 2.8-4.3-1.9-.1-3.5-1.2-4.3-2.9-.1 1.9-1.2 3.5-2.9 4.3.8 1.7 2.5 2.8 4.4 2.9zm13 0c1.9-.1 3.6-1.2 4.4-2.9-1.7-.8-2.8-2.4-2.9-4.3-.8 1.7-2.4 2.8-4.3 2.9 1.7.8 2.8 2.5 2.8 4.3z" />
           </svg>
         )
       };
     }
   };
 
+  const renderPhone = (variant: "front" | "back") => (
+    <div className={`app-phone-mockup app-phone-mockup--${variant}`}>
+      <div className="app-phone-speaker" />
+      <div className="app-phone-notch" />
+      <div className="app-phone-reflection" />
+      <div className="app-phone-screen">
+        <CmsImage
+          src={cms.imageUrl ?? "/al-and images/application.jpeg"}
+          fallbackSrc="/al-and images/application.jpeg"
+          alt={cms.title}
+          width={460}
+          height={1024}
+          priority={!isHomepage && variant === "front"}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <section className={`application-page__section ${isHomepage ? "is-homepage" : ""}`.trim()}>
-      {/* Islamic Arabesque Geometric Background Pattern */}
-      <div className="application-page__bg-pattern-container">
-        <svg className="application-page__bg-pattern" viewBox="0 0 500 500" fill="none" stroke="rgba(11, 34, 61, 0.03)" strokeWidth="1">
-          <circle cx="250" cy="250" r="240" />
-          <circle cx="250" cy="250" r="200" />
-          <circle cx="250" cy="250" r="160" />
-          <rect x="68" y="68" width="364" height="364" transform="rotate(45 250 250)" />
-          <rect x="68" y="68" width="364" height="364" />
-          <rect x="68" y="68" width="364" height="364" transform="rotate(22.5 250 250)" />
-          <rect x="68" y="68" width="364" height="364" transform="rotate(67.5 250 250)" />
-          <path d="M 250 0 L 250 500 M 0 250 L 500 250 M 73 73 L 427 427 M 73 427 L 427 73" />
-        </svg>
-      </div>
+      <div className="app-banner">
+        {/* Clipped background layer: brand navy + arabesque pattern */}
+        <div className="app-banner__bg" aria-hidden="true">
+          <svg className="app-banner__pattern" viewBox="0 0 500 500" fill="none" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="1">
+            <circle cx="250" cy="250" r="240" />
+            <circle cx="250" cy="250" r="200" />
+            <circle cx="250" cy="250" r="160" />
+            <rect x="68" y="68" width="364" height="364" transform="rotate(45 250 250)" />
+            <rect x="68" y="68" width="364" height="364" />
+            <rect x="68" y="68" width="364" height="364" transform="rotate(22.5 250 250)" />
+            <rect x="68" y="68" width="364" height="364" transform="rotate(67.5 250 250)" />
+            <path d="M 250 0 L 250 500 M 0 250 L 500 250 M 73 73 L 427 427 M 73 427 L 427 73" />
+          </svg>
+        </div>
 
-      <div className="application-page__grid">
-        {/* Left content column */}
-        <div className="application-page__content">
-          {/* Red Al-Andalus outline emblem logo */}
-          <ScrollReveal>
-            <div className="application-page__logo-container">
-              <LogoSVG variant="dark" className="application-page__logo-mark" />
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={1}>
-            <span className="application-page__eyebrow">
-              {eyebrow}
-            </span>
-          </ScrollReveal>
-          
-          <AnimatedHeadline
-            title={cms.title}
-            className="application-page__title"
-            immediate
-            delay={0.8}
-          />
-          
-          <ScrollReveal delay={2}>
-            <p className="application-page__desc">{descriptionText}</p>
-          </ScrollReveal>
-
-          {/* Download Buttons Section */}
-          <div className="application-page__downloads-container">
-            <ScrollReveal delay={3}>
-              <span className="application-page__downloads-label">
-                {downloadLabel}
-              </span>
+        <div className="app-banner__grid">
+          {/* Text column */}
+          <div className="app-banner__content">
+            <ScrollReveal>
+              <span className="app-banner__eyebrow">{eyebrow}</span>
             </ScrollReveal>
-            
-            <div className="application-page__buttons">
+
+            <AnimatedHeadline
+              title={cms.title}
+              className="app-banner__title"
+              immediate
+              delay={0.8}
+            />
+
+            <ScrollReveal delay={2}>
+              <p className="app-banner__desc">{descriptionText}</p>
+            </ScrollReveal>
+
+            <div className="app-banner__buttons">
               {cms.downloads.map((download, index) => {
                 const badge = getBadgeDetails(index, download.label);
-                // Badge variants based on mockup: index 0 (App Store) is red, index 1 & 2 are outline white/red
-                const variantClass = index === 0 ? "app-store-badge--solid-red" : "app-store-badge--outline-red";
-                
+                const variantClass = index === 0 ? "app-store-badge--solid-red" : "app-store-badge--outline-light";
+
                 return download.url ? (
-                  <ScrollReveal key={download.label} delay={4 + index}>
+                  <ScrollReveal key={download.label} delay={3 + index}>
                     <a
                       href={download.url}
                       target="_blank"
@@ -195,7 +132,7 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
                     </a>
                   </ScrollReveal>
                 ) : (
-                  <ScrollReveal key={download.label} delay={4 + index}>
+                  <ScrollReveal key={download.label} delay={3 + index}>
                     <span
                       className={`app-store-badge ${variantClass} app-store-badge--disabled`}
                       aria-disabled="true"
@@ -205,9 +142,6 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
                         <span className="app-badge-sub">{badge.sub}</span>
                         <span className="app-badge-main">{badge.main}</span>
                       </div>
-                      <span className="app-badge-status-pill">
-                        {comingSoon}
-                      </span>
                     </span>
                   </ScrollReveal>
                 );
@@ -215,45 +149,15 @@ export default async function ApplicationSection({ isHomepage = false }: Applica
             </div>
           </div>
 
-          {/* Bottom trust row */}
-          <div className="application-page__trust-row">
-            {trustItems.map((item, index) => (
-              <ScrollReveal key={index} delay={7 + index}>
-                <div className="app-trust-item">
-                  <div className="app-trust-icon-container">
-                    {item.icon}
-                  </div>
-                  <span className="app-trust-label">{item.label}</span>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-
-        {/* Right media column with phone */}
-        <div className="application-page__media">
-          <ScrollReveal delay={1.5}>
-            <div className="app-phone-container">
-              <div className="app-phone-ambient-glow" />
-
-              {/* iPhone Frame */}
-              <div className="app-phone-mockup">
-                <div className="app-phone-speaker" />
-                <div className="app-phone-notch" />
-                <div className="app-phone-reflection" />
-                <div className="app-phone-screen">
-                  <CmsImage
-                    src={cms.imageUrl ?? "/al-and images/application.jpeg"}
-                    fallbackSrc="/al-and images/application.jpeg"
-                    alt={cms.title}
-                    width={460}
-                    height={1024}
-                    priority={!isHomepage}
-                  />
-                </div>
+          {/* Media column: two overlapping phones bleeding out of the banner */}
+          <div className="app-banner__media">
+            <ScrollReveal delay={1.5}>
+              <div className="app-phone-duo">
+                {renderPhone("back")}
+                {renderPhone("front")}
               </div>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
+          </div>
         </div>
       </div>
     </section>

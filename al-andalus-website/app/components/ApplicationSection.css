@@ -1,178 +1,161 @@
-/* ═══════════════ APPLICATION PAGE REDESIGN ═══════════════ */
+/* ═══════════════ APPLICATION APP-DOWNLOAD BANNER ═══════════════ */
 
 .application-page__section {
-  padding: calc(var(--header-height) + var(--space-12)) var(--space-6) var(--space-24);
+  padding: calc(var(--header-height) + var(--space-16)) var(--space-6) var(--space-24);
   background: var(--white);
   position: relative;
-  overflow: hidden;
 }
 
 .application-page__section.is-homepage {
-  padding: var(--space-24) var(--space-6);
+  padding: var(--space-24) var(--space-6) var(--space-20);
 }
 
 @media (max-width: 900px) {
   .application-page__section.is-homepage {
-    padding: var(--space-16) var(--space-6);
+    padding: var(--space-16) var(--space-4);
   }
 }
 
+/* Rounded brand-navy banner. Overflow stays visible so the phones can
+   bleed past the rounded edge like the reference layout. */
+.app-banner {
+  position: relative;
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+  border-radius: 36px;
+  padding: clamp(2.5rem, 5vw, 4.5rem) clamp(1.75rem, 5vw, 5rem);
+}
 
-/* Watermark geometric pattern container */
-.application-page__bg-pattern-container {
+/* Clipped background layer (brand navy + arabesque watermark) */
+.app-banner__bg {
   position: absolute;
-  top: 0;
-  right: 0;
-  pointer-events: none;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  background: var(--navy-900);
+  box-shadow: 0 30px 80px rgba(11, 34, 61, 0.25);
   z-index: 0;
 }
 
-.application-page__bg-pattern {
-  width: min(500px, 45vw);
+.app-banner__pattern {
+  position: absolute;
+  inset-inline-start: -120px;
+  bottom: -160px;
+  width: min(520px, 60vw);
   height: auto;
-  opacity: 0.85;
 }
 
-html[dir="rtl"] .application-page__bg-pattern-container {
-  right: auto;
-  left: 0;
+html[dir="rtl"] .app-banner__pattern {
   transform: scaleX(-1);
 }
 
-.application-page__grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: var(--space-12);
-  max-width: var(--max-width, 1200px);
-  margin: 0 auto;
-  align-items: center;
+.app-banner__grid {
   position: relative;
   z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--space-10);
+  align-items: center;
 }
 
-.application-page__content {
-  grid-column: 1 / span 6;
+/* ═══════════════ TEXT COLUMN ═══════════════ */
+
+.app-banner__content {
+  grid-column: 1 / span 7;
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
 }
 
-/* Emblem Logo */
-.application-page__logo-container {
-  width: 52px;
-  height: 52px;
-  margin-bottom: var(--space-1);
-}
-
-.application-page__logo-mark {
-  --navy-900: var(--red-500);
-  --light-100: var(--red-500);
-  display: block;
-}
-
-/* Eyebrow */
-.application-page__eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.18em;
+.app-banner__eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--red-500);
+  color: var(--gold-400);
   font-weight: 800;
   display: block;
 }
 
-/* Serif Title */
-.application-page__title {
-  font-size: clamp(2.5rem, 5vw, 4.25rem);
-  line-height: 1.1;
-  font-weight: 700;
-  color: var(--navy-900);
-  font-family: Georgia, serif;
+html[dir="rtl"] .app-banner__eyebrow {
+  letter-spacing: 0;
 }
 
-html[dir="rtl"] .application-page__title {
-  font-family: var(--font-ar), sans-serif;
+.app-banner__title {
+  font-size: clamp(2.25rem, 4.2vw, 3.75rem);
+  line-height: 1.12;
+  font-weight: 700;
+  color: var(--white);
+  font-family: var(--font-en);
+}
+
+html[dir="rtl"] .app-banner__title {
+  font-family: var(--font-ar);
   font-weight: 800;
 }
 
-.application-page__title .ah-word {
+.app-banner__title .ah-word {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
   padding-top: 0.15em !important;
   padding-bottom: 0.15em !important;
 }
 
-.application-page__desc {
+.app-banner__desc {
   font-size: var(--text-base);
-  line-height: 1.7;
-  color: var(--gray-500);
-  max-width: 50ch;
-  margin-bottom: var(--space-2);
+  line-height: 1.75;
+  color: rgba(221, 228, 236, 0.78);
+  max-width: 46ch;
 }
 
 /* ═══════════════ DOWNLOAD STORE BADGES ═══════════════ */
 
-.application-page__downloads-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  margin-top: var(--space-2);
-}
-
-.application-page__downloads-label {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--navy-900);
-  font-weight: 800;
-}
-
-.application-page__buttons {
+.app-banner__buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  margin-top: var(--space-8);
 }
 
-/* High-fidelity store badge base */
 .app-store-badge {
   border-radius: 12px;
-  padding: 10px 24px;
+  padding: 10px 20px;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   text-decoration: none;
   border-width: 1.5px;
   border-style: solid;
-  box-shadow: 0 4px 15px rgba(212, 87, 78, 0.08);
   transition: all var(--duration-normal) var(--ease-out-expo);
   cursor: pointer;
-  min-width: 190px;
+  min-width: 170px;
 }
 
-/* Solid Red Variant (mockup App Store) */
+/* Primary — solid brand red */
 .app-store-badge--solid-red {
   background: var(--red-500);
   border-color: var(--red-500);
   color: var(--white);
+  box-shadow: 0 8px 25px rgba(212, 87, 78, 0.3);
 }
 
 .app-store-badge--solid-red:hover {
-  background: var(--red-600);
-  border-color: var(--red-600);
+  background: var(--red-400);
+  border-color: var(--red-400);
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(212, 87, 78, 0.25);
+  box-shadow: 0 12px 32px rgba(212, 87, 78, 0.4);
 }
 
-/* Outline Red Variant (mockup Google Play & Direct Download) */
-.app-store-badge--outline-red {
-  background: var(--white);
-  border-color: var(--red-500);
-  color: var(--red-500);
+/* Secondary — light outline on navy */
+.app-store-badge--outline-light {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(221, 228, 236, 0.35);
+  color: var(--white);
 }
 
-.app-store-badge--outline-red:hover {
-  background: var(--brand-pink-soft);
+.app-store-badge--outline-light:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(221, 228, 236, 0.65);
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(212, 87, 78, 0.18);
 }
 
 .app-badge-icon {
@@ -196,7 +179,7 @@ html[dir="rtl"] .app-badge-text {
   font-size: 9px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  opacity: 0.85;
+  opacity: 0.8;
   font-weight: 600;
   line-height: 1.1;
 }
@@ -209,166 +192,101 @@ html[dir="rtl"] .app-badge-text {
 
 /* Disabled badge styling */
 .app-store-badge--disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
-  position: relative;
 }
 
-.app-badge-status-pill {
-  position: absolute;
-  top: -8px;
-  right: 12px;
-  background: var(--brand-pink-soft);
-  color: var(--red-500);
-  font-size: 8px;
-  font-weight: 800;
-  padding: 1px 6px;
-  border-radius: 6px;
-  border: 1px solid var(--red-500);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1;
-}
+/* ═══════════════ PHONE DUO ═══════════════ */
 
-html[dir="rtl"] .app-badge-status-pill {
-  right: auto;
-  left: 12px;
-}
-
-/* ═══════════════ BOTTOM TRUST ROW ═══════════════ */
-
-.application-page__trust-row {
-  display: flex;
-  gap: var(--space-8);
-  align-items: center;
-  justify-content: flex-start;
-  margin-top: var(--space-8);
-  border-top: 1px solid var(--light-50);
-  padding-top: var(--space-6);
-  flex-wrap: wrap;
-}
-
-.app-trust-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.app-trust-icon-container {
-  color: var(--navy-900);
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.85;
-}
-
-.app-trust-icon {
-  width: 100%;
-  height: 100%;
-}
-
-.app-trust-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(11, 34, 61, 0.6);
-  letter-spacing: 0.03em;
-  line-height: 1;
-}
-
-/* ═══════════════ APP DEVICE MOCKUP & CARDS ═══════════════ */
-
-.application-page__media {
+.app-banner__media {
   grid-column: 8 / span 5;
+  position: relative;
   display: flex;
   justify-content: center;
-  position: relative;
+  align-self: stretch;
 }
 
-.app-phone-container {
+.app-phone-duo {
   position: relative;
-  width: 100%;
-  max-width: 320px;
-  perspective: 1200px;
-  z-index: 2;
+  width: min(280px, 100%);
+  /* Bleed past the banner's rounded edges, like the reference */
+  margin-top: calc(clamp(2.5rem, 5vw, 4.5rem) * -1 - 2rem);
+  margin-bottom: calc(clamp(2.5rem, 5vw, 4.5rem) * -1 - 1rem);
 }
 
-/* Tilted iPhone Frame to match mockup */
 .app-phone-mockup {
   position: relative;
   width: 100%;
   aspect-ratio: 9 / 19.5;
   background: #101418;
-  border: 11px solid #1c1c1e;
+  border: 10px solid #1c1c1e;
   border-radius: 46px;
-  box-shadow: 
-    -20px 30px 80px rgba(11, 34, 61, 0.16),
-    0 10px 25px rgba(11, 34, 61, 0.08),
+  box-shadow:
+    -24px 36px 70px rgba(4, 12, 22, 0.55),
     inset 0 0 4px rgba(255, 255, 255, 0.25);
   overflow: hidden;
-  transform-style: preserve-3d;
-  transform: rotate(-10deg) rotateY(-15deg) rotateX(8deg);
-  transition: transform 0.6s var(--ease-out-expo), box-shadow 0.6s var(--ease-out-expo);
+  transition: transform 0.6s var(--ease-out-expo);
 }
 
-.app-phone-mockup:hover {
-  transform: rotate(-8deg) rotateY(-10deg) rotateX(6deg) translateY(-6px) scale(1.02);
-  box-shadow: 
-    -25px 40px 95px rgba(11, 34, 61, 0.2),
-    0 12px 30px rgba(11, 34, 61, 0.1),
-    inset 0 0 6px rgba(255, 255, 255, 0.3);
+/* Front phone — main, tilted toward the text */
+.app-phone-mockup--front {
+  z-index: 2;
+  transform: rotate(-8deg);
 }
 
-/* RTL overrides for phone tilt symmetry */
-html[dir="rtl"] .app-phone-mockup {
-  transform: rotate(10deg) rotateY(15deg) rotateX(8deg);
-  box-shadow: 
-    20px 30px 80px rgba(11, 34, 61, 0.16),
-    0 10px 25px rgba(11, 34, 61, 0.08),
-    inset 0 0 4px rgba(255, 255, 255, 0.25);
-}
-
-html[dir="rtl"] .app-phone-mockup:hover {
-  transform: rotate(8deg) rotateY(10deg) rotateX(6deg) translateY(-6px) scale(1.02);
-  box-shadow: 
-    25px 40px 95px rgba(11, 34, 61, 0.2),
-    0 12px 30px rgba(11, 34, 61, 0.1),
-    inset 0 0 6px rgba(255, 255, 255, 0.3);
-}
-
-/* Ambient glow */
-.app-phone-ambient-glow {
+/* Back phone — offset behind, opposite tilt, slightly dimmed */
+.app-phone-mockup--back {
   position: absolute;
-  top: 5%;
-  left: 5%;
-  right: 5%;
-  bottom: 5%;
-  background: radial-gradient(circle, var(--brand-pink-soft) 0%, var(--brand-yellow-soft) 55%, transparent 80%);
-  filter: blur(60px);
-  opacity: 0.85;
-  z-index: -1;
-  transform: scale(1.25);
-  pointer-events: none;
-  animation: pulseGlow 12s ease-in-out infinite alternate;
+  top: 16%;
+  inset-inline-start: 52%;
+  width: 88%;
+  z-index: 1;
+  transform: rotate(9deg);
+  filter: brightness(0.8);
 }
 
-@keyframes pulseGlow {
-  0% { transform: scale(1.1) rotate(0deg); opacity: 0.65; }
-  100% { transform: scale(1.35) rotate(360deg); opacity: 0.9; }
+.app-phone-duo:hover .app-phone-mockup--front {
+  transform: rotate(-6deg) translateY(-8px);
+}
+
+.app-phone-duo:hover .app-phone-mockup--back {
+  transform: rotate(11deg) translateY(6px);
+}
+
+/* Mirror the composition in RTL so phones lean toward the text */
+html[dir="rtl"] .app-phone-mockup--front {
+  transform: rotate(8deg);
+}
+
+html[dir="rtl"] .app-phone-mockup--back {
+  transform: rotate(-9deg);
+}
+
+html[dir="rtl"] .app-phone-duo:hover .app-phone-mockup--front {
+  transform: rotate(6deg) translateY(-8px);
+}
+
+html[dir="rtl"] .app-phone-duo:hover .app-phone-mockup--back {
+  transform: rotate(-11deg) translateY(6px);
+}
+
+html[dir="rtl"] .app-phone-mockup {
+  box-shadow:
+    24px 36px 70px rgba(4, 12, 22, 0.55),
+    inset 0 0 4px rgba(255, 255, 255, 0.25);
 }
 
 /* Dynamic Island */
 .app-phone-notch {
   position: absolute;
-  top: 14px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 95px;
-  height: 25px;
+  width: 88px;
+  height: 23px;
   background: #000000;
-  border-radius: 15px;
+  border-radius: 14px;
   z-index: 10;
   border: 0.5px solid rgba(255, 255, 255, 0.08);
 }
@@ -376,7 +294,7 @@ html[dir="rtl"] .app-phone-mockup:hover {
 .app-phone-notch::after {
   content: '';
   position: absolute;
-  right: 18px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   width: 7px;
@@ -389,10 +307,10 @@ html[dir="rtl"] .app-phone-mockup:hover {
 /* Speaker bar */
 .app-phone-speaker {
   position: absolute;
-  top: 6px;
+  top: 5px;
   left: 50%;
   transform: translateX(-50%);
-  width: 44px;
+  width: 42px;
   height: 3px;
   background: #2c2c2e;
   border-radius: 2px;
@@ -401,14 +319,7 @@ html[dir="rtl"] .app-phone-mockup:hover {
 
 /* Glass screen reflection overlay */
 .app-phone-reflection {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0) 100%);
-  pointer-events: none;
-  z-index: 5;
+  display: none;
 }
 
 .app-phone-screen {
@@ -426,237 +337,73 @@ html[dir="rtl"] .app-phone-mockup:hover {
   height: 100%;
   object-fit: cover;
   border-radius: 34px;
-  transition: transform 0.6s var(--ease-out-expo);
-}
-
-/* ═══════════════ FLOATING CARDS ═══════════════ */
-
-.app-floating-card {
-  position: absolute;
-  z-index: 5;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(11, 34, 61, 0.08);
-  border-radius: 16px;
-  padding: var(--space-4) var(--space-5);
-  box-shadow: 
-    0 20px 40px rgba(11, 34, 61, 0.06), 
-    0 5px 15px rgba(11, 34, 61, 0.03);
-  width: 175px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--space-2);
-  animation: floatCard 6s ease-in-out infinite alternate;
-}
-
-@keyframes floatCard {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-8px); }
-}
-
-/* Animations delays offset */
-.card--left {
-  left: -175px;
-  top: 14%;
-  animation-delay: 0s;
-}
-
-.card--right-top {
-  right: -175px;
-  top: 36%;
-  animation-delay: 1.5s;
-}
-
-.card--right-bottom {
-  right: -175px;
-  top: 72%;
-  animation-delay: 3s;
-}
-
-/* RTL overrides for cards coordinates */
-html[dir="rtl"] .card--left {
-  left: auto;
-  right: -175px;
-}
-
-html[dir="rtl"] .card--right-top {
-  right: auto;
-  left: -175px;
-}
-
-html[dir="rtl"] .card--right-bottom {
-  right: auto;
-  left: -175px;
-}
-
-/* Floating Card Elements */
-.card-icon-container {
-  background: var(--brand-pink-soft);
-  color: var(--red-500);
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.card-icon {
-  width: 18px;
-  height: 18px;
-}
-
-.card-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--navy-900);
-  line-height: 1.2;
-}
-
-.card-sub {
-  font-size: 10px;
-  color: var(--gray-500);
-  line-height: 1.35;
-}
-
-/* Red Dotted Connector Lines */
-.card-connector-svg {
-  position: absolute;
-  pointer-events: none;
-  z-index: -1;
-  height: 20px;
-  width: 70px;
-}
-
-.line--left {
-  left: 98%;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.line--right-top {
-  right: 98%;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.line--right-bottom {
-  right: 98%;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-/* RTL overrides for lines positioning */
-html[dir="rtl"] .line--left {
-  left: auto;
-  right: 98%;
-}
-
-html[dir="rtl"] .line--right-top {
-  right: auto;
-  left: 98%;
-}
-
-html[dir="rtl"] .line--right-bottom {
-  right: auto;
-  left: 98%;
-}
-
-html[dir="rtl"] .card-connector-svg {
-  transform: translateY(-50%) scaleX(-1);
 }
 
 /* ═══════════════ RESPONSIVE LAYOUTS ═══════════════ */
 
 @media (max-width: 1100px) {
-  .card--left { left: -145px; }
-  .card--right-top { right: -145px; }
-  .card--right-bottom { right: -145px; }
+  .app-banner__content {
+    grid-column: 1 / span 7;
+  }
 
-  html[dir="rtl"] .card--left { right: -145px; left: auto; }
-  html[dir="rtl"] .card--right-top { left: -145px; right: auto; }
-  html[dir="rtl"] .card--right-bottom { left: -145px; right: auto; }
-}
+  .app-banner__media {
+    grid-column: 8 / span 5;
+  }
 
-@media (max-width: 990px) {
-  .application-page__grid {
-    column-gap: var(--space-8);
+  .app-phone-duo {
+    width: min(240px, 100%);
   }
 }
 
 @media (max-width: 900px) {
   .application-page__section {
-    padding: calc(var(--header-height) + var(--space-8)) var(--space-6) var(--space-16);
+    padding: calc(var(--header-height) + var(--space-8)) var(--space-4) var(--space-16);
   }
 
-  .application-page__content {
+  .app-banner {
+    padding: clamp(2rem, 6vw, 3rem) clamp(1.25rem, 5vw, 2.5rem) 0;
+  }
+
+  .app-banner__grid {
+    column-gap: 0;
+  }
+
+  .app-banner__content {
     grid-column: 1 / -1;
-    gap: var(--space-6);
+    gap: var(--space-5);
   }
 
-  .application-page__media {
+  .app-banner__media {
     grid-column: 1 / -1;
-    margin-top: var(--space-16);
-    padding: 0 var(--space-10);
+    margin-top: var(--space-12);
   }
 
-  .app-phone-container {
-    max-width: 300px;
-  }
-}
-
-/* Smooth layout wrap on tablets/mobile */
-@media (max-width: 768px) {
-  .app-phone-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-6);
-    max-width: 100%;
-  }
-
-  .app-phone-mockup {
-    order: -1;
-    max-width: 270px;
-    transform: none !important;
-  }
-
-  .app-floating-card {
-    position: relative !important;
-    left: auto !important;
-    right: auto !important;
-    top: auto !important;
-    bottom: auto !important;
-    width: 100% !important;
-    max-width: 320px !important;
-    transform: none !important;
-    animation: none !important;
-    padding: 16px;
-    box-shadow: 0 8px 24px rgba(11, 34, 61, 0.05);
-  }
-
-  .card-connector-svg {
-    display: none !important;
+  /* On mobile the phones sit at the bottom of the banner and bleed
+     downward only — clip the lower bleed with padding instead */
+  .app-phone-duo {
+    margin-top: 0;
+    margin-bottom: 0;
+    width: min(230px, 70vw);
+    /* pull the phones down so they visually anchor to the banner edge */
+    transform: translateY(clamp(1rem, 4vw, 2rem));
   }
 }
 
 @media (max-width: 480px) {
-  .application-page__buttons {
+  .app-banner__buttons {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .app-store-badge {
     min-width: 100%;
   }
 
-  .application-page__trust-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-4);
+  .app-phone-mockup--back {
+    display: none;
+  }
+
+  .app-phone-duo {
+    width: min(210px, 65vw);
   }
 }
