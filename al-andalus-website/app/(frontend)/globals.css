@@ -667,6 +667,10 @@ html[dir="rtl"] .btn:hover .btn-arrow {
   transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
+.header__mobile-menu {
+  display: none;
+}
+
 /* Mobile menu icons — sized outside the media query so Tailwind svg resets can't blow them up */
 .header__mobile-icon {
   display: inline-flex;

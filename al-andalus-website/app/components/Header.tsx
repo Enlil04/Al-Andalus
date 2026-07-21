@@ -7,6 +7,7 @@ import { SCROLL_EVENT, type ScrollEventDetail } from "@/lib/scrollEvents";
 import { useLocale } from "@/app/components/LocaleProvider";
 
 const SCROLL_THRESHOLD = 80;
+const MOBILE_MENU_MAX_WIDTH = 768;
 
 function MenuIcon({ children }: { children: ReactNode }) {
   return (
@@ -144,6 +145,25 @@ export default function Header({ logoUrl }: { logoUrl?: string | null }) {
 
     window.addEventListener(SCROLL_EVENT, handleScroll);
     return () => window.removeEventListener(SCROLL_EVENT, handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(
+      `(max-width: ${MOBILE_MENU_MAX_WIDTH}px)`,
+    );
+
+    const closeMenuOnDesktop = () => {
+      if (!mediaQuery.matches) {
+        setMenuOpen(false);
+      }
+    };
+
+    closeMenuOnDesktop();
+    mediaQuery.addEventListener("change", closeMenuOnDesktop);
+
+    return () => {
+      mediaQuery.removeEventListener("change", closeMenuOnDesktop);
+    };
   }, []);
 
   const toggleLanguage = () => {
