@@ -79,21 +79,6 @@ export const Products: CollectionConfig = {
       ],
     },
     {
-      name: "icon",
-      type: "upload",
-      relationTo: "media",
-      filterOptions: { mimeType: { contains: "image" } },
-      label: bilingualLabel("Service Icon", "أيقونة الخدمة"),
-      admin: {
-        description: mediaFieldHint(
-          "this service's icon where icon-based service cards are used",
-          "أيقونة هذه الخدمة في بطاقات الخدمات التي تعرض الأيقونات",
-          "transparent square PNG/SVG, 512×512",
-          "PNG/SVG شفاف ومربع 512×512",
-        ),
-      },
-    },
-    {
       name: "thumbnail",
       type: "upload",
       relationTo: "media",

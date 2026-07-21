@@ -14,7 +14,6 @@ import { Media } from "./collections/Media";
 import { Documents } from "./collections/Documents";
 import { Products } from "./collections/Products";
 import { News } from "./collections/News";
-import { BlogCategories } from "./collections/BlogCategories";
 import { Partners } from "./collections/Partners";
 import { FAQs } from "./collections/FAQs";
 import { ContactMessages } from "./collections/ContactMessages";
@@ -127,7 +126,6 @@ export default buildConfig({
     Products,
     InsuranceRequests,
     News,
-    BlogCategories,
     Partners,
     FAQs,
     Jobs,

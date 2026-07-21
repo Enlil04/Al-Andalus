@@ -175,11 +175,6 @@ export const Homepage: GlobalConfig = {
                 languageTabs(
                   [
                     {
-                      name: "titleEn",
-                      type: "text",
-                      label: bilingualLabel("Title (English)", "العنوان (إنجليزي)"),
-                    },
-                    {
                       name: "descriptionEn",
                       type: "textarea",
                       label: bilingualLabel("Description (English)", "الوصف (إنجليزي)"),
@@ -191,11 +186,6 @@ export const Homepage: GlobalConfig = {
                     },
                   ],
                   [
-                    {
-                      name: "titleAr",
-                      type: "text",
-                      label: bilingualLabel("Title (Arabic)", "العنوان (عربي)"),
-                    },
                     {
                       name: "descriptionAr",
                       type: "textarea",

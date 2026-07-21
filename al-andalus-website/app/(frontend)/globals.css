@@ -667,6 +667,26 @@ html[dir="rtl"] .btn:hover .btn-arrow {
   transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
+/* Mobile menu icons — sized outside the media query so Tailwind svg resets can't blow them up */
+.header__mobile-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  overflow: hidden;
+  color: var(--navy-900);
+}
+
+.header__mobile-icon svg {
+  width: 20px !important;
+  height: 20px !important;
+  max-width: 20px !important;
+  max-height: 20px !important;
+  display: block;
+}
+
 /* --- Hero --- */
 /* Sticky track (not GSAP pin) so React can unmount cleanly on navigation */
 .hero-track {
@@ -1224,18 +1244,6 @@ html[dir="rtl"] .featured-product:nth-child(even) > * {
 .product-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 20px 60px rgba(11, 34, 61, 0.12);
-}
-
-.product-card__icon {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto var(--space-4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--light-50);
-  border-radius: 12px;
-  font-size: 1.5rem;
 }
 
 .product-card__name {
@@ -2083,6 +2091,22 @@ html[dir="rtl"] .product-card__badge {
     text-transform: none;
     padding-top: var(--space-1);
     padding-bottom: var(--space-1);
+  }
+
+  .header__mobile-link--icon {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding-left: 0;
+  }
+
+  html[dir="rtl"] .header__mobile-link--sub {
+    padding-left: 0;
+    padding-right: var(--space-4);
+  }
+
+  html[dir="rtl"] .header__mobile-link--icon {
+    padding-right: 0;
   }
 
   .header__mobile-contact-btn {

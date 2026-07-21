@@ -34,8 +34,18 @@ export const JobApplications: CollectionConfig = {
       name: "job",
       type: "relationship",
       relationTo: "jobs",
-      required: true,
       label: bilingualLabel("Job Opening", "الوظيفة"),
+    },
+    {
+      name: "jobTitle",
+      type: "text",
+      label: bilingualLabel("Job Title", "المسمى الوظيفي"),
+      admin: {
+        description: {
+          en: "Used when the application is not linked to a CMS job record.",
+          ar: "يُستخدم عندما لا يكون الطلب مرتبطاً بوظيفة في لوحة التحكم.",
+        },
+      },
     },
     {
       name: "fullName",

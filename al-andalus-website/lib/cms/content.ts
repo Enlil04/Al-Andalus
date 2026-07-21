@@ -131,7 +131,6 @@ export type AboutPageContent = {
 };
 
 export type SiteSettingsContent = {
-  companyName: string;
   phone: string;
   shortNumber: string;
   email: string;
@@ -414,8 +413,6 @@ export type PagesContent = {
     visitIntro: string;
   };
   application: {
-    bannerTitle: string;
-    bannerSubtitle: string;
     title: string;
     paragraphs: readonly string[];
     imageUrl: string | null;
@@ -618,14 +615,6 @@ export const fetchPagesContent = cache(async function fetchPagesContent(payload?
         siteCopy.requestQuotePage.contact.intro,
     },
     application: {
-      bannerTitle:
-        pickLocaleText(application, "bannerTitle", currentLocale) ||
-        (currentLocale === "ar" ? "تطبيق الأندلس" : "Al-Andalus App"),
-      bannerSubtitle:
-        pickLocaleText(application, "bannerSubtitle", currentLocale) ||
-        (currentLocale === "ar"
-          ? "التأمين في جيبك"
-          : "Insurance in your pocket"),
       title:
         pickLocaleText(application, "title", currentLocale) ||
         (currentLocale === "ar"
@@ -921,14 +910,6 @@ export const fetchSiteSettings = cache(async function fetchSiteSettings(payload?
     { label: "TikTok", href: cmsSocial?.tiktok ?? social[3]?.href ?? "" },
   ].filter((link) => link.href);
 
-  const companyName = useArabic
-    ? settings.companyNameAr ||
-      settings.companyNameEn ||
-      "شركة الأندلس للتأمين الدولي"
-    : settings.companyNameEn ||
-      settings.companyNameAr ||
-      "Al-Andalus International Insurance";
-
   const mappedBranches = settings.branches
     ?.map((b: any) => ({
       id: b.branchId,
@@ -942,7 +923,6 @@ export const fetchSiteSettings = cache(async function fetchSiteSettings(payload?
   const branches = mappedBranches?.length ? mappedBranches : undefined;
 
   return {
-    companyName,
     phone: settings.contact?.phone ?? "+9647710006000",
     shortNumber: settings.contact?.shortNumber ?? "7366",
     email: settings.contact?.email ?? "info@alandalus-iq.com",

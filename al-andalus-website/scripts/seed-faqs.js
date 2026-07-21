@@ -46,7 +46,6 @@ function lexicalAnswer(text, rtl = false) {
 
 const faqs = [
   {
-    category: "health",
     order: 1,
     questionEn: "What is the purpose of group and individual health insurance?",
     questionAr: "ما هو الغرض من التأمين الصحي الجماعي والفردي؟",
@@ -56,7 +55,6 @@ const faqs = [
       "الغرض من هذا التأمين هو تغطية تكاليف العمليات الجراحية الكبرى وجراحة الناظور التي تُجرى تحت التخدير العام. وتغطي الوثيقة النفقات الطبية المؤهلة أثناء العلاج: تكاليف الإقامة بالمستشفى، أجور الجراحين والأطباء، إقامة الشخص المرافق للمريض عند الاقتضاء، الفحوصات الطبية، الأدوية، التحاليل المخبرية، والخدمات التشخيصية بالتصوير والأشعة.",
   },
   {
-    category: "fire",
     order: 2,
     questionEn: "What does fire and burglary insurance for commercial shops cover?",
     questionAr: "ماذا يشمل تأمين الحريق والسرقة للمحلات التجارية؟",
@@ -66,7 +64,6 @@ const faqs = [
       "تغطي هذه الوثيقة الخسائر والأضرار الناتجة عن الحريق الناجم عن تماس كهربائي، أو الإهمال العرضي غير المتعمد، أو الحرائق التي تنشأ في المباني المجاورة وتنتشر للمحل المؤمن عليه. ويمكن إضافة تغطية السرقة والسطو بناءً على طلب المؤمن له وخاضعة لقسط إضافي محدد للمخاطر المختارة.",
   },
   {
-    category: "accident",
     order: 3,
     questionEn: "What does individual and group personal accident insurance cover?",
     questionAr: "ما الذي يغطيه تأمين الحوادث الشخصية الفردي والجماعي؟",
@@ -76,7 +73,6 @@ const faqs = [
       "يغطي تأمين الحوادث الشخصية الأحداث العرضية المفاجئة التي تؤدي إلى إصابة بدنية، أو عجز كلي دائم، أو الوفاة الناتجة عن حادث فقط. وتقتصر التغطية على الحوادث العرضية ولا تشمل الوفاة أو العجز الناتجين عن أسباب طبيعية أو مرض أو حالة صحية سابقة.",
   },
   {
-    category: "general",
     order: 4,
     questionEn: "Is Al-Andalus a licensed insurance company?",
     questionAr: "هل شركة الأندلس شركة تأمين مرخصة؟",
@@ -86,7 +82,6 @@ const faqs = [
       "نعم. تحمل شركة الأندلس للتأمين الدولي إجازة ممارسة أعمال التأمين رقم 38/2018 الصادرة عن ديوان التأمين بوزارة المالية العراقية في 31 تموز 2018، وتعمل بموجب قانون تنظيم أعمال التأمين رقم 10 لسنة 2005.",
   },
   {
-    category: "general",
     order: 5,
     questionEn: "Where are your branches?",
     questionAr: "أين تقع فروعكم؟",
@@ -96,7 +91,6 @@ const faqs = [
       "نعمل من ثلاثة فروع رئيسية: المقر الرئيسي في بغداد، وفرع البصرة، وفرع أربيل.",
   },
   {
-    category: "general",
     order: 6,
     questionEn: "Which services are still under development?",
     questionAr: "ما هي الخدمات التي لا تزال قيد التطوير؟",
@@ -106,7 +100,6 @@ const faqs = [
       "تأمين المصرف الشامل (Bankers Blanket)، تأمين حماية القروض، والتأمين ضد المخاطر السيبرانية هي حالياً قيد التطوير. يرجى التواصل معنا لمعرفة المستجدات وتوافرها.",
   },
   {
-    category: "general",
     order: 7,
     questionEn: "How do I get a quote?",
     questionAr: "كيف يمكنني الحصول على عرض أسعار؟",
@@ -121,7 +114,7 @@ const now = new Date().toISOString();
 let batch = "BEGIN;\nDELETE FROM faqs_locales;\nDELETE FROM faqs;\n";
 
 for (const faq of faqs) {
-  batch += `INSERT INTO faqs (category, "order", updated_at, created_at) VALUES (${q(faq.category)}, ${faq.order}, ${q(now)}, ${q(now)});\n`;
+  batch += `INSERT INTO faqs ("order", updated_at, created_at) VALUES (${faq.order}, ${q(now)}, ${q(now)});\n`;
   batch += `INSERT INTO faqs_locales (question, answer, _locale, _parent_id) VALUES (${q(faq.questionEn)}, ${q(lexicalAnswer(faq.answerEn, false))}, 'en', last_insert_rowid());\n`;
   batch += `INSERT INTO faqs_locales (question, answer, _locale, _parent_id) VALUES (${q(faq.questionAr)}, ${q(lexicalAnswer(faq.answerAr, true))}, 'ar', (SELECT id FROM faqs ORDER BY id DESC LIMIT 1));\n`;
 }

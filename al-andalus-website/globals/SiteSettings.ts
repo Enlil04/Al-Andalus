@@ -42,13 +42,6 @@ export const SiteSettings: GlobalConfig = {
           },
           fields: [
             {
-              name: "companyNameEn",
-              type: "text",
-              required: true,
-              defaultValue: "Al-Andalus International Insurance",
-              label: bilingualLabel("Company Name (English)", "اسم الشركة (إنجليزي)"),
-            },
-            {
               name: "heroTextEn",
               type: "text",
               label: bilingualLabel("Hero Headline (English)", "عنوان البانر (إنجليزي)"),
@@ -72,13 +65,6 @@ export const SiteSettings: GlobalConfig = {
             ar: "العربية",
           },
           fields: [
-            {
-              name: "companyNameAr",
-              type: "text",
-              required: true,
-              defaultValue: "شركة الأندلس للتأمين الدولي",
-              label: bilingualLabel("Company Name (Arabic)", "اسم الشركة (عربي)"),
-            },
             {
               name: "heroTextAr",
               type: "text",

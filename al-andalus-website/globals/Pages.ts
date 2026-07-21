@@ -359,7 +359,6 @@ export const Pages: GlobalConfig = {
               name: "application",
               label: { en: "Application Page", ar: "صفحة التطبيق" },
               fields: [
-                ...bannerFields("Application", "التطبيق", false),
                 languageTabs(
                   [
                     { name: "titleEn", type: "text", label: "App Title" },

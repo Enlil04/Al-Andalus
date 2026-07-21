@@ -11,7 +11,7 @@ export const FAQs: CollectionConfig = {
   },
   admin: {
     useAsTitle: "questionEn",
-    defaultColumns: ["questionEn", "questionAr", "category", "order"],
+    defaultColumns: ["questionEn", "questionAr", "order"],
     description: {
       en: "Enter English and Arabic content in the tabs below.",
       ar: "أدخل المحتوى بالإنجليزية والعربية من التبويبات أدناه.",
@@ -73,35 +73,6 @@ export const FAQs: CollectionConfig = {
           ],
         },
       ],
-    },
-    {
-      name: "category",
-      type: "select",
-      required: true,
-      defaultValue: "general",
-      options: [
-        { label: bilingualLabel("General", "عام"), value: "general" },
-        {
-          label: bilingualLabel("Health Insurance", "التأمين الصحي"),
-          value: "health",
-        },
-        {
-          label: bilingualLabel("Motor Insurance", "تأمين السيارات"),
-          value: "motor",
-        },
-        {
-          label: bilingualLabel("Fire Insurance", "تأمين الحريق"),
-          value: "fire",
-        },
-        {
-          label: bilingualLabel("Personal Accident", "الحوادث الشخصية"),
-          value: "accident",
-        },
-      ],
-      admin: {
-        position: "sidebar",
-      },
-      label: bilingualLabel("Category", "التصنيف"),
     },
     {
       name: "order",

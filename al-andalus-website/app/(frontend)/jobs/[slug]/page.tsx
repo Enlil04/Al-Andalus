@@ -305,7 +305,7 @@ export default async function JobDetailPage({ params }: PageProps) {
                     </div>
                   </div>
                   <Link
-                    href={`mailto:hr@alandalus-iq.com?subject=${locale === "ar" ? "طلب تقديم لوظيفة" : "Application for"} ${encodeURIComponent(title)}`}
+                    href={`/jobs/${slug}/apply`}
                     className="btn w-full text-center"
                     style={{ marginTop: "1rem" }}
                   >
