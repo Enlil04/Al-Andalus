@@ -34,17 +34,32 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
-  const payload = await getCMSPayload();
   const locale = await getLocale();
 
-  const [homepageContent, featuredServices, faqItems, newsItems, partners] =
-    await Promise.all([
-      fetchHomepageContent(payload),
-      fetchFeaturedProducts(payload),
-      fetchFaqs(payload),
-      fetchPublishedNews(payload, 5),
-      fetchPartners(payload, 8),
-    ]);
+  let homepageContent;
+  let featuredServices;
+  let faqItems;
+  let newsItems: Awaited<ReturnType<typeof fetchPublishedNews>>;
+  let partners: Awaited<ReturnType<typeof fetchPartners>>;
+
+  try {
+    const payload = await getCMSPayload();
+    [homepageContent, featuredServices, faqItems, newsItems, partners] =
+      await Promise.all([
+        fetchHomepageContent(payload),
+        fetchFeaturedProducts(payload),
+        fetchFaqs(payload),
+        fetchPublishedNews(payload, 5),
+        fetchPartners(payload, 8),
+      ]);
+  } catch (error) {
+    console.error("[home] CMS unavailable — using static fallbacks:", error);
+    homepageContent = await fetchHomepageContent();
+    featuredServices = await fetchFeaturedProducts();
+    faqItems = await fetchFaqs();
+    newsItems = [];
+    partners = [];
+  }
 
   const { hero, intro, story, aboutPreview } = homepageContent;
 

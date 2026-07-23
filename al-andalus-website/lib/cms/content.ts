@@ -215,13 +215,15 @@ function pickLocaleText(
 }
 
 export const fetchHomepageContent = cache(async function fetchHomepageContent(payload?: Payload) {
-  const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
   const siteCopy = getSiteCopy(currentLocale);
-  const [homepage, siteSettings] = await Promise.all([
-    cms.findGlobal({ slug: "homepage" }),
-    cms.findGlobal({ slug: "site-settings" }),
-  ]);
+
+  try {
+    const cms = payload ?? (await getCMSPayload());
+    const [homepage, siteSettings] = await Promise.all([
+      cms.findGlobal({ slug: "homepage" }),
+      cms.findGlobal({ slug: "site-settings" }),
+    ]);
 
   const useArabic = currentLocale === "ar";
   const settingsHeroText = useArabic
@@ -345,7 +347,62 @@ export const fetchHomepageContent = cache(async function fetchHomepageContent(pa
     aboutPreview,
     whyUs,
   };
+  } catch (error) {
+    console.error("[cms] fetchHomepageContent failed — using static copy:", error);
+    return getStaticHomepageContent(currentLocale);
+  }
 })
+
+function getStaticHomepageContent(locale: string) {
+  const siteCopy = getSiteCopy(locale);
+  const introLines = siteCopy.intro.headline;
+  return {
+    hero: {
+      headline: siteCopy.hero.headline,
+      headlineRight: siteCopy.hero.headlineRight,
+      scrollLabel: siteCopy.hero.scrollLabel,
+      videoUrl: null as string | null,
+      imageUrl: null as string | null,
+    },
+    intro: {
+      titleLines: [introLines[0], introLines[1], introLines[2]] as [
+        string,
+        string,
+        string,
+      ],
+      lead: siteCopy.intro.lead,
+      imageUrl: IMAGE_FALLBACKS.intro as string | null,
+    },
+    story: {
+      paragraphs: [...siteCopy.story.paragraphs],
+      ctaText: siteCopy.story.cta,
+      ctaLink: "#about",
+      imageLargeUrl: IMAGE_FALLBACKS.storyLarge,
+      imageSmallUrl: IMAGE_FALLBACKS.storySmall,
+    },
+    expandingImageUrl: IMAGE_FALLBACKS.heroExpanding,
+    aboutPreview: {
+      label: siteCopy.aboutPinned.label,
+      headline: siteCopy.aboutPinned.headline,
+      text: siteCopy.aboutPinned.text,
+      image1Url: IMAGE_FALLBACKS.aboutPinned1,
+      image2Url: IMAGE_FALLBACKS.aboutPinned2,
+      image3Url: IMAGE_FALLBACKS.aboutPinned3,
+      image4Url: IMAGE_FALLBACKS.aboutPinned4,
+    },
+    whyUs: {
+      label: siteCopy.whyUs.label,
+      headline: siteCopy.whyUs.headline,
+      desc: siteCopy.whyUs.desc,
+      img1Url: IMAGE_FALLBACKS.whyUs1,
+      img2Url: IMAGE_FALLBACKS.whyUs2,
+      img3Url: IMAGE_FALLBACKS.whyUs3,
+      img4Url: IMAGE_FALLBACKS.whyUs4,
+      img5Url: IMAGE_FALLBACKS.whyUs5,
+      img6Url: IMAGE_FALLBACKS.whyUs6,
+    },
+  };
+}
 
 export type PagesContent = {
   services: {
@@ -892,115 +949,138 @@ export const fetchAboutPageContent = cache(async function fetchAboutPageContent(
 })
 
 export const fetchSiteSettings = cache(async function fetchSiteSettings(payload?: Payload): Promise<SiteSettingsContent> {
-  const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
   const siteCopy = getSiteCopy(currentLocale);
-  const settings = await cms.findGlobal({
-    slug: "site-settings",
-  });
-
   const social = siteCopy.footer.social;
-  const cmsSocial = settings.socialLinks;
-  const useArabic = currentLocale === "ar";
 
-  const socialLinks = [
-    { label: "Facebook", href: cmsSocial?.facebook ?? social[0]?.href ?? "" },
-    { label: "Instagram", href: cmsSocial?.instagram ?? social[1]?.href ?? "" },
-    { label: "LinkedIn", href: cmsSocial?.linkedin ?? social[2]?.href ?? "" },
-    { label: "TikTok", href: cmsSocial?.tiktok ?? social[3]?.href ?? "" },
-  ].filter((link) => link.href);
+  try {
+    const cms = payload ?? (await getCMSPayload());
+    const settings = await cms.findGlobal({
+      slug: "site-settings",
+    });
 
-  const mappedBranches = settings.branches
-    ?.map((b: any) => ({
-      id: b.branchId,
-      label: useArabic ? b.labelAr || b.labelEn : b.labelEn || b.labelAr,
-      area: useArabic ? b.areaAr || b.areaEn : b.areaEn || b.areaAr,
-      mapEmbedUrl: b.mapEmbedUrl,
-      mapLinkUrl: b.mapLinkUrl,
-    }))
-    // Incomplete rows (no label or no map) fall back to static branches.
-    .filter((b: { label?: string; mapEmbedUrl?: string }) => b.label && b.mapEmbedUrl);
-  const branches = mappedBranches?.length ? mappedBranches : undefined;
+    const cmsSocial = settings.socialLinks;
+    const useArabic = currentLocale === "ar";
 
-  return {
-    phone: settings.contact?.phone ?? "+9647710006000",
-    shortNumber: settings.contact?.shortNumber ?? "7366",
-    email: settings.contact?.email ?? "info@alandalus-iq.com",
-    whatsapp: settings.contact?.whatsapp ?? "+9647710006000",
-    socialLinks,
-    branches,
-    siteLogo: getMediaUrl(settings.siteLogo) || IMAGE_FALLBACKS.siteLogo,
-  };
+    const socialLinks = [
+      { label: "Facebook", href: cmsSocial?.facebook ?? social[0]?.href ?? "" },
+      { label: "Instagram", href: cmsSocial?.instagram ?? social[1]?.href ?? "" },
+      { label: "LinkedIn", href: cmsSocial?.linkedin ?? social[2]?.href ?? "" },
+      { label: "TikTok", href: cmsSocial?.tiktok ?? social[3]?.href ?? "" },
+    ].filter((link) => link.href);
+
+    const mappedBranches = settings.branches
+      ?.map((b: any) => ({
+        id: b.branchId,
+        label: useArabic ? b.labelAr || b.labelEn : b.labelEn || b.labelAr,
+        area: useArabic ? b.areaAr || b.areaEn : b.areaEn || b.areaAr,
+        mapEmbedUrl: b.mapEmbedUrl,
+        mapLinkUrl: b.mapLinkUrl,
+      }))
+      // Incomplete rows (no label or no map) fall back to static branches.
+      .filter((b: { label?: string; mapEmbedUrl?: string }) => b.label && b.mapEmbedUrl);
+    const branches = mappedBranches?.length ? mappedBranches : undefined;
+
+    return {
+      phone: settings.contact?.phone ?? "+9647710006000",
+      shortNumber: settings.contact?.shortNumber ?? "7366",
+      email: settings.contact?.email ?? "info@alandalus-iq.com",
+      whatsapp: settings.contact?.whatsapp ?? "+9647710006000",
+      socialLinks,
+      branches,
+      siteLogo: getMediaUrl(settings.siteLogo) || IMAGE_FALLBACKS.siteLogo,
+    };
+  } catch (error) {
+    console.error("[cms] fetchSiteSettings failed — using static defaults:", error);
+    return {
+      phone: "+9647710006000",
+      shortNumber: "7366",
+      email: "info@alandalus-iq.com",
+      whatsapp: "+9647710006000",
+      socialLinks: social.filter((link) => link.href),
+      siteLogo: IMAGE_FALLBACKS.siteLogo,
+    };
+  }
 })
 
 export const fetchFeaturedProducts = cache(async function fetchFeaturedProducts(payload?: Payload): Promise<Service[]> {
-  const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
-  const allServices = await fetchAllProducts(cms);
-  const bySlug = new Map(allServices.map((service) => [service.slug, service]));
+  try {
+    const cms = payload ?? (await getCMSPayload());
+    const allServices = await fetchAllProducts(cms);
+    const bySlug = new Map(allServices.map((service) => [service.slug, service]));
 
-  const { docs } = await cms.find({
-    collection: "products",
-    limit: 100,
-    sort: "order",
-    overrideAccess: true,
-    where: {
-      and: [
-        { isFeatured: { equals: true } },
-        {
-          or: [
-            { status: { equals: "active" } },
-            { status: { equals: "under-development" } },
-          ],
-        },
-      ],
-    },
-  });
+    const { docs } = await cms.find({
+      collection: "products",
+      limit: 100,
+      sort: "order",
+      overrideAccess: true,
+      where: {
+        and: [
+          { isFeatured: { equals: true } },
+          {
+            or: [
+              { status: { equals: "active" } },
+              { status: { equals: "under-development" } },
+            ],
+          },
+        ],
+      },
+    });
 
-  if (docs.length > 0) {
-    return docs
-      .map((product) => {
-        const slug = normalizeServiceSlug(product.slug as string);
-        return bySlug.get(slug) ?? mapProductToService(product as Record<string, unknown>, currentLocale);
-      })
-      .filter((service): service is Service => Boolean(service));
+    if (docs.length > 0) {
+      return docs
+        .map((product) => {
+          const slug = normalizeServiceSlug(product.slug as string);
+          return bySlug.get(slug) ?? mapProductToService(product as Record<string, unknown>, currentLocale);
+        })
+        .filter((service): service is Service => Boolean(service));
+    }
+
+    return getFeaturedServices(currentLocale).map(
+      (featured) => bySlug.get(featured.slug) ?? featured,
+    );
+  } catch (error) {
+    console.error("[cms] fetchFeaturedProducts failed — using static services:", error);
+    return getFeaturedServices(currentLocale);
   }
-
-  return getFeaturedServices(currentLocale).map(
-    (featured) => bySlug.get(featured.slug) ?? featured,
-  );
 })
 
 export const fetchFaqs = cache(async function fetchFaqs(payload?: Payload): Promise<FaqItem[]> {
-  const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
-  const { docs } = await cms.find({
-    collection: "faqs",
-    limit: 20,
-    sort: "order",
-    overrideAccess: true,
-  });
+  try {
+    const cms = payload ?? (await getCMSPayload());
+    const { docs } = await cms.find({
+      collection: "faqs",
+      limit: 20,
+      sort: "order",
+      overrideAccess: true,
+    });
 
-  if (docs.length === 0) {
+    if (docs.length === 0) {
+      return getFaqItems(currentLocale);
+    }
+
+    const useArabic = currentLocale === "ar";
+
+    return docs.map((item) => {
+      const record = item as Record<string, unknown>;
+      const question = useArabic
+        ? ((record.questionAr as string) || (record.questionEn as string) || "")
+        : ((record.questionEn as string) || (record.questionAr as string) || "");
+      const answerDoc = useArabic
+        ? record.answerAr || record.answerEn
+        : record.answerEn || record.answerAr;
+
+      return {
+        question,
+        answer: serializeLexical(answerDoc),
+      };
+    });
+  } catch (error) {
+    console.error("[cms] fetchFaqs failed — using static FAQs:", error);
     return getFaqItems(currentLocale);
   }
-
-  const useArabic = currentLocale === "ar";
-
-  return docs.map((item) => {
-    const record = item as Record<string, unknown>;
-    const question = useArabic
-      ? ((record.questionAr as string) || (record.questionEn as string) || "")
-      : ((record.questionEn as string) || (record.questionAr as string) || "");
-    const answerDoc = useArabic
-      ? record.answerAr || record.answerEn
-      : record.answerEn || record.answerAr;
-
-    return {
-      question,
-      answer: serializeLexical(answerDoc),
-    };
-  });
 })
 
 export type NewsListItem = {
@@ -1139,29 +1219,34 @@ export const fetchPublishedNews = cache(async function fetchPublishedNews(
   payload?: Payload,
   limit = 50,
 ): Promise<NewsListItem[]> {
-  const cms = payload ?? (await getCMSPayload());
-  const currentLocale = await getLocale();
-  const { docs } = await cms.find({
-    collection: "news",
-    limit,
-    sort: "-publishedDate",
-    depth: 1,
-    overrideAccess: true,
-    where: { status: { equals: "published" } },
-  });
+  try {
+    const cms = payload ?? (await getCMSPayload());
+    const currentLocale = await getLocale();
+    const { docs } = await cms.find({
+      collection: "news",
+      limit,
+      sort: "-publishedDate",
+      depth: 1,
+      overrideAccess: true,
+      where: { status: { equals: "published" } },
+    });
 
-  return docs.map((item) => {
-    const record = item as Record<string, unknown>;
-    return {
-      id: item.id,
-      title: pickLocaleText(record, "title", currentLocale),
-      slug: item.slug as string,
-      publishedDate: (item.publishedDate as string) ?? null,
-      category: (item.category as string) ?? null,
-      excerpt: pickLocaleText(record, "excerpt", currentLocale) || null,
-      imageUrl: getMediaUrl(item.coverImage),
-    };
-  });
+    return docs.map((item) => {
+      const record = item as Record<string, unknown>;
+      return {
+        id: item.id,
+        title: pickLocaleText(record, "title", currentLocale),
+        slug: item.slug as string,
+        publishedDate: (item.publishedDate as string) ?? null,
+        category: (item.category as string) ?? null,
+        excerpt: pickLocaleText(record, "excerpt", currentLocale) || null,
+        imageUrl: getMediaUrl(item.coverImage),
+      };
+    });
+  } catch (error) {
+    console.error("[cms] fetchPublishedNews failed:", error);
+    return [];
+  }
 })
 
 export async function fetchNewsBySlug(
@@ -1198,17 +1283,22 @@ export const fetchPartners = cache(async function fetchPartners(
   payload?: Payload,
   limit = 100,
 ): Promise<Record<string, unknown>[]> {
-  const cms = payload ?? (await getCMSPayload());
-  const currentLocale = await getLocale();
-  const { docs } = await cms.find({
-    collection: "partners",
-    locale: currentLocale,
-    limit,
-    sort: "order",
-    depth: 1,
-    overrideAccess: true,
-  });
-  return docs as Record<string, unknown>[];
+  try {
+    const cms = payload ?? (await getCMSPayload());
+    const currentLocale = await getLocale();
+    const { docs } = await cms.find({
+      collection: "partners",
+      locale: currentLocale,
+      limit,
+      sort: "order",
+      depth: 1,
+      overrideAccess: true,
+    });
+    return docs as Record<string, unknown>[];
+  } catch (error) {
+    console.error("[cms] fetchPartners failed:", error);
+    return [];
+  }
 })
 
 export const fetchOpenJobs = cache(async function fetchOpenJobs(
