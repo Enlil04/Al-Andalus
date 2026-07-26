@@ -1,6 +1,6 @@
 import type { Payload } from "payload";
 
-const DEFAULT_CONTACT_EMAIL = "info@alandalus-iq.com";
+const DEFAULT_CONTACT_EMAIL = "website@alandalus-iq.com";
 
 export type ContactSubmission = {
   name: string;

@@ -1,6 +1,7 @@
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import { NextResponse } from "next/server";
+import { sendInsuranceQuoteNotification } from "@/lib/insuranceQuoteEmail";
 import { clientKey, rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
@@ -55,19 +56,56 @@ export async function POST(request: Request) {
       insuranceServiceId = docs[0].id;
     }
 
+    const fullName = String(data.fullName).slice(0, 200);
+    const email = String(data.email).slice(0, 200);
+    const phone = String(data.phone).slice(0, 50);
+    const city = data.city ? String(data.city).slice(0, 100) : "";
+    const details = data.details ? String(data.details).slice(0, 5000) : "";
+
+    let serviceLabel = String(data.insuranceService).slice(0, 200);
+    try {
+      const product = await payload.findByID({
+        collection: "products",
+        id: insuranceServiceId,
+        overrideAccess: true,
+      });
+      const title =
+        (product as { titleEn?: string; titleAr?: string }).titleEn ||
+        (product as { titleAr?: string }).titleAr;
+      if (title) {
+        serviceLabel = title;
+      }
+    } catch {
+      // Keep the submitted service id/slug as the email label.
+    }
+
     await payload.create({
       collection: "insurance-requests",
       overrideAccess: true,
       data: {
-        fullName: String(data.fullName).slice(0, 200),
-        email: String(data.email).slice(0, 200),
-        phone: String(data.phone).slice(0, 50),
+        fullName,
+        email,
+        phone,
         insuranceService: insuranceServiceId,
-        city: data.city ? String(data.city).slice(0, 100) : "",
-        details: data.details ? String(data.details).slice(0, 5000) : "",
+        city,
+        details,
         status: "new",
       },
     });
+
+    // Dashboard save is primary; email failure should not block the visitor.
+    try {
+      await sendInsuranceQuoteNotification(payload, {
+        fullName,
+        email,
+        phone,
+        insuranceService: serviceLabel,
+        city,
+        details,
+      });
+    } catch (emailError) {
+      console.error("Insurance quote email notification failed:", emailError);
+    }
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {

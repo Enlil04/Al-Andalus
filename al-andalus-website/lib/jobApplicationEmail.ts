@@ -1,6 +1,6 @@
 import type { Payload } from "payload";
 
-const DEFAULT_CAREERS_EMAIL = "hr@alandalus-iq.com";
+const DEFAULT_CAREERS_EMAIL = "website@alandalus-iq.com";
 
 export type JobApplicationSubmission = {
   fullName: string;

@@ -33,7 +33,7 @@ const dirname = path.dirname(filename);
 
 const smtpHost = process.env.SMTP_HOST;
 const smtpFromAddress =
-  process.env.SMTP_FROM_ADDRESS || "info@alandalus-iq.com";
+  process.env.SMTP_FROM_ADDRESS || "website@alandalus-iq.com";
 const smtpFromName = process.env.SMTP_FROM_NAME || "Al-Andalus Insurance";
 
 // Public origin of the deployed site (e.g. https://alandalus-iq.com).
