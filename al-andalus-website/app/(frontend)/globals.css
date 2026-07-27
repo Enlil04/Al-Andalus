@@ -1679,6 +1679,23 @@ html[dir="rtl"] .product-card__badge {
   margin: 0 auto var(--space-12);
 }
 
+/* Footer intro stays centered in both LTR and RTL */
+html[dir="rtl"] .footer-new__top-content,
+html[dir="rtl"] .footer-new__title,
+html[dir="rtl"] .footer-new__desc {
+  text-align: center !important;
+}
+
+html[dir="rtl"] .footer-new__title {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .footer-new__desc {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+}
+
 .footer-new__newsletter {
   display: flex;
   max-width: 550px;
@@ -2375,7 +2392,7 @@ html[dir="rtl"] .product-card__badge {
     height: 120px !important;
   }
 
-  /* Contact CTA Mobile Layout (Headline -> Paragraph -> Circle Button) */
+  /* Contact CTA Mobile Layout (Headline -> Paragraph -> Button) */
   .contact-cta {
     height: 100vh !important;
     display: flex !important;
@@ -2423,7 +2440,7 @@ html[dir="rtl"] .product-card__badge {
     mix-blend-mode: normal !important;
   }
 
-  .contact-cta__desc {
+  .contact-cta__info {
     position: static !important;
     transform: none !important;
     width: 100% !important;
@@ -2433,18 +2450,37 @@ html[dir="rtl"] .product-card__badge {
     margin: 0 !important;
   }
 
+  .contact-cta__desc {
+    text-align: center !important;
+    margin: 0 0 1.25rem !important;
+  }
+
+  .contact-cta__details {
+    width: 100%;
+    max-width: 22rem;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .contact-cta__details li {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+  }
+
   .contact-cta__btn {
     position: relative !important;
     left: auto !important;
     top: auto !important;
     transform: none !important;
-    width: 140px !important;
-    height: 140px !important;
+    width: auto !important;
+    min-width: 11rem !important;
+    height: auto !important;
+    padding: 1rem 1.6rem !important;
     margin-top: 1rem !important;
+    border-radius: 0 !important;
   }
 
   .contact-cta__bg {
-    clip-path: circle(var(--clip-radius, 70px) at 50% 68%) !important;
+    clip-path: inset(62% 28% 28% 28%) !important;
   }
 
   .footer__top {
@@ -2910,7 +2946,8 @@ html[dir="rtl"] .product-card__badge {
   background: linear-gradient(to top, var(--navy-900), var(--navy-700));
   background-size: cover;
   background-position: center;
-  clip-path: circle(var(--clip-radius, 80px) at 65% 75%);
+  /* Small rect near CTA (65% / 75%); GSAP expands to inset(0) */
+  clip-path: inset(70% 27% 22% 57%);
   z-index: 1;
 }
 
@@ -2928,6 +2965,7 @@ html[dir="rtl"] .product-card__badge {
   justify-content: center;
   padding: 4rem;
   text-align: left;
+  transform: translateY(-10vh);
 }
 
 .contact-cta__hero {
@@ -2936,26 +2974,67 @@ html[dir="rtl"] .product-card__badge {
   display: inline-block;
 }
 
-.contact-cta__desc {
+.contact-cta__info {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 0.75rem);
   left: 0;
   z-index: 3;
   width: max-content;
-  max-width: 22rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  line-height: 1.65;
-  letter-spacing: 0.02em;
-  text-align: left;
+  max-width: min(32rem, 48vw);
   color: var(--navy-900);
   transition: color 0.5s ease;
+}
+
+.contact-cta__desc {
+  margin: 0 0 1.35rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  text-align: left;
+}
+
+.contact-cta__details {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.contact-cta__details li {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: baseline;
+}
+
+.contact-cta__details-key {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.contact-cta__details-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.contact-cta__details-value:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .contact-cta__title {
   position: relative;
   z-index: 2;
-  font-size: 14vw;
+  font-size: 10vw;
   font-weight: 500;
   color: var(--white);
   mix-blend-mode: difference;
@@ -2968,20 +3047,15 @@ html[dir="rtl"] .product-card__badge {
   pointer-events: none;
 }
 
-/* On scroll active state, the text turns to an outline */
+/* Expanded: solid white fill — keep the brand mark readable, no outline */
 .contact-cta.is-active .contact-cta__title,
 .contact-cta.is-active .contact-cta__title .ah-word-inner {
-  color: var(--navy-800);
-  -webkit-text-stroke: 2px var(--white);
-  paint-order: stroke fill;
+  color: var(--white);
+  -webkit-text-stroke: 0;
   mix-blend-mode: normal;
 }
 
-.contact-cta__desc p {
-  margin: 0;
-}
-
-.contact-cta.is-active .contact-cta__desc {
+.contact-cta.is-active .contact-cta__info {
   color: var(--white);
 }
 
@@ -2990,9 +3064,11 @@ html[dir="rtl"] .product-card__badge {
   left: 65%;
   top: 75%;
   transform: translate(-50%, -50%);
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
+  width: auto;
+  min-width: 11.5rem;
+  height: auto;
+  padding: 1.15rem 1.85rem;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3008,7 +3084,7 @@ html[dir="rtl"] .product-card__badge {
   width: 100%;
   height: 100%;
   background: var(--white);
-  border-radius: 50%;
+  border-radius: 0;
   transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), background 0.5s, border 0.5s;
   z-index: 1;
 }
@@ -3016,14 +3092,17 @@ html[dir="rtl"] .product-card__badge {
 .contact-cta__btn span {
   position: relative;
   z-index: 2;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.05em;
+  text-align: center;
+  line-height: 1.3;
+  white-space: nowrap;
   transition: color 0.5s ease;
 }
 
 .contact-cta__btn:hover .contact-cta__btn-bg {
-  transform: scale(1.3);
+  transform: scale(1.08);
   background: transparent;
   border: 1px solid var(--white);
 }
@@ -3033,25 +3112,35 @@ html[dir="rtl"] .product-card__badge {
 }
 
 @media (max-width: 900px) {
-  .contact-cta__bg {
-    clip-path: inset(30% 10% 30% 10%);
-  }
   .contact-cta__content {
     padding: 2rem;
   }
+  .contact-cta__info {
+    top: calc(100% + 0.5rem);
+    max-width: min(20rem, 70vw);
+  }
   .contact-cta__desc {
-    top: calc(100% - 0.9rem);
-    max-width: 16rem;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .contact-cta__details li {
+    grid-template-columns: 6.25rem minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+  .contact-cta__details-key {
+    font-size: 0.65rem;
+  }
+  .contact-cta__details-value {
+    font-size: 0.95rem;
   }
   .contact-cta__btn {
     left: 90%;
     top: 70%;
-    width: 120px;
-    height: 120px;
+    min-width: 9.5rem;
+    padding: 1rem 1.5rem;
   }
   .contact-cta__bg {
-    clip-path: circle(var(--clip-radius, 60px) at 90% 70%);
+    clip-path: inset(66% 5% 26% 82%);
   }
 }
 
@@ -3262,6 +3351,25 @@ html[dir="rtl"] .product-card__badge {
   margin: 1rem auto 0;
 }
 
+/* FAQ intro stays centered in both LTR and RTL */
+html[dir="rtl"] .faq__header,
+html[dir="rtl"] .faq__label,
+html[dir="rtl"] .faq__title,
+html[dir="rtl"] .faq__subtitle {
+  text-align: center !important;
+}
+
+html[dir="rtl"] .faq__title {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .faq__subtitle {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+  max-width: 36rem;
+}
+
 /* --- Services Page --- */
 .services-page {
   padding: calc(var(--header-height) + 4rem) 0 var(--space-section);
@@ -3453,38 +3561,40 @@ html[dir="rtl"] .product-card__badge {
 
 .about-company__row {
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: 24px;
-  align-items: start;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
   padding: clamp(2.5rem, 4vh, 3.5rem) 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .about-company__label {
-  grid-column: 4 / 6;
+  flex: 0 0 clamp(10.5rem, 18vw, 15rem);
   font-size: 0.95rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.8;
-  text-align: left;
+  text-align: start;
 }
 
 .about-company__value {
-  grid-column: 6 / 12;
+  flex: 1 1 auto;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--white);
   line-height: 2;
   margin: 0;
-  max-width: 56rem;
+  max-width: none;
+  text-align: start;
 }
 
 .about-company__board {
-  grid-column: 6 / 12;
+  flex: 1 1 auto;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-4) var(--space-8);
+  text-align: start;
 }
 
 .about-company__board-entry {
@@ -3493,6 +3603,7 @@ html[dir="rtl"] .product-card__badge {
   color: var(--white);
   line-height: 2;
   margin: 0;
+  text-align: start;
 }
 
 .about-company__board-entry strong {
@@ -3502,23 +3613,20 @@ html[dir="rtl"] .product-card__badge {
 
 @media (max-width: 768px) {
   .about-company__row {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
+    flex-direction: column;
+    gap: var(--space-3);
     padding: clamp(2.5rem, 5vh, 3.5rem) 0;
   }
 
   .about-company__label,
   .about-company__value,
   .about-company__board {
-    grid-column: 1 / -1;
+    flex: 1 1 auto;
+    width: 100%;
   }
 
   .about-company__board {
     grid-template-columns: 1fr;
-  }
-
-  .about-company__label {
-    text-align: left;
   }
 }
 
@@ -4670,11 +4778,14 @@ html[dir="rtl"] .product-card__badge {
 
 /* ═══════════════ RTL SUPPORT OVERRIDES ═══════════════ */
 html[dir="rtl"] {
+  /* Slightly larger base type for Arabic readability (older audience). */
+  font-size: 18px;
   text-align: right;
 }
 
 html[dir="rtl"] body {
   font-family: var(--font-ar);
+  line-height: 1.75;
 }
 
 /* Ensure font-family for headings and specific labels is Cairo when dir="rtl" */
@@ -4699,10 +4810,6 @@ html[dir="rtl"] .partners-grid-section__title,
 html[dir="rtl"] .faq__title,
 html[dir="rtl"] .faq__label,
 html[dir="rtl"] .faq__subtitle,
-html[dir="rtl"] .contact-cta__title,
-html[dir="rtl"] .contact-cta__desc,
-html[dir="rtl"] .footer-new__title,
-html[dir="rtl"] .footer-new__desc,
 html[dir="rtl"] .footer-new__links-col,
 html[dir="rtl"] .footer-new__bottom-left,
 html[dir="rtl"] .footer-new__bottom-right,
@@ -4799,9 +4906,6 @@ html[dir="rtl"] .about-message__panel,
 html[dir="rtl"] .about-company__row,
 html[dir="rtl"] .about-company__list,
 html[dir="rtl"] .culture-footer__btn,
-html[dir="rtl"] .faq__header,
-html[dir="rtl"] .contact-cta__hero,
-html[dir="rtl"] .footer-new__top-content,
 html[dir="rtl"] .footer-new__links-col,
 html[dir="rtl"] .proposal-view__aside,
 html[dir="rtl"] .job-sidebar-card,
@@ -4827,12 +4931,36 @@ html[dir="rtl"] .quote-contact__list-key {
   margin-right: 0;
   margin-left: auto;
 }
-html[dir="rtl"] .about-company__row {
-  flex-direction: row-reverse;
+
+/* Company snapshot: fixed label width keeps every row on the same edges. */
+html[dir="rtl"] .about-company__label {
+  flex-basis: clamp(11rem, 22vw, 16rem);
+  font-size: 1.05rem;
+  text-align: start !important;
 }
+
+html[dir="rtl"] .about-company__value,
+html[dir="rtl"] .about-company__board,
 html[dir="rtl"] .about-company__board-entry {
-  text-align: right;
+  text-align: start !important;
 }
+
+html[dir="rtl"] .about-company__board-entry {
+  font-size: 1.05rem;
+}
+
+html[dir="rtl"] .about-company__value {
+  font-size: 1.1rem;
+}
+
+html[dir="rtl"] .four-divisions__item-title {
+  font-size: 1.35rem;
+}
+
+html[dir="rtl"] .four-divisions__item-list li {
+  font-size: 1rem;
+}
+
 html[dir="rtl"] .request-quote__type-dot {
   margin-right: 0;
   margin-left: 12px;
@@ -4860,70 +4988,147 @@ html[dir="rtl"] .partner-page-card__num {
   left: 20px;
 }
 
-/* ── Contact CTA: RTL layout fixes ── */
+/* ── Contact CTA: RTL layout — mirror the English composition ── */
 
-/* Make the hero a column flex so title + desc stack vertically instead of overlapping */
 html[dir="rtl"] .contact-cta__content {
-  text-align: right !important;
+  text-align: center;
+  transform: translateY(-10vh) translateX(5vw);
 }
 
+/* Keep hero as an inline block (like LTR) so it stays centered as a unit */
 html[dir="rtl"] .contact-cta__hero {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-end !important;
+  display: inline-block !important;
+  position: relative;
+  text-align: center;
 }
 
 html[dir="rtl"] .contact-cta__title {
   font-family: var(--font-ar) !important;
-  font-size: 10vw;
-  line-height: 1.15;
+  font-size: 9vw !important;
+  line-height: 1.2;
+  text-align: center !important;
+  width: auto !important;
+  letter-spacing: 0;
+}
+
+/* Hang the copy under the title on the right — mirror of LTR left: 0 */
+html[dir="rtl"] .contact-cta__info {
+  position: absolute !important;
+  top: calc(100% + 0.85rem) !important;
+  right: 0 !important;
+  left: auto !important;
+  margin: 0 !important;
+  width: max-content;
+  max-width: min(32rem, 48vw);
   text-align: right !important;
+}
+
+html[dir="rtl"] .contact-cta__desc {
+  text-align: right !important;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .contact-cta__details {
+  gap: 0.85rem;
+  text-align: right;
+}
+
+html[dir="rtl"] .contact-cta__details li {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  direction: rtl;
+  justify-content: start;
+}
+
+html[dir="rtl"] .contact-cta__details-key {
+  text-align: right;
+  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+html[dir="rtl"] .contact-cta__details-value {
+  text-align: right;
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .contact-cta__details-value[dir="ltr"] {
+  text-align: right;
+  unicode-bidi: isolate;
+}
+
+/* CTA on the left, close to the headline — mirror of LTR right-side CTA */
+html[dir="rtl"] .contact-cta__btn {
+  left: 33% !important;
+  right: auto !important;
+  top: 48% !important;
+  transform: translate(-50%, -50%);
+  min-width: 0;
+  padding: 1.15rem 1.75rem;
+  text-align: center;
+  direction: rtl;
+}
+
+html[dir="rtl"] .contact-cta__btn span {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+  white-space: nowrap;
+  text-align: center;
+  display: block;
   width: 100%;
 }
 
-/* Pull the description out of the absolute overlap — position it below the title */
-html[dir="rtl"] .contact-cta__desc {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  margin-top: 1.5rem;
-  margin-left: auto;
-  text-align: right !important;
-}
-
-/* Mirror the button to the left side of the viewport */
-html[dir="rtl"] .contact-cta__btn {
-  left: 15% !important;
-  right: auto !important;
-  transform: translate(-50%, -50%);
-}
-
-/* Mirror the expanding circle to originate from the left side */
+/* Expanding rect originates from the RTL CTA position */
 html[dir="rtl"] .contact-cta__bg {
-  clip-path: circle(var(--clip-radius, 80px) at 15% 75%);
+  clip-path: inset(42% 59% 48% 25%);
 }
 
-/* Mobile: the 768px stacked layout already resets positions, just fix text alignment */
+/* Mobile: stacked centered layout */
 @media (max-width: 768px) {
+  html[dir="rtl"] .contact-cta__content {
+    transform: none;
+  }
   html[dir="rtl"] .contact-cta__hero {
+    display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
+    width: 100%;
   }
   html[dir="rtl"] .contact-cta__title {
     text-align: center !important;
+    font-size: clamp(2.75rem, 12vw, 3.75rem);
+    width: 100%;
+  }
+  html[dir="rtl"] .contact-cta__info {
+    position: static !important;
+    text-align: center !important;
+    margin: 0 !important;
+    max-width: 22rem;
+    width: 100%;
   }
   html[dir="rtl"] .contact-cta__desc {
     text-align: center !important;
-    margin-top: 0 !important;
+  }
+  html[dir="rtl"] .contact-cta__details {
+    margin-inline: auto;
+    text-align: right;
+  }
+  html[dir="rtl"] .contact-cta__details li {
+    grid-template-columns: 7rem minmax(0, 1fr);
   }
   html[dir="rtl"] .contact-cta__btn {
     position: relative !important;
     left: auto !important;
     right: auto !important;
+    top: auto !important;
     transform: none !important;
   }
   html[dir="rtl"] .contact-cta__bg {
-    clip-path: circle(var(--clip-radius, 70px) at 50% 68%) !important;
+    clip-path: inset(62% 28% 28% 28%) !important;
   }
 }
+
+
 

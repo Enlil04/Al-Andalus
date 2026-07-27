@@ -196,6 +196,23 @@
   color: var(--gray-500);
 }
 
+.request-quote__required {
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-weight: 700;
+  color: var(--brand-pink, #c45c6a);
+}
+
+.request-quote__field.is-invalid input,
+.request-quote__field.is-invalid select,
+.request-quote__field.is-invalid textarea,
+.request-quote__field input.is-invalid,
+.request-quote__field select.is-invalid,
+.request-quote__field textarea.is-invalid {
+  border-color: var(--brand-pink, #c45c6a);
+  box-shadow: 0 0 0 4px var(--brand-pink-soft, rgba(196, 92, 106, 0.15));
+}
+
 .request-quote__field input,
 .request-quote__field select,
 .request-quote__field textarea,

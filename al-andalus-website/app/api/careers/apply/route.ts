@@ -1,18 +1,55 @@
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import { NextResponse } from "next/server";
+import path from "path";
 import { clientKey, rateLimit } from "@/lib/rateLimit";
-import { sendJobApplicationNotification } from "@/lib/jobApplicationEmail";
+import {
+  sanitizeText,
+  sendJobApplicationNotification,
+} from "@/lib/email/formNotifications";
+import { isValidEmail, isValidPhone } from "@/lib/formValidation";
+import { validateCvUpload } from "@/lib/cvFileValidation";
 
 const MAX_CV_BYTES = 5 * 1024 * 1024; // 5 MB
 
-async function resolveJobId(
+type OpenJob = { id: string; title: string };
+
+function jobTitleFromDoc(doc: Record<string, unknown>): string {
+  const title = doc.title;
+  if (typeof title === "string" && title.trim()) return title.trim().slice(0, 200);
+  if (title && typeof title === "object") {
+    const localized = title as Record<string, unknown>;
+    for (const key of ["en", "ar"]) {
+      const value = localized[key];
+      if (typeof value === "string" && value.trim()) {
+        return value.trim().slice(0, 200);
+      }
+    }
+  }
+  return "Job opening";
+}
+
+async function resolveOpenJob(
   payload: Awaited<ReturnType<typeof getPayload>>,
   job: FormDataEntryValue | null,
   jobSlug: FormDataEntryValue | null,
-): Promise<string | null> {
+): Promise<OpenJob | null> {
   if (job) {
-    return String(job);
+    try {
+      const doc = await payload.findByID({
+        collection: "jobs",
+        id: String(job),
+        overrideAccess: true,
+      });
+      if (doc && (doc as { status?: string }).status === "open") {
+        return {
+          id: String(doc.id),
+          title: jobTitleFromDoc(doc as Record<string, unknown>),
+        };
+      }
+    } catch {
+      // Invalid ID or missing doc — fall through to slug lookup.
+    }
   }
 
   if (!jobSlug) {
@@ -31,8 +68,10 @@ async function resolveJobId(
     },
   });
 
-  const match = docs[0];
-  return match ? String(match.id) : null;
+  const match = docs[0] as Record<string, unknown> | undefined;
+  if (!match) return null;
+
+  return { id: String(match.id), title: jobTitleFromDoc(match) };
 }
 
 export async function POST(request: Request) {
@@ -50,16 +89,19 @@ export async function POST(request: Request) {
     );
   }
 
+  let documentId: string | number | null = null;
+  let payload: Awaited<ReturnType<typeof getPayload>> | null = null;
+
   try {
     const formData = await request.formData();
-    const payload = await getPayload({ config: configPromise });
+    payload = await getPayload({ config: configPromise });
 
     const job = formData.get("job");
     const jobSlug = formData.get("jobSlug");
-    const jobTitle = formData.get("jobTitle");
-    const fullName = formData.get("fullName");
-    const email = formData.get("email");
-    const phone = formData.get("phone");
+    const fullName = sanitizeText(formData.get("fullName"), 200);
+    const email = sanitizeText(formData.get("email"), 200);
+    const phone = sanitizeText(formData.get("phone"), 50);
+    const coverLetter = sanitizeText(formData.get("coverLetter"), 5000);
     const cv = formData.get("cv");
 
     if (!fullName || !email || !phone || !cv || !(cv instanceof File)) {
@@ -69,14 +111,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const resolvedJobId = await resolveJobId(payload, job, jobSlug);
-    const resolvedJobTitle = jobTitle
-      ? String(jobTitle).slice(0, 200)
-      : "";
-
-    if (!resolvedJobId && !resolvedJobTitle) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
-        { error: "Job information is missing." },
+        { error: "A valid email address is required." },
+        { status: 400 },
+      );
+    }
+
+    if (!isValidPhone(phone)) {
+      return NextResponse.json(
+        { error: "A valid phone number is required." },
         { status: 400 },
       );
     }
@@ -88,61 +132,68 @@ export async function POST(request: Request) {
       );
     }
 
-    const allowedTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    const allowedExtensions = [".pdf", ".doc", ".docx"];
-    const lowerName = cv.name.toLowerCase();
-    const hasAllowedExtension = allowedExtensions.some((ext) =>
-      lowerName.endsWith(ext),
-    );
-    const hasAllowedMime = !cv.type || allowedTypes.includes(cv.type);
-    if (!hasAllowedExtension || !hasAllowedMime) {
+    const buffer = Buffer.from(await cv.arrayBuffer());
+    const cvCheck = validateCvUpload({
+      filename: cv.name || "resume.pdf",
+      mimeType: cv.type,
+      buffer,
+    });
+    if (!cvCheck.ok) {
+      return NextResponse.json({ error: cvCheck.error }, { status: 400 });
+    }
+
+    const openJob = await resolveOpenJob(payload, job, jobSlug);
+    if (!openJob) {
       return NextResponse.json(
-        { error: "CV must be a PDF or Word document." },
+        { error: "This job opening is not available." },
         { status: 400 },
       );
     }
 
-    const buffer = Buffer.from(await cv.arrayBuffer());
+    const safeUploadName = path.basename(cv.name || `resume.${cvCheck.kind}`);
+
     const document = await payload.create({
       collection: "documents",
       overrideAccess: true,
       data: {
-        title: `${String(fullName).slice(0, 100)} CV`,
+        title: `${fullName.slice(0, 100)} CV`,
       },
       file: {
         data: buffer,
-        mimetype: cv.type || "application/pdf",
-        name: cv.name,
-        size: cv.size,
+        mimetype: cvCheck.mimeType,
+        name: safeUploadName,
+        size: buffer.length,
       },
     });
-
-    const applicationData = {
-      fullName: String(fullName).slice(0, 200),
-      email: String(email).slice(0, 200),
-      phone: String(phone).slice(0, 50),
-      cv: document.id,
-      status: "new" as const,
-      ...(resolvedJobId ? { job: resolvedJobId } : {}),
-      ...(resolvedJobTitle ? { jobTitle: resolvedJobTitle } : {}),
-    };
+    documentId = document.id;
 
     await payload.create({
       collection: "job-applications",
       overrideAccess: true,
-      data: applicationData,
+      data: {
+        fullName,
+        email,
+        phone,
+        cv: document.id,
+        status: "new",
+        job: openJob.id,
+        jobTitle: openJob.title,
+        ...(coverLetter ? { coverLetter } : {}),
+      },
     });
 
     try {
       await sendJobApplicationNotification(payload, {
-        fullName: applicationData.fullName,
-        email: applicationData.email,
-        phone: applicationData.phone,
-        jobTitle: resolvedJobTitle || "Job opening",
+        fullName,
+        email,
+        phone,
+        jobTitle: openJob.title,
+        coverLetter,
+        resume: {
+          filename: safeUploadName,
+          content: buffer,
+          contentType: cvCheck.mimeType,
+        },
       });
     } catch (emailError) {
       console.error("Job application email notification failed:", emailError);
@@ -150,6 +201,17 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
+    if (payload && documentId != null) {
+      try {
+        await payload.delete({
+          collection: "documents",
+          id: documentId,
+          overrideAccess: true,
+        });
+      } catch (cleanupError) {
+        console.error("Failed to clean up orphaned CV document:", cleanupError);
+      }
+    }
     console.error("Job Application Error:", error);
     return NextResponse.json(
       { error: "An error occurred while submitting the application." },

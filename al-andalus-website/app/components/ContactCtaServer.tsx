@@ -6,10 +6,16 @@ export default async function ContactCtaServer() {
   return (
     <ContactCta
       headline={contactCta.headline}
-      lines={contactCta.lines}
+      description={contactCta.description}
       cta={contactCta.cta}
       ctaLink={contactCta.ctaLink}
       backgroundImageUrl={contactCta.backgroundImageUrl}
+      shortcode={contactCta.shortcode}
+      phone={contactCta.phone}
+      phoneHref={contactCta.phoneHref}
+      hours={contactCta.hours}
+      locations={contactCta.locations}
+      labels={contactCta.labels}
     />
   );
 }

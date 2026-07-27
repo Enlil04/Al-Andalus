@@ -1,7 +1,11 @@
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import { NextResponse } from "next/server";
-import { sendInsuranceQuoteNotification } from "@/lib/insuranceQuoteEmail";
+import {
+  sanitizeText,
+  sendInsuranceQuoteNotification,
+} from "@/lib/email/formNotifications";
+import { isValidEmail, isValidPhone } from "@/lib/formValidation";
 import { clientKey, rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
@@ -23,12 +27,34 @@ export async function POST(request: Request) {
     const data = await request.json();
     const payload = await getPayload({ config: configPromise });
 
-    if (!data.fullName || !data.email || !data.phone || !data.insuranceService) {
+    const fullName = sanitizeText(data.fullName ?? data.name, 200);
+    const email = sanitizeText(data.email, 200);
+    const phone = sanitizeText(data.phone, 50);
+    const company = sanitizeText(data.company, 200);
+    const budget = sanitizeText(data.budget, 100);
+    const city = sanitizeText(data.city, 100);
+    const details = sanitizeText(data.details ?? data.message, 5000);
+
+    if (!fullName || !email || !phone || !data.insuranceService) {
       return NextResponse.json(
         {
           error:
             "Full name, email, phone, and insurance service are required.",
         },
+        { status: 400 },
+      );
+    }
+
+    if (!isValidEmail(email)) {
+      return NextResponse.json(
+        { error: "A valid email address is required." },
+        { status: 400 },
+      );
+    }
+
+    if (!isValidPhone(phone)) {
+      return NextResponse.json(
+        { error: "A valid phone number is required." },
         { status: 400 },
       );
     }
@@ -56,13 +82,7 @@ export async function POST(request: Request) {
       insuranceServiceId = docs[0].id;
     }
 
-    const fullName = String(data.fullName).slice(0, 200);
-    const email = String(data.email).slice(0, 200);
-    const phone = String(data.phone).slice(0, 50);
-    const city = data.city ? String(data.city).slice(0, 100) : "";
-    const details = data.details ? String(data.details).slice(0, 5000) : "";
-
-    let serviceLabel = String(data.insuranceService).slice(0, 200);
+    let serviceLabel = sanitizeText(data.insuranceService, 200);
     try {
       const product = await payload.findByID({
         collection: "products",
@@ -78,6 +98,14 @@ export async function POST(request: Request) {
     } catch {
       // Keep the submitted service id/slug as the email label.
     }
+
+    // Prefer an explicit message; otherwise include city in project details.
+    const projectDetails = [
+      details,
+      city && !details.includes(city) ? `Preferred branch / city: ${city}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
 
     await payload.create({
       collection: "insurance-requests",
@@ -99,9 +127,10 @@ export async function POST(request: Request) {
         fullName,
         email,
         phone,
-        insuranceService: serviceLabel,
-        city,
-        details,
+        company,
+        service: serviceLabel,
+        budget,
+        message: projectDetails,
       });
     } catch (emailError) {
       console.error("Insurance quote email notification failed:", emailError);

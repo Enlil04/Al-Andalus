@@ -269,18 +269,27 @@ export default function GSAPAnimations() {
           });
         }
 
-        /* ── Contact CTA: scroll background expansion ── */
+        /* ── Contact CTA: scroll background expansion (rectangle) ── */
+        const isRtl = document.documentElement.getAttribute("dir") === "rtl";
+        const contactStartClip = (() => {
+          if (window.innerWidth <= 768) return "inset(62% 28% 28% 28%)";
+          if (isRtl) return "inset(42% 59% 48% 25%)";
+          if (window.innerWidth <= 900) return "inset(66% 5% 26% 82%)";
+          return "inset(70% 27% 22% 57%)";
+        })();
+
         gsap.fromTo(
           ".contact-cta__bg",
-          { "--clip-radius": () => (window.innerWidth <= 900 ? "60px" : "80px") },
+          { clipPath: contactStartClip },
           {
-            "--clip-radius": "1800px",
+            clipPath: "inset(0% 0% 0% 0%)",
             ease: "power1.inOut",
             scrollTrigger: {
               trigger: ".contact-cta",
-              start: "top 95%",
-              end: "bottom center",
-              scrub: 1.5,
+              start: "top 90%",
+              // Finish expanding once the section fills the viewport
+              end: "top top",
+              scrub: 1,
             },
           },
         );
@@ -288,7 +297,7 @@ export default function GSAPAnimations() {
         /* ── Contact CTA: active class toggle on scroll ── */
         ScrollTrigger.create({
           trigger: ".contact-cta",
-          start: "top 35%",
+          start: "top 55%",
           end: "bottom center",
           toggleClass: "is-active",
         });
@@ -296,17 +305,17 @@ export default function GSAPAnimations() {
         /* ── Contact CTA: button scroll parallax and scaling ── */
         gsap.fromTo(
           ".contact-cta__btn",
-          { scale: 0.8, y: 40, rotation: -8 },
+          { scale: 0.9, y: 28, rotation: -2 },
           {
-            scale: 1.4,
-            y: -40,
-            rotation: 8,
+            scale: 1.12,
+            y: -28,
+            rotation: 2,
             ease: "power1.out",
             scrollTrigger: {
               trigger: ".contact-cta",
               start: "top bottom",
-              end: "bottom center",
-              scrub: 1.5,
+              end: "top top",
+              scrub: 1,
             },
           },
         );

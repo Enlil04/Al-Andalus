@@ -295,6 +295,8 @@ export default async function Home() {
           </div>
         </section>
 
+        <ApplicationSection isHomepage />
+
         {/* ═══════════════ WHY CHOOSE AL-ANDALUS ═══════════════ */}
         <section className="vs-section" id="why-us">
           <div className="vs-overlay">
@@ -532,8 +534,6 @@ export default async function Home() {
 
         {/* ═══════════════ FAQ ═══════════════ */}
         <FAQ items={faqItems} />
-
-        <ApplicationSection isHomepage />
     </PageShell>
   );
 }

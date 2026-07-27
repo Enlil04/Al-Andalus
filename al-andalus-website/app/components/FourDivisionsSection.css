@@ -201,6 +201,17 @@
   line-height: 1.4;
 }
 
+html[dir="rtl"] .four-divisions__item-list li {
+  padding-left: 0;
+  padding-right: 1.25rem;
+  text-align: right;
+}
+
+html[dir="rtl"] .four-divisions__item-list li::before {
+  left: auto;
+  right: 0;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .four-divisions__layout {

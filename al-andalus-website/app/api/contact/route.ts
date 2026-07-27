@@ -1,7 +1,11 @@
 import { getPayload } from "payload";
 import configPromise from "@/payload.config";
 import { NextResponse } from "next/server";
-import { sendContactNotification } from "@/lib/contactEmail";
+import {
+  sanitizeText,
+  sendContactNotification,
+} from "@/lib/email/formNotifications";
+import { isValidEmail, isValidPhone } from "@/lib/formValidation";
 import { clientKey, rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
@@ -23,21 +27,41 @@ export async function POST(request: Request) {
     const data = await request.json();
     const payload = await getPayload({ config: configPromise });
 
-    if (!data.name || !data.email || !data.message) {
+    const name = sanitizeText(data.name, 200);
+    const email = sanitizeText(data.email, 200);
+    const message = sanitizeText(data.message, 5000);
+    const phone = sanitizeText(data.phone, 50);
+    const company = sanitizeText(data.company, 200);
+    const subject =
+      sanitizeText(data.subject, 200) || "New Contact Form Submission";
+
+    if (!name || !email || !message) {
       return NextResponse.json(
         { error: "Name, email, and message are required." },
         { status: 400 },
       );
     }
 
+    if (!isValidEmail(email)) {
+      return NextResponse.json(
+        { error: "A valid email address is required." },
+        { status: 400 },
+      );
+    }
+
+    if (phone && !isValidPhone(phone, { required: false })) {
+      return NextResponse.json(
+        { error: "Please enter a valid phone number." },
+        { status: 400 },
+      );
+    }
+
     const submission = {
-      name: String(data.name).slice(0, 200),
-      email: String(data.email).slice(0, 200),
-      phone: data.phone ? String(data.phone).slice(0, 50) : "",
-      subject: data.subject
-        ? String(data.subject).slice(0, 200)
-        : "New Contact Form Submission",
-      message: String(data.message).slice(0, 5000),
+      name,
+      email,
+      phone,
+      subject,
+      message,
     };
 
     await payload.create({
@@ -51,7 +75,10 @@ export async function POST(request: Request) {
 
     // Dashboard save is primary; email failure should not block the visitor.
     try {
-      await sendContactNotification(payload, submission);
+      await sendContactNotification(payload, {
+        ...submission,
+        company,
+      });
     } catch (emailError) {
       console.error("Contact email notification failed:", emailError);
     }

@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getServices } from "@/lib/services";
+import { getServices, getServiceQuoteHref } from "@/lib/services";
 import PageShell from "../../../components/PageShell";
 import PageBanner from "../../../components/PageBanner";
 import ScrollReveal from "../../../components/ScrollReveal";
@@ -103,6 +103,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       ? "حماية الأصول وضمان الاستمرارية"
       : "Safeguarding Assets & Supporting Continuity";
   const quoteButtonLabel = locale === "ar" ? "طلب تسعيرة" : "Request a Quote";
+  const quoteHref = getServiceQuoteHref(slug);
 
   return (
     <PageShell>
@@ -128,7 +129,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={2}>
-                <Link href="/request-quote" className="btn">
+                <Link href={quoteHref} className="btn">
                   {quoteButtonLabel}
                   <svg
                     className="btn-arrow"

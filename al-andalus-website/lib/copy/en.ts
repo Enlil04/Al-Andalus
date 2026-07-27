@@ -314,13 +314,17 @@ export const siteCopy = {
 
   contact: {
     headline: "CONTACT US",
-    lines: [
-      "Talk to us about your coverage.",
-      "Whether you need a motor policy, health coverage for your team, or commercial insurance for a new project — start with a conversation.",
-      "Shortcode 7366 · +964 771 000 6000",
-      "Baghdad · Basrah · Erbil",
-    ],
-    cta: "GO TO FORM",
+    description:
+      "Every insurance need is unique. Whether you're protecting your vehicle, your people, or your business — our specialists are ready with expert guidance.",
+    cta: "REQUEST A QUOTE",
+    labels: {
+      shortcode: "Shortcode",
+      phone: "Phone",
+      hours: "Hours",
+      locations: "Locations",
+    },
+    hours: "Sat–Thu · 8:30 AM – 4:30 PM",
+    locations: "Baghdad · Basrah · Erbil",
   },
 
   footer: {
@@ -430,6 +434,11 @@ export const siteCopy = {
       success:
         "Thank you — we've received your request. Our team will be in touch via your preferred branch.",
       errorPrefix: "Something went wrong. Please try again or call",
+      requiredMark: "required",
+      requiredFieldsError: "Please fill in the required fields.",
+      invalidEmailError: "Please enter a valid email address.",
+      invalidPhoneError: "Please enter a valid phone number.",
+      invalidReturnDateError: "Return date must be on or after the departure date.",
       insuranceTypes: [
         { id: "travel", label: "Travel Insurance" },
         { id: "motor", label: "Motor Insurance" },
@@ -482,6 +491,10 @@ export const siteCopy = {
       submitting: "Sending...",
       success: "Thank you — your message has been sent successfully.",
       error: "Something went wrong. Please try again.",
+      requiredMark: "required",
+      requiredFieldsError: "Please fill in the required fields.",
+      invalidEmailError: "Please enter a valid email address.",
+      invalidPhoneError: "Please enter a valid phone number.",
     },
   },
 } as const;

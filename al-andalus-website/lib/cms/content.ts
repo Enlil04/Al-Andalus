@@ -15,7 +15,6 @@ import { IMAGE_FALLBACKS } from "./fallbacks";
 import { serializeLexical } from "./lexical";
 import { getMediaUrl } from "./media";
 import { getCMSPayload } from "./payload";
-import { slugify } from "./format";
 
 const SERVICE_CATEGORIES = new Set<ServiceCategoryId>([
   "personal",
@@ -68,10 +67,21 @@ export type AboutPreviewContent = {
 
 export type ContactCtaContent = {
   headline: string;
-  lines: readonly string[];
+  description: string;
   cta: string;
   ctaLink: string;
   backgroundImageUrl: string | null;
+  shortcode: string;
+  phone: string;
+  phoneHref: string;
+  hours: string;
+  locations: string;
+  labels: {
+    shortcode: string;
+    phone: string;
+    hours: string;
+    locations: string;
+  };
 };
 
 export type WhyUsContent = {
@@ -738,38 +748,124 @@ export const fetchPagesContent = cache(async function fetchPagesContent(payload?
   };
 })
 
+function formatPhoneDisplay(phone: string): string {
+  const compact = phone.replace(/[^\d+]/g, "");
+  const match = compact.match(/^\+?964(\d{3})(\d{3})(\d{4})$/);
+  if (match) return `+964 ${match[1]} ${match[2]} ${match[3]}`;
+  return phone.trim();
+}
+
+function toTelHref(phone: string): string {
+  const digits = phone.replace(/[^\d+]/g, "");
+  return digits.startsWith("+") ? `tel:${digits}` : `tel:+${digits}`;
+}
+
+/** Drop legacy contact-detail lines from CMS body copy (now shown as labeled rows). */
+function sanitizeContactDescription(raw: string, fallback: string): string {
+  const cleaned = splitLines(raw)
+    .map((line) => {
+      let compact = line.replace(/\s+/g, " ").trim();
+      if (!compact) return "";
+      compact = compact
+        .replace(/\s*(Shortcode|الرقم المختصر)\b.*$/i, "")
+        .trim();
+      compact = compact.replace(/\s*\+?\s*964[\d\s·.\-]+.*$/i, "").trim();
+      if (
+        /^(baghdad|basrah|erbil|بغداد|البصرة|أربيل)/i.test(compact) &&
+        compact.length < 60
+      ) {
+        return "";
+      }
+      return compact;
+    })
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
+  return cleaned || fallback;
+}
+
+const LEGACY_CONTACT_CTA = new Set([
+  "GO TO FORM",
+  "Go to form",
+  "اذهب إلى النموذج",
+]);
+
+function contactCtaFallback(locale: "en" | "ar"): ContactCtaContent {
+  const siteCopy = getSiteCopy(locale);
+  const rawPhone = "+9647710006000";
+  return {
+    headline: siteCopy.contact.headline,
+    description: siteCopy.contact.description,
+    cta: siteCopy.contact.cta,
+    ctaLink: "/request-quote",
+    backgroundImageUrl: null,
+    shortcode: "7366",
+    phone: formatPhoneDisplay(rawPhone),
+    phoneHref: toTelHref(rawPhone),
+    hours: siteCopy.contact.hours,
+    locations: siteCopy.contact.locations,
+    labels: { ...siteCopy.contact.labels },
+  };
+}
+
 export const fetchContactCtaContent = cache(async function fetchContactCtaContent(
   payload?: Payload,
 ): Promise<ContactCtaContent> {
-  const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
-  const siteCopy = getSiteCopy(currentLocale);
-  const siteSettings = await cms.findGlobal({ slug: "site-settings" });
-  const contactCtaGroup = (siteSettings.contactCta ?? null) as Record<
-    string,
-    unknown
-  > | null;
-  const contactDescription = pickLocaleText(
-    contactCtaGroup,
-    "description",
-    currentLocale,
-  );
+  try {
+    const cms = payload ?? (await getCMSPayload());
+    const siteCopy = getSiteCopy(currentLocale);
+    const siteSettings = await cms.findGlobal({ slug: "site-settings" });
+    const contactCtaGroup = (siteSettings.contactCta ?? null) as Record<
+      string,
+      unknown
+    > | null;
+    const contactGroup = (siteSettings.contact ?? null) as Record<
+      string,
+      unknown
+    > | null;
+    const contactDescription = pickLocaleText(
+      contactCtaGroup,
+      "description",
+      currentLocale,
+    );
+    const rawPhone =
+      normalizeCmsText(contactGroup?.phone) || "+9647710006000";
+    const shortcode =
+      normalizeCmsText(contactGroup?.shortNumber) || "7366";
+    const cmsCta = pickLocaleText(contactCtaGroup, "buttonText", currentLocale);
 
-  return {
-    headline:
-      pickLocaleText(contactCtaGroup, "title", currentLocale) ||
-      siteCopy.contact.headline,
-    lines: contactDescription
-      ? splitLines(contactDescription)
-      : [...siteCopy.contact.lines],
-    cta:
-      pickLocaleText(contactCtaGroup, "buttonText", currentLocale) ||
-      siteCopy.contact.cta,
-    ctaLink: normalizeCmsText(contactCtaGroup?.buttonLink) || "/request-quote",
-    backgroundImageUrl: getMediaUrl(
-      contactCtaGroup?.backgroundImage,
-    ),
-  };
+    return {
+      headline:
+        pickLocaleText(contactCtaGroup, "title", currentLocale) ||
+        siteCopy.contact.headline,
+      description: contactDescription
+        ? sanitizeContactDescription(
+            contactDescription,
+            siteCopy.contact.description,
+          )
+        : siteCopy.contact.description,
+      cta:
+        cmsCta && !LEGACY_CONTACT_CTA.has(cmsCta)
+          ? cmsCta
+          : siteCopy.contact.cta,
+      ctaLink: normalizeCmsText(contactCtaGroup?.buttonLink) || "/request-quote",
+      backgroundImageUrl: getMediaUrl(contactCtaGroup?.backgroundImage),
+      shortcode,
+      phone: formatPhoneDisplay(rawPhone),
+      phoneHref: toTelHref(rawPhone),
+      hours: siteCopy.contact.hours,
+      locations: siteCopy.contact.locations,
+      labels: { ...siteCopy.contact.labels },
+    };
+  } catch (error) {
+    console.error(
+      "[cms] fetchContactCtaContent failed — using static fallback:",
+      error,
+    );
+    return contactCtaFallback(currentLocale);
+  }
 })
 
 export const fetchAboutPageContent = cache(async function fetchAboutPageContent(payload?: Payload): Promise<AboutPageContent> {
@@ -1304,64 +1400,66 @@ export const fetchPartners = cache(async function fetchPartners(
 export const fetchOpenJobs = cache(async function fetchOpenJobs(
   payload?: Payload,
 ): Promise<JobListItem[]> {
-  const cms = payload ?? (await getCMSPayload());
   const currentLocale = await getLocale();
-  const { docs } = await cms.find({
-    collection: "jobs",
-    limit: 100,
-    sort: "-createdAt",
-    overrideAccess: true,
-    where: { status: { equals: "open" } },
-  });
 
-  if (docs.length === 0) {
-    const siteCopy = getSiteCopy(currentLocale);
-    return siteCopy.jobsPage.listings.jobs.map((job) => ({
-      slug: slugify(job.title),
-      title: job.title,
-      department: job.category,
-    }));
+  try {
+    const cms = payload ?? (await getCMSPayload());
+    const { docs } = await cms.find({
+      collection: "jobs",
+      limit: 100,
+      sort: "-createdAt",
+      overrideAccess: true,
+      where: { status: { equals: "open" } },
+    });
+
+    return docs.map((job) => {
+      const record = job as Record<string, unknown>;
+      return {
+        slug: record.slug as string,
+        title: pickLocaleText(record, "title", currentLocale),
+        department: pickLocaleText(record, "department", currentLocale),
+      };
+    });
+  } catch (error) {
+    console.error("[cms] fetchOpenJobs failed — returning empty list:", error);
+    return [];
   }
-
-  return docs.map((job) => {
-    const record = job as Record<string, unknown>;
-    return {
-      slug: record.slug as string,
-      title: pickLocaleText(record, "title", currentLocale),
-      department: pickLocaleText(record, "department", currentLocale),
-    };
-  });
 })
 
 export async function fetchJobBySlug(
   slug: string,
   payload?: Payload,
 ): Promise<Record<string, unknown> | null> {
-  const cms = payload ?? (await getCMSPayload());
-  const currentLocale = await getLocale();
-  const { docs } = await cms.find({
-    collection: "jobs",
-    limit: 1,
-    overrideAccess: true,
-    where: {
-      and: [
-        { slug: { equals: slug } },
-        { status: { equals: "open" } },
-      ],
-    },
-  });
+  try {
+    const cms = payload ?? (await getCMSPayload());
+    const currentLocale = await getLocale();
+    const { docs } = await cms.find({
+      collection: "jobs",
+      limit: 1,
+      overrideAccess: true,
+      where: {
+        and: [
+          { slug: { equals: slug } },
+          { status: { equals: "open" } },
+        ],
+      },
+    });
 
-  const job = (docs[0] as Record<string, unknown>) ?? null;
-  if (!job) return null;
+    const job = (docs[0] as Record<string, unknown>) ?? null;
+    if (!job) return null;
 
-  return {
-    ...job,
-    title: pickLocaleText(job, "title", currentLocale),
-    department: pickLocaleText(job, "department", currentLocale),
-    location: pickLocaleText(job, "location", currentLocale),
-    description: pickLocaleValue(job, "description", currentLocale),
-    requirements: pickLocaleValue(job, "requirements", currentLocale),
-  };
+    return {
+      ...job,
+      title: pickLocaleText(job, "title", currentLocale),
+      department: pickLocaleText(job, "department", currentLocale),
+      location: pickLocaleText(job, "location", currentLocale),
+      description: pickLocaleValue(job, "description", currentLocale),
+      requirements: pickLocaleValue(job, "requirements", currentLocale),
+    };
+  } catch (error) {
+    console.error("[cms] fetchJobBySlug failed:", error);
+    return null;
+  }
 }
 
 export const fetchQuoteProducts = cache(async function fetchQuoteProducts(

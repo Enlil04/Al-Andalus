@@ -311,6 +311,44 @@ export function getServices(locale: string): Service[] {
   return locale === "ar" ? servicesAr : servicesEn;
 }
 
+/** Quote form insurance tabs supported by `/request-quote?type=`. */
+export const quoteInsuranceTypeIds = [
+  "travel",
+  "motor",
+  "health",
+  "fire",
+  "engineering",
+] as const;
+
+export type QuoteInsuranceTypeId = (typeof quoteInsuranceTypeIds)[number];
+
+/** Map a service page slug to the closest quote-form type (when one exists). */
+const SERVICE_QUOTE_TYPE_BY_SLUG: Record<string, QuoteInsuranceTypeId> = {
+  travel: "travel",
+  motor: "motor",
+  health: "health",
+  fire: "fire",
+  engineering: "engineering",
+  "medical-malpractice": "health",
+  glass: "fire",
+  burglary: "fire",
+  "public-liability": "fire",
+  "fidelity-guarantee": "fire",
+};
+
+export function getServiceQuoteType(slug: string): QuoteInsuranceTypeId | null {
+  const canonical = normalizeServiceSlug(slug);
+  return SERVICE_QUOTE_TYPE_BY_SLUG[canonical] ?? null;
+}
+
+/** Deep-link to the quote form, preselecting the matching insurance type when possible. */
+export function getServiceQuoteHref(slug: string): string {
+  const type = getServiceQuoteType(slug);
+  return type
+    ? `/request-quote?type=${type}#request-form`
+    : "/request-quote#request-form";
+}
+
 export function getServicesByCategory(categoryId: ServiceCategoryId, locale: string): Service[] {
   return getServices(locale).filter((service) => service.category === categoryId);
 }

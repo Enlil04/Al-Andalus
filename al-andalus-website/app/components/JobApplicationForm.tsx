@@ -4,7 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
+import FormFieldLabel from "./FormFieldLabel";
 import { useLocale } from "./LocaleProvider";
+import {
+  clearInvalidMarks,
+  getEmptyRequiredFields,
+  isValidEmail,
+  isValidPhone,
+  markInvalidFields,
+} from "@/lib/formValidation";
 import "./RequestQuote.css";
 
 type JobApplicationFormProps = {
@@ -45,6 +53,10 @@ export default function JobApplicationForm({
     backToJob: isAr ? "العودة إلى الوظيفة" : "Back to job",
     backToJobs: isAr ? "جميع الوظائف" : "All jobs",
     error: isAr ? "تعذّر إرسال الطلب. يرجى المحاولة مرة أخرى." : "Could not submit your application. Please try again.",
+    requiredMark: isAr ? "مطلوبة" : "required",
+    requiredFieldsError: isAr ? "يرجى ملء الحقول المطلوبة." : "Please fill in the required fields.",
+    invalidEmailError: isAr ? "يرجى إدخال بريد إلكتروني صالح." : "Please enter a valid email address.",
+    invalidPhoneError: isAr ? "يرجى إدخال رقم هاتف صالح." : "Please enter a valid phone number.",
   };
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -56,7 +68,35 @@ export default function JobApplicationForm({
     setErrorMessage("");
 
     const form = event.currentTarget;
+    clearInvalidMarks(form);
+
+    const emptyRequired = getEmptyRequiredFields(form);
+    if (emptyRequired.length > 0) {
+      markInvalidFields(emptyRequired, true);
+      emptyRequired[0]?.focus();
+      setStatus("error");
+      setErrorMessage(copy.requiredFieldsError);
+      return;
+    }
+
     const data = new FormData(form);
+    const email = data.get("email")?.toString().trim() ?? "";
+    const phone = data.get("phone")?.toString().trim() ?? "";
+
+    if (!isValidEmail(email)) {
+      const emailInput = form.querySelector<HTMLInputElement>("#email");
+      if (emailInput) markInvalidFields([emailInput], true);
+      setStatus("error");
+      setErrorMessage(copy.invalidEmailError);
+      return;
+    }
+    if (!isValidPhone(phone)) {
+      const phoneInput = form.querySelector<HTMLInputElement>("#phone");
+      if (phoneInput) markInvalidFields([phoneInput], true);
+      setStatus("error");
+      setErrorMessage(copy.invalidPhoneError);
+      return;
+    }
 
     if (jobId != null) {
       data.set("job", String(jobId));
@@ -77,6 +117,7 @@ export default function JobApplicationForm({
       }
 
       form.reset();
+      clearInvalidMarks(form);
       setStatus("success");
     } catch (error) {
       setStatus("error");
@@ -127,18 +168,32 @@ export default function JobApplicationForm({
         </aside>
 
         <div className="request-quote__main about-grid__cols-7-12">
-          <form className="request-quote__form" onSubmit={handleSubmit} noValidate>
+          <form
+            className="request-quote__form"
+            onSubmit={handleSubmit}
+            noValidate
+            onInput={(e) => {
+              const target = e.target;
+              if (!(target instanceof HTMLElement)) return;
+              target.classList.remove("is-invalid");
+              target.closest(".request-quote__field")?.classList.remove("is-invalid");
+              if (errorMessage === copy.requiredFieldsError) setErrorMessage("");
+            }}
+          >
             <fieldset className="request-quote__fieldset">
               <legend className="request-quote__legend">{copy.legend}</legend>
 
               <div className="request-quote__fields">
                 <div className="request-quote__field request-quote__field--full">
-                  <label htmlFor="fullName">{copy.fullName}</label>
+                  <FormFieldLabel htmlFor="fullName" required requiredMark={copy.requiredMark}>
+                    {copy.fullName}
+                  </FormFieldLabel>
                   <input
                     type="text"
                     id="fullName"
                     name="fullName"
                     required
+                    minLength={2}
                     autoComplete="name"
                     placeholder={isAr ? "أحمد علي" : "John Doe"}
                   />
@@ -146,7 +201,9 @@ export default function JobApplicationForm({
                 </div>
 
                 <div className="request-quote__field">
-                  <label htmlFor="email">{copy.email}</label>
+                  <FormFieldLabel htmlFor="email" required requiredMark={copy.requiredMark}>
+                    {copy.email}
+                  </FormFieldLabel>
                   <input
                     type="email"
                     id="email"
@@ -159,20 +216,25 @@ export default function JobApplicationForm({
                 </div>
 
                 <div className="request-quote__field">
-                  <label htmlFor="phone">{copy.phone}</label>
+                  <FormFieldLabel htmlFor="phone" required requiredMark={copy.requiredMark}>
+                    {copy.phone}
+                  </FormFieldLabel>
                   <input
                     type="tel"
                     id="phone"
                     name="phone"
                     required
                     autoComplete="tel"
+                    inputMode="tel"
                     placeholder="+964 770 000 0000"
                   />
                   <span className="request-quote__help-text">{copy.phoneHelp}</span>
                 </div>
 
                 <div className="request-quote__field request-quote__field--full">
-                  <label htmlFor="cv">{copy.cv}</label>
+                  <FormFieldLabel htmlFor="cv" required requiredMark={copy.requiredMark}>
+                    {copy.cv}
+                  </FormFieldLabel>
                   <input
                     type="file"
                     id="cv"

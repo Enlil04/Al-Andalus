@@ -230,7 +230,7 @@ export default function Header({ logoUrl }: { logoUrl?: string | null }) {
             {insuranceTypes.map((type) => (
               <Link
                 key={type.id}
-                href={`/request-quote?type=${type.id}`}
+                href={`/request-quote?type=${type.id}#request-form`}
                 className="header__dropdown-item"
               >
                 {type.label}
@@ -329,7 +329,7 @@ export default function Header({ logoUrl }: { logoUrl?: string | null }) {
             {insuranceTypes.map((type) => (
               <Link
                 key={type.id}
-                href={`/request-quote?type=${type.id}`}
+                href={`/request-quote?type=${type.id}#request-form`}
                 className="header__mobile-link header__mobile-link--sub header__mobile-link--icon"
                 onClick={() => setMenuOpen(false)}
               >

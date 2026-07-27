@@ -3,7 +3,15 @@
 import React, { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
+import FormFieldLabel from "./FormFieldLabel";
 import { getSiteCopy } from "@/lib/copy";
+import {
+  clearInvalidMarks,
+  getEmptyRequiredFields,
+  isValidEmail,
+  isValidPhone,
+  markInvalidFields,
+} from "@/lib/formValidation";
 import { useLocale } from "./LocaleProvider";
 import "./RequestQuote.css";
 
@@ -38,13 +46,43 @@ export default function ContactForm({
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    e.currentTarget.classList.remove("is-invalid");
+    e.currentTarget.closest(".request-quote__field")?.classList.remove("is-invalid");
+    if (error === formCopy.requiredFieldsError) setError("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
     setSuccess(false);
     setError("");
+
+    const form = e.currentTarget;
+    clearInvalidMarks(form);
+
+    const emptyRequired = getEmptyRequiredFields(form);
+    if (emptyRequired.length > 0) {
+      markInvalidFields(emptyRequired, true);
+      emptyRequired[0]?.focus();
+      setError(formCopy.requiredFieldsError);
+      setSubmitting(false);
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      const emailInput = form.querySelector<HTMLInputElement>("#email");
+      if (emailInput) markInvalidFields([emailInput], true);
+      setError(formCopy.invalidEmailError);
+      setSubmitting(false);
+      return;
+    }
+    if (formData.phone.trim() && !isValidPhone(formData.phone, { required: false })) {
+      const phoneInput = form.querySelector<HTMLInputElement>("#phone");
+      if (phoneInput) markInvalidFields([phoneInput], true);
+      setError(formCopy.invalidPhoneError);
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/contact", {
@@ -59,6 +97,7 @@ export default function ContactForm({
       }
 
       setSuccess(true);
+      clearInvalidMarks(form);
       setFormData({
         name: "",
         email: "",
@@ -66,8 +105,8 @@ export default function ContactForm({
         subject: "",
         message: "",
       });
-    } catch (err: any) {
-      setError(err.message || formCopy.error);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : formCopy.error);
     } finally {
       setSubmitting(false);
     }
@@ -102,7 +141,9 @@ export default function ContactForm({
 
               <div className="request-quote__fields">
                 <div className="request-quote__field">
-                  <label htmlFor="name">{formCopy.fields.name}</label>
+                  <FormFieldLabel htmlFor="name" required requiredMark={formCopy.requiredMark}>
+                    {formCopy.fields.name}
+                  </FormFieldLabel>
                   <input
                     type="text"
                     id="name"
@@ -110,6 +151,7 @@ export default function ContactForm({
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    minLength={2}
                     placeholder={namePlaceholder}
                     autoComplete="name"
                   />
@@ -117,7 +159,9 @@ export default function ContactForm({
                 </div>
 
                 <div className="request-quote__field">
-                  <label htmlFor="email">{formCopy.fields.email}</label>
+                  <FormFieldLabel htmlFor="email" required requiredMark={formCopy.requiredMark}>
+                    {formCopy.fields.email}
+                  </FormFieldLabel>
                   <input
                     type="email"
                     id="email"
@@ -141,6 +185,7 @@ export default function ContactForm({
                     onChange={handleChange}
                     placeholder="+964 770 000 0000"
                     autoComplete="tel"
+                    inputMode="tel"
                   />
                   <span className="request-quote__help-text">{formCopy.fields.phoneHelp}</span>
                 </div>
@@ -159,7 +204,9 @@ export default function ContactForm({
                 </div>
 
                 <div className="request-quote__field request-quote__field--full">
-                  <label htmlFor="message">{formCopy.fields.message}</label>
+                  <FormFieldLabel htmlFor="message" required requiredMark={formCopy.requiredMark}>
+                    {formCopy.fields.message}
+                  </FormFieldLabel>
                   <textarea
                     id="message"
                     name="message"

@@ -5,15 +5,27 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
+import FormFieldLabel from "./FormFieldLabel";
 import { contactInfo } from "@/lib/contact";
 import { getSiteCopy } from "@/lib/copy";
 import { useLocale } from "./LocaleProvider";
 import type { QuoteProduct } from "@/lib/cms/content";
+import {
+  clearInvalidMarks,
+  currentVehicleYearMax,
+  getEmptyRequiredFields,
+  isValidEmail,
+  isValidPhone,
+  markInvalidFields,
+  todayDateInputValue,
+  yearsAgoDateInputValue,
+} from "@/lib/formValidation";
 import "./RequestQuote.css";
 
 const coverageFieldKeys = [
   "destination",
-  "travelDates",
+  "departureDate",
+  "returnDate",
   "travelers",
   "vehicleMake",
   "vehicleYear",
@@ -66,12 +78,20 @@ export default function RequestQuoteForm({
 
   const [activeType, setActiveType] = useState<InsuranceId>("travel");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [fieldError, setFieldError] = useState("");
+  const [departureDate, setDepartureDate] = useState("");
+
+  const today = todayDateInputValue();
+  const dobMin = yearsAgoDateInputValue(120);
+  const vehicleYearMax = currentVehicleYearMax();
 
   // Sync state if query parameter changes
   useEffect(() => {
     if (typeParam && insuranceTypes.some((t) => t.id === typeParam)) {
       setActiveType(typeParam);
       setStatus("idle");
+      setFieldError("");
+      setDepartureDate("");
     }
   }, [typeParam, insuranceTypes]);
 
@@ -80,17 +100,59 @@ export default function RequestQuoteForm({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFieldError("");
     setStatus("loading");
 
     const form = e.currentTarget;
+    clearInvalidMarks(form);
+
+    const emptyRequired = getEmptyRequiredFields(form);
+    if (emptyRequired.length > 0) {
+      markInvalidFields(emptyRequired, true);
+      emptyRequired[0]?.focus();
+      setStatus("idle");
+      setFieldError(formCopy.requiredFieldsError);
+      return;
+    }
+
     const data = new FormData(form);
+    const fullName = data.get("fullName")?.toString().trim() ?? "";
+    const email = data.get("email")?.toString().trim() ?? "";
+    const phone = data.get("phone")?.toString().trim() ?? "";
+
+    if (!isValidEmail(email)) {
+      const emailInput = form.querySelector<HTMLInputElement>("#email");
+      if (emailInput) markInvalidFields([emailInput], true);
+      setStatus("idle");
+      setFieldError(formCopy.invalidEmailError);
+      return;
+    }
+    if (!isValidPhone(phone)) {
+      const phoneInput = form.querySelector<HTMLInputElement>("#phone");
+      if (phoneInput) markInvalidFields([phoneInput], true);
+      setStatus("idle");
+      setFieldError(formCopy.invalidPhoneError);
+      return;
+    }
+
+    if (activeType === "travel") {
+      const departure = data.get("departureDate")?.toString() ?? "";
+      const returnDate = data.get("returnDate")?.toString() ?? "";
+      if (departure && returnDate && returnDate < departure) {
+        const returnInput = form.querySelector<HTMLInputElement>("#returnDate");
+        if (returnInput) markInvalidFields([returnInput], true);
+        setStatus("idle");
+        setFieldError(formCopy.invalidReturnDateError);
+        return;
+      }
+    }
 
     const coverageFields = coverageFieldKeys
       .map((key) => {
         const value = data.get(key)?.toString().trim();
         if (!value) return null;
         const label = form.querySelector<HTMLLabelElement>(`label[for="${key}"]`);
-        return `${label?.textContent?.replace("*", "").trim() ?? key}: ${value}`;
+        return `${label?.textContent?.replace(/\s*\([^)]*\)\s*$/, "").trim() ?? key}: ${value}`;
       })
       .filter(Boolean)
       .join("\n");
@@ -110,21 +172,34 @@ export default function RequestQuoteForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fullName: data.get("fullName"),
-          email: data.get("email"),
-          phone: data.get("phone"),
+          fullName,
+          email,
+          phone,
           city: data.get("city"),
           insuranceService: matchedProduct?.id ?? productSlug,
           details,
         }),
       });
 
-      if (!res.ok) throw new Error("Submit failed");
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Submit failed");
+      }
 
       form.reset();
+      setDepartureDate("");
+      clearInvalidMarks(form);
       setStatus("success");
-    } catch {
+    } catch (err) {
       setStatus("error");
+      if (
+        err instanceof Error &&
+        err.message &&
+        err.message !== "Submit failed" &&
+        !/occurred while submitting/i.test(err.message)
+      ) {
+        setFieldError(err.message);
+      }
     }
   };
 
@@ -134,9 +209,10 @@ export default function RequestQuoteForm({
     destinationPlaceholder: locale === "ar" ? "مثال: تركيا، الإمارات" : "e.g. Turkey, UAE",
     destinationHelp: locale === "ar" ? "الدولة أو المنطقة التي تسافر إليها (مثل: تركيا، منطقة الشنغن، الإمارات)" : "The country or region you are traveling to (e.g. Turkey, Schengen Area, UAE)",
     
-    travelDates: locale === "ar" ? "تواريخ السفر" : "Travel dates",
-    travelDatesPlaceholder: locale === "ar" ? "اليوم/الشهر/السنة - اليوم/الشهر/السنة" : "DD/MM/YYYY – DD/MM/YYYY",
-    travelDatesHelp: locale === "ar" ? "تاريخا المغادرة والعودة لرحلتك" : "Departure and return dates of your trip",
+    departureDate: locale === "ar" ? "تاريخ المغادرة" : "Departure date",
+    departureDateHelp: locale === "ar" ? "يوم بدء الرحلة" : "First day of travel",
+    returnDate: locale === "ar" ? "تاريخ العودة" : "Return date",
+    returnDateHelp: locale === "ar" ? "يوم العودة — يجب أن يكون في أو بعد تاريخ المغادرة" : "Return day — must be on or after departure",
     
     travelers: locale === "ar" ? "عدد المسافرين" : "Travelers",
     travelersHelp: locale === "ar" ? "عدد الأفراد المشمولين بهذه الوثيقة" : "Number of individuals covered under this policy",
@@ -241,6 +317,8 @@ export default function RequestQuoteForm({
                 onClick={() => {
                   setActiveType(type.id as InsuranceId);
                   setStatus("idle");
+                  setFieldError("");
+                  setDepartureDate("");
                 }}
                 aria-pressed={activeType === type.id}
               >
@@ -259,7 +337,18 @@ export default function RequestQuoteForm({
         </aside>
 
         <div className="request-quote__main about-grid__cols-7-12">
-          <form className="request-quote__form" onSubmit={handleSubmit} noValidate>
+          <form
+            className="request-quote__form"
+            onSubmit={handleSubmit}
+            noValidate
+            onInput={(e) => {
+              const target = e.target;
+              if (!(target instanceof HTMLElement)) return;
+              target.classList.remove("is-invalid");
+              target.closest(".request-quote__field")?.classList.remove("is-invalid");
+              if (fieldError === formCopy.requiredFieldsError) setFieldError("");
+            }}
+          >
             <p className="request-quote__form-badge">{activeLabel}</p>
 
             <fieldset className="request-quote__fieldset" key={activeType}>
@@ -268,18 +357,45 @@ export default function RequestQuoteForm({
               {activeType === "travel" && (
                 <div className="request-quote__fields">
                   <div className="request-quote__field request-quote__field--full">
-                    <label htmlFor="destination">{tr.destination}</label>
+                    <FormFieldLabel htmlFor="destination" required requiredMark={formCopy.requiredMark}>
+                      {tr.destination}
+                    </FormFieldLabel>
                     <input id="destination" name="destination" type="text" required placeholder={tr.destinationPlaceholder} />
                     <span className="request-quote__help-text">{tr.destinationHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="travelDates">{tr.travelDates}</label>
-                    <input id="travelDates" name="travelDates" type="text" required placeholder={tr.travelDatesPlaceholder} />
-                    <span className="request-quote__help-text">{tr.travelDatesHelp}</span>
+                    <FormFieldLabel htmlFor="departureDate" required requiredMark={formCopy.requiredMark}>
+                      {tr.departureDate}
+                    </FormFieldLabel>
+                    <input
+                      id="departureDate"
+                      name="departureDate"
+                      type="date"
+                      required
+                      min={today}
+                      value={departureDate}
+                      onChange={(e) => setDepartureDate(e.target.value)}
+                    />
+                    <span className="request-quote__help-text">{tr.departureDateHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="travelers">{tr.travelers}</label>
-                    <input id="travelers" name="travelers" type="number" required min={1} placeholder="1" />
+                    <FormFieldLabel htmlFor="returnDate" required requiredMark={formCopy.requiredMark}>
+                      {tr.returnDate}
+                    </FormFieldLabel>
+                    <input
+                      id="returnDate"
+                      name="returnDate"
+                      type="date"
+                      required
+                      min={departureDate || today}
+                    />
+                    <span className="request-quote__help-text">{tr.returnDateHelp}</span>
+                  </div>
+                  <div className="request-quote__field">
+                    <FormFieldLabel htmlFor="travelers" required requiredMark={formCopy.requiredMark}>
+                      {tr.travelers}
+                    </FormFieldLabel>
+                    <input id="travelers" name="travelers" type="number" required min={1} max={50} placeholder="1" />
                     <span className="request-quote__help-text">{tr.travelersHelp}</span>
                   </div>
                 </div>
@@ -288,22 +404,38 @@ export default function RequestQuoteForm({
               {activeType === "motor" && (
                 <div className="request-quote__fields">
                   <div className="request-quote__field">
-                    <label htmlFor="vehicleMake">{tr.vehicleMake}</label>
+                    <FormFieldLabel htmlFor="vehicleMake" required requiredMark={formCopy.requiredMark}>
+                      {tr.vehicleMake}
+                    </FormFieldLabel>
                     <input id="vehicleMake" name="vehicleMake" type="text" required placeholder={tr.vehicleMakePlaceholder} />
                     <span className="request-quote__help-text">{tr.vehicleMakeHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="vehicleYear">{tr.vehicleYear}</label>
-                    <input id="vehicleYear" name="vehicleYear" type="number" required min={1990} placeholder="2024" />
+                    <FormFieldLabel htmlFor="vehicleYear" required requiredMark={formCopy.requiredMark}>
+                      {tr.vehicleYear}
+                    </FormFieldLabel>
+                    <input
+                      id="vehicleYear"
+                      name="vehicleYear"
+                      type="number"
+                      required
+                      min={1990}
+                      max={vehicleYearMax}
+                      placeholder="2024"
+                    />
                     <span className="request-quote__help-text">{tr.vehicleYearHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="licensePlate">{tr.licensePlate}</label>
+                    <FormFieldLabel htmlFor="licensePlate" required requiredMark={formCopy.requiredMark}>
+                      {tr.licensePlate}
+                    </FormFieldLabel>
                     <input id="licensePlate" name="licensePlate" type="text" required placeholder={tr.licensePlatePlaceholder} />
                     <span className="request-quote__help-text">{tr.licensePlateHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="vehicleValue">{tr.vehicleValue}</label>
+                    <FormFieldLabel htmlFor="vehicleValue" required requiredMark={formCopy.requiredMark}>
+                      {tr.vehicleValue}
+                    </FormFieldLabel>
                     <input id="vehicleValue" name="vehicleValue" type="text" required placeholder={tr.vehicleValuePlaceholder} />
                     <span className="request-quote__help-text">{tr.vehicleValueHelp}</span>
                   </div>
@@ -313,7 +445,9 @@ export default function RequestQuoteForm({
               {activeType === "health" && (
                 <div className="request-quote__fields">
                   <div className="request-quote__field request-quote__field--full">
-                    <label htmlFor="coverageType">{tr.coverageType}</label>
+                    <FormFieldLabel htmlFor="coverageType" required requiredMark={formCopy.requiredMark}>
+                      {tr.coverageType}
+                    </FormFieldLabel>
                     <select id="coverageType" name="coverageType" required defaultValue="">
                       <option value="" disabled>{tr.selectPlaceholder}</option>
                       <option value="individual">{tr.individual}</option>
@@ -323,12 +457,23 @@ export default function RequestQuoteForm({
                     <span className="request-quote__help-text">{tr.coverageTypeHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="dob">{tr.dob}</label>
-                    <input id="dob" name="dob" type="date" required />
+                    <FormFieldLabel htmlFor="dob" required requiredMark={formCopy.requiredMark}>
+                      {tr.dob}
+                    </FormFieldLabel>
+                    <input
+                      id="dob"
+                      name="dob"
+                      type="date"
+                      required
+                      min={dobMin}
+                      max={today}
+                    />
                     <span className="request-quote__help-text">{tr.dobHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="preExisting">{tr.preExisting}</label>
+                    <FormFieldLabel htmlFor="preExisting" required requiredMark={formCopy.requiredMark}>
+                      {tr.preExisting}
+                    </FormFieldLabel>
                     <select id="preExisting" name="preExisting" required defaultValue="">
                       <option value="" disabled>{tr.selectPlaceholder}</option>
                       <option value="no">{tr.no}</option>
@@ -342,7 +487,9 @@ export default function RequestQuoteForm({
               {activeType === "fire" && (
                 <div className="request-quote__fields">
                   <div className="request-quote__field">
-                    <label htmlFor="propertyType">{tr.propertyType}</label>
+                    <FormFieldLabel htmlFor="propertyType" required requiredMark={formCopy.requiredMark}>
+                      {tr.propertyType}
+                    </FormFieldLabel>
                     <select id="propertyType" name="propertyType" required defaultValue="">
                       <option value="" disabled>{tr.selectPlaceholder}</option>
                       <option value="residential">{tr.residential}</option>
@@ -352,12 +499,16 @@ export default function RequestQuoteForm({
                     <span className="request-quote__help-text">{tr.propertyTypeHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="propertyValue">{tr.propertyValue}</label>
+                    <FormFieldLabel htmlFor="propertyValue" required requiredMark={formCopy.requiredMark}>
+                      {tr.propertyValue}
+                    </FormFieldLabel>
                     <input id="propertyValue" name="propertyValue" type="text" required placeholder={tr.propertyValuePlaceholder} />
                     <span className="request-quote__help-text">{tr.propertyValueHelp}</span>
                   </div>
                   <div className="request-quote__field request-quote__field--full">
-                    <label htmlFor="propertyLocation">{tr.propertyLocation}</label>
+                    <FormFieldLabel htmlFor="propertyLocation" required requiredMark={formCopy.requiredMark}>
+                      {tr.propertyLocation}
+                    </FormFieldLabel>
                     <input id="propertyLocation" name="propertyLocation" type="text" required placeholder={tr.propertyLocationPlaceholder} />
                     <span className="request-quote__help-text">{tr.propertyLocationHelp}</span>
                   </div>
@@ -367,7 +518,9 @@ export default function RequestQuoteForm({
               {activeType === "engineering" && (
                 <div className="request-quote__fields">
                   <div className="request-quote__field request-quote__field--full">
-                    <label htmlFor="projectType">{tr.projectType}</label>
+                    <FormFieldLabel htmlFor="projectType" required requiredMark={formCopy.requiredMark}>
+                      {tr.projectType}
+                    </FormFieldLabel>
                     <select id="projectType" name="projectType" required defaultValue="">
                       <option value="" disabled>{tr.selectPlaceholder}</option>
                       <option value="construction">{tr.construction}</option>
@@ -378,12 +531,16 @@ export default function RequestQuoteForm({
                     <span className="request-quote__help-text">{tr.projectTypeHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="projectDuration">{tr.duration}</label>
+                    <FormFieldLabel htmlFor="projectDuration" required requiredMark={formCopy.requiredMark}>
+                      {tr.duration}
+                    </FormFieldLabel>
                     <input id="projectDuration" name="projectDuration" type="text" required placeholder={tr.durationPlaceholder} />
                     <span className="request-quote__help-text">{tr.durationHelp}</span>
                   </div>
                   <div className="request-quote__field">
-                    <label htmlFor="contractValue">{tr.contractValue}</label>
+                    <FormFieldLabel htmlFor="contractValue" required requiredMark={formCopy.requiredMark}>
+                      {tr.contractValue}
+                    </FormFieldLabel>
                     <input id="contractValue" name="contractValue" type="text" required placeholder={tr.contractValuePlaceholder} />
                     <span className="request-quote__help-text">{tr.contractValueHelp}</span>
                   </div>
@@ -395,22 +552,38 @@ export default function RequestQuoteForm({
               <legend className="request-quote__legend">{formCopy.detailsLegend}</legend>
               <div className="request-quote__fields">
                 <div className="request-quote__field request-quote__field--full">
-                  <label htmlFor="fullName">{tr.fullName}</label>
-                  <input id="fullName" name="fullName" type="text" required autoComplete="name" />
+                  <FormFieldLabel htmlFor="fullName" required requiredMark={formCopy.requiredMark}>
+                    {tr.fullName}
+                  </FormFieldLabel>
+                  <input id="fullName" name="fullName" type="text" required autoComplete="name" minLength={2} />
                   <span className="request-quote__help-text">{tr.fullNameHelp}</span>
                 </div>
                 <div className="request-quote__field">
-                  <label htmlFor="email">{tr.email}</label>
+                  <FormFieldLabel htmlFor="email" required requiredMark={formCopy.requiredMark}>
+                    {tr.email}
+                  </FormFieldLabel>
                   <input id="email" name="email" type="email" required autoComplete="email" />
                   <span className="request-quote__help-text">{tr.emailHelp}</span>
                 </div>
                 <div className="request-quote__field">
-                  <label htmlFor="phone">{tr.phone}</label>
-                  <input id="phone" name="phone" type="tel" required autoComplete="tel" />
+                  <FormFieldLabel htmlFor="phone" required requiredMark={formCopy.requiredMark}>
+                    {tr.phone}
+                  </FormFieldLabel>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    autoComplete="tel"
+                    inputMode="tel"
+                    placeholder="+964 770 000 0000"
+                  />
                   <span className="request-quote__help-text">{tr.phoneHelp}</span>
                 </div>
                 <div className="request-quote__field request-quote__field--full">
-                  <label htmlFor="city">{tr.preferredBranch}</label>
+                  <FormFieldLabel htmlFor="city" required requiredMark={formCopy.requiredMark}>
+                    {tr.preferredBranch}
+                  </FormFieldLabel>
                   <select id="city" name="city" required defaultValue="">
                     <option value="" disabled>{tr.selectPlaceholder}</option>
                     <option value="Baghdad">{locale === "ar" ? "بغداد — المقر الرئيسي" : "Baghdad — Headquarters"}</option>
@@ -440,7 +613,12 @@ export default function RequestQuoteForm({
                   {formCopy.success}
                 </p>
               )}
-              {status === "error" && (
+              {fieldError && (
+                <p className="request-quote__feedback request-quote__feedback--error" role="alert">
+                  {fieldError}
+                </p>
+              )}
+              {status === "error" && !fieldError && (
                 <p className="request-quote__feedback request-quote__feedback--error" role="alert">
                   {formCopy.errorPrefix}{" "}
                   <a href={contactInfo.phoneHref} dir="ltr">{contactInfo.phone}</a>.
