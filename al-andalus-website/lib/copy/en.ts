@@ -323,7 +323,7 @@ export const siteCopy = {
       hours: "Hours",
       locations: "Locations",
     },
-    hours: "Sat–Thu · 8:30 AM – 4:30 PM",
+    hours: "Sat–Thu · 8:00 AM – 3:30 PM",
     locations: "Baghdad · Basrah · Erbil",
   },
 

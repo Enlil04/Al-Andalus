@@ -835,6 +835,8 @@ export const fetchContactCtaContent = cache(async function fetchContactCtaConten
     const shortcode =
       normalizeCmsText(contactGroup?.shortNumber) || "7366";
     const cmsCta = pickLocaleText(contactCtaGroup, "buttonText", currentLocale);
+    const cmsHours = pickLocaleText(contactCtaGroup, "hours", currentLocale);
+    const cmsLocations = pickLocaleText(contactCtaGroup, "locations", currentLocale);
 
     return {
       headline:
@@ -850,13 +852,20 @@ export const fetchContactCtaContent = cache(async function fetchContactCtaConten
         cmsCta && !LEGACY_CONTACT_CTA.has(cmsCta)
           ? cmsCta
           : siteCopy.contact.cta,
-      ctaLink: normalizeCmsText(contactCtaGroup?.buttonLink) || "/request-quote",
+      ctaLink: (() => {
+        const link = normalizeCmsText(contactCtaGroup?.buttonLink);
+        // Legacy CMS values pointed at /contact; the live CTA opens the quote form.
+        if (!link || link === "/contact" || link === "/contact/") {
+          return "/request-quote";
+        }
+        return link;
+      })(),
       backgroundImageUrl: getMediaUrl(contactCtaGroup?.backgroundImage),
       shortcode,
       phone: formatPhoneDisplay(rawPhone),
       phoneHref: toTelHref(rawPhone),
-      hours: siteCopy.contact.hours,
-      locations: siteCopy.contact.locations,
+      hours: cmsHours || siteCopy.contact.hours,
+      locations: cmsLocations || siteCopy.contact.locations,
       labels: { ...siteCopy.contact.labels },
     };
   } catch (error) {

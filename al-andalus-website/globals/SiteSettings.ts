@@ -146,6 +146,12 @@ export const SiteSettings: GlobalConfig = {
         en: "Contact Information",
         ar: "معلومات التواصل",
       },
+      admin: {
+        description: {
+          en: "Used site-wide (header, Contact Us rows, forms). Shortcode and phone appear as labeled rows in the Contact Us section — do not paste them into the Contact Us description.",
+          ar: "تُستخدم في جميع أنحاء الموقع. الرقم المختصر والهاتف يظهران كصفوف منفصلة في قسم اتصل بنا — لا تضعهما داخل وصف القسم.",
+        },
+      },
       fields: [
         {
           name: "shortNumber",
@@ -192,6 +198,12 @@ export const SiteSettings: GlobalConfig = {
         en: "Contact Us Section",
         ar: "قسم اتصل بنا",
       },
+      admin: {
+        description: {
+          en: "Homepage / site-wide Contact Us block. Layout on the website: title, description, then rows for Shortcode, Phone (from Contact Information), Hours, Locations, plus the quote button.",
+          ar: "كتلة اتصل بنا في الموقع. الترتيب: العنوان، الوصف، ثم صفوف الرقم المختصر والهاتف (من معلومات التواصل) وساعات العمل والفروع، مع زر طلب التسعيرة.",
+        },
+      },
       fields: [
         languageTabs(
           [
@@ -199,16 +211,60 @@ export const SiteSettings: GlobalConfig = {
               name: "titleEn",
               type: "text",
               label: bilingualLabel("Title (English)", "العنوان (إنجليزي)"),
+              defaultValue: "CONTACT US",
+              admin: {
+                description: {
+                  en: "Large headline in the Contact Us section.",
+                  ar: "العنوان الكبير في قسم اتصل بنا.",
+                },
+              },
             },
             {
               name: "descriptionEn",
               type: "textarea",
               label: bilingualLabel("Description (English)", "الوصف (إنجليزي)"),
+              admin: {
+                description: {
+                  en: "Short supporting paragraph only. Do not include phone, shortcode, hours, or cities — those are separate fields/rows.",
+                  ar: "فقرة قصيرة فقط. لا تُدرج الهاتف أو الرقم المختصر أو الساعات أو المدن — لها حقول وصفوف منفصلة.",
+                },
+              },
+            },
+            {
+              name: "hoursEn",
+              type: "text",
+              label: bilingualLabel("Hours (English)", "ساعات العمل (إنجليزي)"),
+              defaultValue: "Sat–Thu · 8:00 AM – 3:30 PM",
+              admin: {
+                description: {
+                  en: "Shown as the Hours row under the description (e.g. Sat–Thu · 8:00 AM – 3:30 PM).",
+                  ar: "يظهر كصف ساعات العمل تحت الوصف.",
+                },
+              },
+            },
+            {
+              name: "locationsEn",
+              type: "text",
+              label: bilingualLabel("Locations (English)", "الفروع (إنجليزي)"),
+              defaultValue: "Baghdad · Basrah · Erbil",
+              admin: {
+                description: {
+                  en: "Shown as the Locations row (e.g. Baghdad · Basrah · Erbil).",
+                  ar: "يظهر كصف الفروع.",
+                },
+              },
             },
             {
               name: "buttonTextEn",
               type: "text",
               label: bilingualLabel("Button Text (English)", "نص الزر (إنجليزي)"),
+              defaultValue: "REQUEST A QUOTE",
+              admin: {
+                description: {
+                  en: "CTA button label (website default: REQUEST A QUOTE).",
+                  ar: "نص زر الدعوة للإجراء (الافتراضي في الموقع: REQUEST A QUOTE).",
+                },
+              },
             },
           ],
           [
@@ -216,23 +272,50 @@ export const SiteSettings: GlobalConfig = {
               name: "titleAr",
               type: "text",
               label: bilingualLabel("Title (Arabic)", "العنوان (عربي)"),
+              defaultValue: "اتصل بنا",
             },
             {
               name: "descriptionAr",
               type: "textarea",
               label: bilingualLabel("Description (Arabic)", "الوصف (عربي)"),
+              admin: {
+                description: {
+                  en: "Short supporting paragraph only. Do not include phone, shortcode, hours, or cities.",
+                  ar: "فقرة قصيرة فقط. لا تُدرج الهاتف أو الرقم المختصر أو الساعات أو المدن.",
+                },
+              },
+            },
+            {
+              name: "hoursAr",
+              type: "text",
+              label: bilingualLabel("Hours (Arabic)", "ساعات العمل (عربي)"),
+              defaultValue: "السبت–الخميس · ٨:٠٠ ص – ٣:٣٠ م",
+            },
+            {
+              name: "locationsAr",
+              type: "text",
+              label: bilingualLabel("Locations (Arabic)", "الفروع (عربي)"),
+              defaultValue: "بغداد · البصرة · أربيل",
             },
             {
               name: "buttonTextAr",
               type: "text",
               label: bilingualLabel("Button Text (Arabic)", "نص الزر (عربي)"),
+              defaultValue: "اطلب تسعيرة",
             },
           ],
         ),
         {
           name: "buttonLink",
           type: "text",
+          defaultValue: "/request-quote",
           label: { en: "Button Link", ar: "رابط الزر" },
+          admin: {
+            description: {
+              en: "Where the CTA goes (website default: /request-quote).",
+              ar: "وجهة الزر (الافتراضي في الموقع: /request-quote).",
+            },
+          },
         },
         {
           name: "backgroundImage",
