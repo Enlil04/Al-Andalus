@@ -7,6 +7,7 @@ import { en } from "@payloadcms/translations/languages/en";
 import { ar } from "@payloadcms/translations/languages/ar";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
+import { resolveSqliteDatabaseUri } from "./lib/sqliteDatabaseUri";
 
 // Collections
 import { Users } from "./collections/Users";
@@ -189,7 +190,19 @@ export default buildConfig({
 
   db: sqliteAdapter({
     client: {
-      url: process.env.DATABASE_URI || "file:./database.db",
+      url: (() => {
+        const raw = process.env.DATABASE_URI;
+        const url = resolveSqliteDatabaseUri(raw);
+        if (!raw?.trim()) {
+          console.warn(
+            `[payload] DATABASE_URI is unset at runtime — using ${url}. ` +
+              "On Hostinger, create nodejs/.env with the absolute file path if panel env vars are not injected.",
+          );
+        } else {
+          console.info(`[payload] SQLite DATABASE_URI → ${url}`);
+        }
+        return url;
+      })(),
       authToken: process.env.DATABASE_AUTH_TOKEN || undefined,
     },
     // Avoid silent schema push in production unless explicitly enabled.
