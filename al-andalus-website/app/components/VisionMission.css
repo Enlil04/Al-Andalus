@@ -128,6 +128,14 @@
   margin-top: var(--space-8);
 }
 
+html[dir="ltr"] .vision-mission__card-text {
+  font-size: 1.05rem;
+}
+
+html[dir="ltr"] .vision-mission__card-num {
+  font-size: 0.95rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .vision-mission {

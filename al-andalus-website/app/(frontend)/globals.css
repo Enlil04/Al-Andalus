@@ -137,6 +137,16 @@ select {
   font-family: inherit;
 }
 
+/* English: slightly larger body/copy scale than Arabic (Cairo reads bigger at the same rem).
+   Keep heading tokens (--text-2xl+) unchanged so hero/titles don't overflow. */
+html[dir="ltr"] {
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.3125rem;
+}
+
 /* RTL Support */
 html[dir="rtl"] body {
   font-family: var(--font-ar);

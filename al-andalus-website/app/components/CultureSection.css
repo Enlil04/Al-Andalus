@@ -7,6 +7,10 @@
   font-family: var(--font-en);
 }
 
+html[dir="rtl"] .culture-section {
+  font-family: var(--font-ar);
+}
+
 .culture-container {
   max-width: var(--max-width, 1200px);
   margin: 0 auto;
@@ -273,6 +277,7 @@
 @media (max-width: 768px) {
   .culture-section {
     padding: 4rem 1.5rem;
+    overflow: visible;
   }
 
   .culture-container {
@@ -327,17 +332,35 @@
     height: auto !important;
   }
 
-  .orbit-node .node-content {
+  /* Full-width row so descriptions wrap instead of overflowing + getting clipped */
+  .orbit-node .node-content,
+  .node-left .node-content,
+  .node-right .node-content {
     display: flex !important;
     flex-direction: row !important;
     gap: 1rem !important;
     align-items: flex-start !important;
-    text-align: left !important;
+    text-align: start !important;
     position: static !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Arabic: put bullets on the left like English mobile (row alone + rtl
+     would park them on the right). Text still uses start alignment. */
+  html[dir="rtl"] .orbit-node .node-content,
+  html[dir="rtl"] .node-left .node-content,
+  html[dir="rtl"] .node-right .node-content {
+    flex-direction: row-reverse !important;
+    text-align: start !important;
   }
 
   .orbit-node .node-text {
     max-width: none !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
   }
 
   .orbit-node .node-text h4 {
@@ -348,6 +371,9 @@
   .orbit-node .node-text p {
     font-size: 0.85rem !important;
     line-height: 1.5 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .node-point {
