@@ -2061,16 +2061,20 @@ html[dir="rtl"] .footer-new__desc {
   }
 
   /*
-   * Arabic mobile: html[dir=rtl] flips flex main-start, so the chrome above
-   * ends up logo-left / controls-right. Force LTR only for header chrome
-   * (menu left, logo right). Restore RTL on the drawer so Arabic links stay correct.
+   * Arabic mobile: html[dir=rtl] reverses the flex main axis, so the LTR
+   * order/margin rules above put logo on the left. We fix it by swapping
+   * order and margins — no direction override needed (that broke drawer scrolling).
    */
-  html[dir="rtl"] .header {
-    direction: ltr;
+  html[dir="rtl"] .header__logo {
+    order: 2 !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
   }
 
-  html[dir="rtl"] .header__mobile-menu {
-    direction: rtl;
+  html[dir="rtl"] .header__right {
+    order: 1 !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
   }
 
   .header__menu-btn {
