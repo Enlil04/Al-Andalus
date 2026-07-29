@@ -2170,6 +2170,20 @@ html[dir="rtl"] .footer-new__desc {
     display: none;
   }
 
+  /* Expanding image: keep the whole image visible (no cropping). */
+  .expanding-image {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .page-banner .expanding-image,
+  .page-banner__image {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
   .hero__content {
     left: var(--space-8);
     right: auto;
