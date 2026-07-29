@@ -325,9 +325,13 @@ export default function GSAPAnimations() {
       const expandingImage = document.querySelector<HTMLElement>(".expanding-image");
       const expandingSection = document.querySelector<HTMLElement>(".expanding-section");
       if (expandingImage && expandingSection) {
+        const isMobile = window.innerWidth <= 768;
+        const targetSize = isMobile
+          ? { width: "92vw", height: "72vh" }
+          : { width: "100vw", height: "100vh" };
+
         gsap.to(expandingImage, {
-          width: "100vw",
-          height: "100vh",
+          ...targetSize,
           borderRadius: 0,
           ease: "none",
           scrollTrigger: {
