@@ -348,12 +348,11 @@ html[dir="rtl"] .culture-section {
     max-width: 100% !important;
   }
 
-  /* Arabic: put bullets on the left like English mobile (row alone + rtl
-     would park them on the right). Text still uses start alignment. */
+  /* Arabic: bullets on the right (inline-start), text stays start-aligned. */
   html[dir="rtl"] .orbit-node .node-content,
   html[dir="rtl"] .node-left .node-content,
   html[dir="rtl"] .node-right .node-content {
-    flex-direction: row-reverse !important;
+    flex-direction: row !important;
     text-align: start !important;
   }
 
