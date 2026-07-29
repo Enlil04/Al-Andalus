@@ -326,13 +326,14 @@ export default function GSAPAnimations() {
       const expandingSection = document.querySelector<HTMLElement>(".expanding-section");
       if (expandingImage && expandingSection) {
         const isMobile = window.innerWidth <= 768;
+        // Mobile: stay smaller + landscape-ish so background-size:contain can
+        // show the full photo without page-banner overflow clipping it.
         const targetSize = isMobile
-          ? { width: "92vw", height: "72vh" }
-          : { width: "100vw", height: "100vh" };
+          ? { width: "90vw", height: "52vw", borderRadius: 12 }
+          : { width: "100vw", height: "100vh", borderRadius: 0 };
 
         gsap.to(expandingImage, {
           ...targetSize,
-          borderRadius: 0,
           ease: "none",
           scrollTrigger: {
             trigger: expandingSection,

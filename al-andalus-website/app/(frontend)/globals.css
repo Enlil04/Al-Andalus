@@ -2170,18 +2170,50 @@ html[dir="rtl"] .footer-new__desc {
     display: none;
   }
 
-  /* Expanding image: keep the whole image visible (no cropping). */
+  /* Expanding image: full photo visible (contain), smaller box — mobile only. */
+  .expanding-section {
+    overflow: visible;
+  }
+
   .expanding-image {
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+    width: 78vw;
+    height: 48vw;
+    max-width: 100%;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-color: transparent !important;
+  }
+
+  .page-banner {
+    overflow: visible;
+  }
+
+  .page-banner__header {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .page-banner__subtitle {
+    white-space: normal;
+  }
+
+  .page-banner .expanding-section {
+    min-height: 0;
+    padding-bottom: var(--space-8);
+    overflow: visible;
   }
 
   .page-banner .expanding-image,
   .page-banner__image {
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+    width: 90vw;
+    height: 52vw;
+    max-width: calc(100% - 2rem);
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-color: transparent !important;
   }
 
   .hero__content {
