@@ -1,5 +1,6 @@
 import ScrollReveal from "./ScrollReveal";
 import AnimatedHeadline from "./AnimatedHeadline";
+import type { Locale } from "@/lib/locale";
 import "./VisionMission.css";
 
 type VisionMissionProps = {
@@ -8,7 +9,19 @@ type VisionMissionProps = {
   paragraphs: readonly string[];
   imageUrl: string | null;
   accentImageUrl: string | null;
+  locale: Locale;
 };
+
+const ARABIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
+
+function formatCardNumber(index: number, locale: Locale): string {
+  const western = String(index + 1).padStart(2, "0");
+  const num =
+    locale === "ar"
+      ? western.replace(/\d/g, (digit) => ARABIC_DIGITS[Number(digit)])
+      : western;
+  return `( ${num} )`;
+}
 
 export default function VisionMission({
   label,
@@ -16,6 +29,7 @@ export default function VisionMission({
   paragraphs,
   imageUrl,
   accentImageUrl,
+  locale,
 }: VisionMissionProps) {
   const [firstHeadline, ...remainingHeadline] = headline.split("\n");
   const secondHeadline = remainingHeadline.join("\n");
@@ -73,32 +87,16 @@ export default function VisionMission({
         {/* Bottom: Grid of 3 Cards */}
         <div className="vision-mission__cards-container about-grid__span-all">
           <div className="vision-mission__cards-grid">
-            <ScrollReveal delay={1}>
-              <div className="vision-mission__grid-card">
-                <span className="vision-mission__card-num">( ٠١ )</span>
-                <p className="vision-mission__card-text">
-                  {paragraphs[0]}
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={1.2}>
-              <div className="vision-mission__grid-card">
-                <span className="vision-mission__card-num">( ٠٢ )</span>
-                <p className="vision-mission__card-text">
-                  {paragraphs[1]}
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={1.4}>
-              <div className="vision-mission__grid-card">
-                <span className="vision-mission__card-num">( ٠٣ )</span>
-                <p className="vision-mission__card-text">
-                  {paragraphs[2]}
-                </p>
-              </div>
-            </ScrollReveal>
+            {paragraphs.map((paragraph, index) => (
+              <ScrollReveal key={index} delay={1 + index * 0.2}>
+                <div className="vision-mission__grid-card">
+                  <span className="vision-mission__card-num">
+                    {formatCardNumber(index, locale)}
+                  </span>
+                  <p className="vision-mission__card-text">{paragraph}</p>
+                </div>
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </div>

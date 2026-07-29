@@ -18,6 +18,7 @@ export async function generateMetadata() {
 }
 
 export default async function AboutPage() {
+  const locale = await getLocale();
   const aboutContent = await fetchAboutPageContent();
 
   return (
@@ -94,7 +95,7 @@ export default async function AboutPage() {
         </section>
 
         {/* ═══════════════ VISION & MISSION ═══════════════ */}
-        <VisionMission {...aboutContent.vision} />
+        <VisionMission {...aboutContent.vision} locale={locale} />
 
         {/* ═══════════════ 4. WHY CHOOSE US ═══════════════ */}
         <FourDivisionsSection {...aboutContent.whyChoose} />
