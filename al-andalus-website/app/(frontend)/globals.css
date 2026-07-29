@@ -2060,6 +2060,19 @@ html[dir="rtl"] .footer-new__desc {
     margin-right: auto !important;
   }
 
+  /*
+   * Arabic mobile: html[dir=rtl] flips flex main-start, so the chrome above
+   * ends up logo-left / controls-right. Force LTR only for header chrome
+   * (menu left, logo right). Restore RTL on the drawer so Arabic links stay correct.
+   */
+  html[dir="rtl"] .header {
+    direction: ltr;
+  }
+
+  html[dir="rtl"] .header__mobile-menu {
+    direction: rtl;
+  }
+
   .header__menu-btn {
     display: flex;
   }
