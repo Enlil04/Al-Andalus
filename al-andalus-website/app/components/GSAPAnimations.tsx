@@ -289,11 +289,15 @@ export default function GSAPAnimations() {
           },
         );
 
-        /* ── Contact CTA: active class toggle on scroll ── */
+        /* ── Contact CTA: active class toggle on scroll ──
+           White text while the navy panel is on screen. end must be
+           "bottom top" (fully past), not "bottom center" — otherwise
+           is-active drops while half the section is still visible
+           (worse on short pages where CTA sits right above the footer). */
         ScrollTrigger.create({
           trigger: ".contact-cta",
-          start: "top 55%",
-          end: "bottom center",
+          start: "top 70%",
+          end: "bottom top",
           toggleClass: "is-active",
         });
 
