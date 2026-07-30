@@ -148,8 +148,8 @@ export const SiteSettings: GlobalConfig = {
       },
       admin: {
         description: {
-          en: "Used site-wide (header, Contact Us rows, forms). Shortcode and phone appear as labeled rows in the Contact Us section — do not paste them into the Contact Us description.",
-          ar: "تُستخدم في جميع أنحاء الموقع. الرقم المختصر والهاتف يظهران كصفوف منفصلة في قسم اتصل بنا — لا تضعهما داخل وصف القسم.",
+          en: "Used site-wide (header, Contact Us rows, forms). Phone and shortcode appear together in the Contact Us phone row — do not paste them into the Contact Us description.",
+          ar: "تُستخدم في جميع أنحاء الموقع. يظهر الهاتف والرقم المختصر معاً في صف الهاتف بقسم اتصل بنا — لا تضعهما داخل وصف القسم.",
         },
       },
       fields: [
@@ -200,8 +200,8 @@ export const SiteSettings: GlobalConfig = {
       },
       admin: {
         description: {
-          en: "Homepage / site-wide Contact Us block. Layout on the website: title, description, then rows for Shortcode, Phone (from Contact Information), Hours, Locations, plus the quote button.",
-          ar: "كتلة اتصل بنا في الموقع. الترتيب: العنوان، الوصف، ثم صفوف الرقم المختصر والهاتف (من معلومات التواصل) وساعات العمل والفروع، مع زر طلب التسعيرة.",
+          en: "Homepage / site-wide Contact Us block. Layout: title, description, then Phone (number · shortcode from Contact Information), Locations, Hours, plus the quote button.",
+          ar: "كتلة اتصل بنا في الموقع. الترتيب: العنوان، الوصف، ثم الهاتف (الرقم · المختصر من معلومات التواصل) والفروع وساعات العمل، مع زر طلب التسعيرة.",
         },
       },
       fields: [
@@ -234,10 +234,10 @@ export const SiteSettings: GlobalConfig = {
               name: "hoursEn",
               type: "text",
               label: bilingualLabel("Hours (English)", "ساعات العمل (إنجليزي)"),
-              defaultValue: "Sat–Thu · 8:00 AM – 3:30 PM",
+              defaultValue: "Sun–Thu · 8:00 AM – 3:30 PM",
               admin: {
                 description: {
-                  en: "Shown as the Hours row under the description (e.g. Sat–Thu · 8:00 AM – 3:30 PM).",
+                  en: "Shown as the Hours row under the description (e.g. Sun–Thu · 8:00 AM – 3:30 PM).",
                   ar: "يظهر كصف ساعات العمل تحت الوصف.",
                 },
               },
@@ -289,7 +289,7 @@ export const SiteSettings: GlobalConfig = {
               name: "hoursAr",
               type: "text",
               label: bilingualLabel("Hours (Arabic)", "ساعات العمل (عربي)"),
-              defaultValue: "السبت–الخميس · ٨:٠٠ ص – ٣:٣٠ م",
+              defaultValue: "الأحد–الخميس · ٨:٠٠ ص – ٣:٣٠ م",
             },
             {
               name: "locationsAr",

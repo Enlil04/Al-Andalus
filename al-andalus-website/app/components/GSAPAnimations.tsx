@@ -270,13 +270,8 @@ export default function GSAPAnimations() {
         }
 
         /* ── Contact CTA: scroll background expansion (rectangle) ── */
-        const isRtl = document.documentElement.getAttribute("dir") === "rtl";
-        const contactStartClip = (() => {
-          if (window.innerWidth <= 768) return "inset(62% 28% 28% 28%)";
-          if (isRtl) return "inset(42% 59% 48% 25%)";
-          if (window.innerWidth <= 900) return "inset(66% 5% 26% 82%)";
-          return "inset(70% 27% 22% 57%)";
-        })();
+        const contactStartClip =
+          window.innerWidth <= 768 ? "inset(62% 28% 28% 28%)" : "inset(70% 27% 22% 57%)";
 
         gsap.fromTo(
           ".contact-cta__bg",
@@ -305,11 +300,11 @@ export default function GSAPAnimations() {
         /* ── Contact CTA: button scroll parallax and scaling ── */
         gsap.fromTo(
           ".contact-cta__btn",
-          { scale: 0.9, y: 28, rotation: -2 },
+          { scale: 0.95, y: 28, rotation: 0 },
           {
-            scale: 1.12,
-            y: -28,
-            rotation: 2,
+            scale: 1.05,
+            y: -14,
+            rotation: 0,
             ease: "power1.out",
             scrollTrigger: {
               trigger: ".contact-cta",

@@ -2465,95 +2465,99 @@ html[dir="rtl"] .footer-new__desc {
     height: 120px !important;
   }
 
-  /* Contact CTA Mobile Layout (Headline -> Paragraph -> Button) */
+  /* Contact CTA Mobile Layout */
   .contact-cta {
-    height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 0 !important;
+    min-height: 100vh !important;
+    padding: 4rem 1.25rem !important;
+    background-color: var(--light-100) !important;
   }
 
   .contact-cta__content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: var(--space-6) !important;
-    width: 100% !important;
-    height: 100% !important;
-    padding: var(--space-8) var(--space-6) !important;
-    position: relative !important;
+    padding: 0 !important;
+    transform: none !important;
   }
 
-  .contact-cta__hero {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: var(--space-4) !important;
-    position: static !important;
-    width: 100% !important;
+  .contact-cta__container {
+    gap: 1.75rem !important;
   }
 
   .contact-cta__title {
-    position: static !important;
-    font-size: clamp(2.5rem, 8vw, 3.5rem) !important;
-    color: var(--white) !important;
-    -webkit-text-stroke: none !important;
-    mix-blend-mode: normal !important;
-    text-align: center !important;
-    white-space: normal !important;
+    font-size: clamp(2.2rem, 9vw, 3.5rem) !important;
+    color: var(--navy-900) !important;
+    transition: color 0.5s ease !important;
   }
 
-  .contact-cta.is-active .contact-cta__title,
-  .contact-cta.is-active .contact-cta__title .ah-word-inner {
+  .contact-cta.is-active .contact-cta__title {
     color: var(--white) !important;
-    -webkit-text-stroke: none !important;
-    mix-blend-mode: normal !important;
-  }
-
-  .contact-cta__info {
-    position: static !important;
-    transform: none !important;
-    width: 100% !important;
-    max-width: 400px !important;
-    text-align: center !important;
-    color: var(--light-100) !important;
-    margin: 0 !important;
   }
 
   .contact-cta__desc {
-    text-align: center !important;
-    margin: 0 0 1.25rem !important;
+    font-size: 1rem !important;
+    color: var(--navy-900) !important;
+    max-width: 100% !important;
+    transition: color 0.5s ease !important;
   }
 
-  .contact-cta__details {
-    width: 100%;
-    max-width: 22rem;
-    margin: 0 auto;
-    text-align: left;
+  .contact-cta.is-active .contact-cta__desc {
+    color: rgba(255, 255, 255, 0.92) !important;
   }
 
-  .contact-cta__details li {
-    grid-template-columns: 6.5rem minmax(0, 1fr);
+  .contact-cta__info-row {
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
+    gap: 1rem !important;
+    font-size: 1rem !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .contact-cta__info-item {
+    font-size: 1rem !important;
+    white-space: nowrap !important;
+    color: var(--navy-900) !important;
+    transition: color 0.5s ease !important;
+  }
+
+  .contact-cta.is-active .contact-cta__info-item {
+    color: var(--white) !important;
+  }
+
+  .contact-cta__icon {
+    fill: var(--navy-900) !important;
+    color: var(--navy-900) !important;
+    transition: fill 0.5s ease, color 0.5s ease !important;
+  }
+
+  .contact-cta.is-active .contact-cta__icon {
+    fill: var(--white) !important;
+    color: var(--white) !important;
+  }
+
+  .contact-cta__btn-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin: 0.5rem auto 0 !important;
   }
 
   .contact-cta__btn {
     position: relative !important;
     left: auto !important;
+    right: auto !important;
     top: auto !important;
     transform: none !important;
-    width: auto !important;
-    min-width: 11rem !important;
+    margin: 0 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    min-width: 200px !important;
     height: auto !important;
-    padding: 1rem 1.6rem !important;
-    margin-top: 1rem !important;
-    border-radius: 0 !important;
-  }
-
-  .contact-cta__bg {
-    clip-path: inset(62% 28% 28% 28%) !important;
+    padding: 0.95rem 2rem !important;
   }
 
   .footer__top {
@@ -3001,12 +3005,13 @@ html[dir="rtl"] .footer-new__desc {
 /* --- Contact CTA Section --- */
 .contact-cta {
   position: relative;
-  height: 100vh;
+  min-height: 100vh;
   background-color: var(--light-100);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 5rem 1.5rem;
 }
 
 .contact-cta__bg {
@@ -3019,108 +3024,53 @@ html[dir="rtl"] .footer-new__desc {
   background: linear-gradient(to top, var(--navy-900), var(--navy-700));
   background-size: cover;
   background-position: center;
-  /* Small rect near CTA (65% / 75%); GSAP expands to inset(0) */
+  /* Small rect near center; GSAP expands to inset(0) on scroll */
   clip-path: inset(70% 27% 22% 57%);
   z-index: 1;
 }
-
-/* Scroll triggered clip-path is managed by GSAP ScrollTrigger */
 
 .contact-cta__content {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: none;
-  height: 100%;
-  margin: 0;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem;
-  text-align: left;
-  transform: translateY(-10vh);
+  padding: 2rem 1rem;
+  text-align: center;
 }
 
-.contact-cta__hero {
-  position: relative;
-  z-index: 2;
-  display: inline-block;
-}
-
-.contact-cta__info {
-  position: absolute;
-  top: calc(100% + 0.75rem);
-  left: 0;
-  z-index: 3;
-  width: max-content;
-  max-width: min(32rem, 48vw);
-  color: var(--navy-900);
-  transition: color 0.5s ease;
-}
-
-.contact-cta__desc {
-  margin: 0 0 1.35rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-  line-height: 1.55;
-  letter-spacing: 0.01em;
-  text-align: left;
-}
-
-.contact-cta__details {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.contact-cta__details li {
-  display: grid;
-  grid-template-columns: 8rem minmax(0, 1fr);
-  gap: 0.85rem;
-  align-items: baseline;
-}
-
-.contact-cta__details-key {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  opacity: 0.72;
-}
-
-.contact-cta__details-value {
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: 0.01em;
-  color: inherit;
-  text-decoration: none;
-}
-
-a.contact-cta__details-value:hover {
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+.contact-cta__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2.25rem;
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
 }
 
 .contact-cta__title {
   position: relative;
   z-index: 2;
-  font-size: 10vw;
-  font-weight: 500;
-  color: var(--white);
-  mix-blend-mode: difference;
+  font-size: clamp(3.2rem, 8vw, 7.5rem);
+  font-weight: 900;
+  color: var(--navy-900);
   text-align: center;
   margin: 0;
-  line-height: 1;
-  font-family: var(--font-en);
-  letter-spacing: -0.02em;
-  transition: all 0.5s ease;
-  pointer-events: none;
+  line-height: 1.1;
+  font-family: var(--font-en), "Poppins", sans-serif;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  width: 100%;
+  transition: color 0.5s ease;
 }
 
-/* Expanded: solid white fill — keep the brand mark readable, no outline */
 .contact-cta.is-active .contact-cta__title,
 .contact-cta.is-active .contact-cta__title .ah-word-inner {
   color: var(--white);
@@ -3128,25 +3078,103 @@ a.contact-cta__details-value:hover {
   mix-blend-mode: normal;
 }
 
-.contact-cta.is-active .contact-cta__info {
+.contact-cta__desc {
+  margin: 0 auto;
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--navy-900);
+  max-width: 715px;
+  text-align: center;
+  font-family: var(--font-en), "Poppins", sans-serif;
+  transition: color 0.5s ease;
+}
+
+.contact-cta.is-active .contact-cta__desc {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.contact-cta__info-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.25rem 2.5rem;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.contact-cta__info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--navy-900);
+  font-size: clamp(0.95rem, 1.3vw, 1.25rem);
+  font-weight: 500;
+  font-family: var(--font-en), "Poppins", sans-serif;
+  transition: color 0.5s ease;
+}
+
+.contact-cta.is-active .contact-cta__info-item {
   color: var(--white);
 }
 
+.contact-cta__icon {
+  width: 1.4rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+  fill: var(--navy-900);
+  color: var(--navy-900);
+  transition: fill 0.5s ease, color 0.5s ease;
+}
+
+.contact-cta.is-active .contact-cta__icon {
+  fill: var(--white);
+  color: var(--white);
+}
+
+.contact-cta__info-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: inherit;
+}
+
+.contact-cta__info-label {
+  text-transform: capitalize;
+  opacity: 0.9;
+}
+
+.contact-cta__info-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.contact-cta__info-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.contact-cta__btn-wrapper {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
 .contact-cta__btn {
-  position: absolute;
-  left: 65%;
-  top: 75%;
-  transform: translate(-50%, -50%);
-  width: auto;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 11.5rem;
   height: auto;
   padding: 1.15rem 1.85rem;
   border-radius: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   text-decoration: none;
-  color: var(--navy-900);
+  color: #2F2F2F;
   z-index: 3;
 }
 
@@ -3156,22 +3184,25 @@ a.contact-cta__details-value:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--white);
+  background: #D9D9D9;
   border-radius: 0;
-  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), background 0.5s, border 0.5s;
+  border: 1px solid transparent;
+  transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), background 0.5s ease, border 0.5s ease;
   z-index: 1;
 }
 
 .contact-cta__btn span {
   position: relative;
   z-index: 2;
-  font-size: 0.8rem;
+  font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-align: center;
   line-height: 1.3;
+  color: #2F2F2F;
   white-space: nowrap;
   transition: color 0.5s ease;
+  font-family: var(--font-en), "Poppins", sans-serif;
 }
 
 .contact-cta__btn:hover .contact-cta__btn-bg {
@@ -3184,38 +3215,7 @@ a.contact-cta__details-value:hover {
   color: var(--white);
 }
 
-@media (max-width: 900px) {
-  .contact-cta__content {
-    padding: 2rem;
-  }
-  .contact-cta__info {
-    top: calc(100% + 0.5rem);
-    max-width: min(20rem, 70vw);
-  }
-  .contact-cta__desc {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-  .contact-cta__details li {
-    grid-template-columns: 6.25rem minmax(0, 1fr);
-    gap: 0.5rem;
-  }
-  .contact-cta__details-key {
-    font-size: 0.65rem;
-  }
-  .contact-cta__details-value {
-    font-size: 0.95rem;
-  }
-  .contact-cta__btn {
-    left: 90%;
-    top: 70%;
-    min-width: 9.5rem;
-    padding: 1rem 1.5rem;
-  }
-  .contact-cta__bg {
-    clip-path: inset(66% 5% 26% 82%);
-  }
-}
+
 
 /* --- Partners Grid Section --- */
 .partners-grid-section {
@@ -5061,146 +5061,27 @@ html[dir="rtl"] .partner-page-card__num {
   left: 20px;
 }
 
-/* ── Contact CTA: RTL layout — mirror the English composition ── */
-
-html[dir="rtl"] .contact-cta__content {
-  text-align: center;
-  transform: translateY(-10vh) translateX(5vw);
-}
-
-/* Keep hero as an inline block (like LTR) so it stays centered as a unit */
-html[dir="rtl"] .contact-cta__hero {
-  display: inline-block !important;
-  position: relative;
-  text-align: center;
-}
-
+/* ── Contact CTA: RTL layout ── */
 html[dir="rtl"] .contact-cta__title {
-  font-family: var(--font-ar) !important;
-  font-size: 9vw !important;
-  line-height: 1.2;
-  text-align: center !important;
-  width: auto !important;
-  letter-spacing: 0;
-}
-
-/* Hang the copy under the title on the right — mirror of LTR left: 0 */
-html[dir="rtl"] .contact-cta__info {
-  position: absolute !important;
-  top: calc(100% + 0.85rem) !important;
-  right: 0 !important;
-  left: auto !important;
-  margin: 0 !important;
-  width: max-content;
-  max-width: min(32rem, 48vw);
-  text-align: right !important;
+  font-family: var(--font-ar), var(--font-cairo), sans-serif !important;
 }
 
 html[dir="rtl"] .contact-cta__desc {
-  text-align: right !important;
-  font-size: 1.1rem;
-  line-height: 1.7;
-  letter-spacing: 0;
+  font-family: var(--font-ar), var(--font-cairo), sans-serif !important;
 }
 
-html[dir="rtl"] .contact-cta__details {
-  gap: 0.85rem;
-  text-align: right;
-}
-
-html[dir="rtl"] .contact-cta__details li {
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 1rem;
+html[dir="rtl"] .contact-cta__info-item {
+  font-family: var(--font-ar), var(--font-cairo), sans-serif !important;
   direction: rtl;
-  justify-content: start;
 }
 
-html[dir="rtl"] .contact-cta__details-key {
-  text-align: right;
-  letter-spacing: 0.04em;
-  font-size: 0.78rem;
-  white-space: nowrap;
-}
-
-html[dir="rtl"] .contact-cta__details-value {
-  text-align: right;
-  letter-spacing: 0;
-}
-
-html[dir="rtl"] .contact-cta__details-value[dir="ltr"] {
-  text-align: right;
-  unicode-bidi: isolate;
-}
-
-/* CTA on the left, close to the headline — mirror of LTR right-side CTA */
-html[dir="rtl"] .contact-cta__btn {
-  left: 33% !important;
-  right: auto !important;
-  top: 48% !important;
-  transform: translate(-50%, -50%);
-  min-width: 0;
-  padding: 1.15rem 1.75rem;
-  text-align: center;
-  direction: rtl;
+html[dir="rtl"] .contact-cta__info-link[dir="ltr"] {
+  direction: ltr;
+  display: inline-block;
 }
 
 html[dir="rtl"] .contact-cta__btn span {
-  font-family: var(--font-ar);
-  letter-spacing: 0;
-  white-space: nowrap;
-  text-align: center;
-  display: block;
-  width: 100%;
-}
-
-/* Expanding rect originates from the RTL CTA position */
-html[dir="rtl"] .contact-cta__bg {
-  clip-path: inset(42% 59% 48% 25%);
-}
-
-/* Mobile: stacked centered layout */
-@media (max-width: 768px) {
-  html[dir="rtl"] .contact-cta__content {
-    transform: none;
-  }
-  html[dir="rtl"] .contact-cta__hero {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    width: 100%;
-  }
-  html[dir="rtl"] .contact-cta__title {
-    text-align: center !important;
-    font-size: clamp(2.75rem, 12vw, 3.75rem);
-    width: 100%;
-  }
-  html[dir="rtl"] .contact-cta__info {
-    position: static !important;
-    text-align: center !important;
-    margin: 0 !important;
-    max-width: 22rem;
-    width: 100%;
-  }
-  html[dir="rtl"] .contact-cta__desc {
-    text-align: center !important;
-  }
-  html[dir="rtl"] .contact-cta__details {
-    margin-inline: auto;
-    text-align: right;
-  }
-  html[dir="rtl"] .contact-cta__details li {
-    grid-template-columns: 7rem minmax(0, 1fr);
-  }
-  html[dir="rtl"] .contact-cta__btn {
-    position: relative !important;
-    left: auto !important;
-    right: auto !important;
-    top: auto !important;
-    transform: none !important;
-  }
-  html[dir="rtl"] .contact-cta__bg {
-    clip-path: inset(62% 28% 28% 28%) !important;
-  }
+  font-family: var(--font-ar), var(--font-cairo), sans-serif !important;
 }
 
 
