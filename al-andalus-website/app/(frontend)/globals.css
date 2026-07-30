@@ -622,12 +622,22 @@ html[dir="rtl"] .btn:hover .btn-arrow {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-decoration: none !important;
+  -webkit-text-decoration-line: none !important;
+  text-decoration-line: none !important;
   border: 1px solid currentColor;
+  border-bottom-color: currentColor;
   border-radius: 999px;
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 1;
+}
+
+/* Kill Figma/browser leftover underlines under pill labels (shows on some clients). */
+.header__pill::after {
+  content: none !important;
+  display: none !important;
 }
 
 .header__pill::before {
@@ -639,9 +649,12 @@ html[dir="rtl"] .btn:hover .btn-arrow {
   padding-bottom: 120%;
   background: var(--navy-900);
   border-radius: 50%;
+  opacity: 0;
   transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1),
+              opacity 0.35s ease;
   z-index: -1;
+  pointer-events: none;
 }
 
 .header__pill--lang {
@@ -656,13 +669,17 @@ html[dir="rtl"] .btn:hover .btn-arrow {
   padding: 0 20px;
 }
 
-.header__pill:hover {
+.header__pill:hover,
+.header__pill:focus-visible {
   color: var(--white);
   border-color: transparent;
+  text-decoration: none !important;
   transform: translateY(-1px);
 }
 
-.header__pill:hover::before {
+.header__pill:hover::before,
+.header__pill:focus-visible::before {
+  opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
 

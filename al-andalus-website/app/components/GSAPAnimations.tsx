@@ -3,15 +3,58 @@
 import { useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { waitForPageReady } from "@/lib/pageReady";
+import { waitForPageReady, SCROLL_EVENT } from "@/lib/pageReady";
 import { initAllHeadlines } from "@/lib/animateHeadline";
 
 gsap.registerPlugin(ScrollTrigger);
+
+/**
+ * Keep Contact Us copy white while the navy panel is on screen.
+ * Uses live getBoundingClientRect (not cached ScrollTrigger start/end) so
+ * tall pages like About — where layout shifts after ST init — stay correct.
+ */
+function syncContactCtaActiveState(section: HTMLElement) {
+  const rect = section.getBoundingClientRect();
+  const vh = window.innerHeight || 1;
+  // Align with clip expansion: white once the section top is well into view.
+  const expandedEnough = rect.top <= vh * 0.7;
+  // Stay white until the entire section has left through the top.
+  const stillOnScreen = rect.bottom > 0;
+  section.classList.toggle("is-active", expandedEnough && stillOnScreen);
+}
+
+function bindContactCtaActiveSync(isDisposed: () => boolean): () => void {
+  const section = document.querySelector<HTMLElement>(".contact-cta");
+  if (!section) return () => {};
+
+  const sync = () => {
+    if (isDisposed()) return;
+    syncContactCtaActiveState(section);
+  };
+
+  sync();
+  window.addEventListener(SCROLL_EVENT, sync);
+  window.addEventListener("resize", sync);
+  const ro = new ResizeObserver(sync);
+  ro.observe(section);
+  // Late image/layout shifts on long pages (About) invalidate early measurements.
+  const t1 = window.setTimeout(sync, 400);
+  const t2 = window.setTimeout(sync, 1200);
+
+  return () => {
+    window.removeEventListener(SCROLL_EVENT, sync);
+    window.removeEventListener("resize", sync);
+    ro.disconnect();
+    window.clearTimeout(t1);
+    window.clearTimeout(t2);
+  };
+}
 
 export default function GSAPAnimations() {
   useLayoutEffect(() => {
     let ctx: gsap.Context | undefined;
     let disposed = false;
+    let stopContactActiveSync: (() => void) | undefined;
 
     const cleanupReady = waitForPageReady(() => {
       if (disposed) return;
@@ -289,17 +332,8 @@ export default function GSAPAnimations() {
           },
         );
 
-        /* ── Contact CTA: active class toggle on scroll ──
-           White text while the navy panel is on screen. end must be
-           "bottom top" (fully past), not "bottom center" — otherwise
-           is-active drops while half the section is still visible
-           (worse on short pages where CTA sits right above the footer). */
-        ScrollTrigger.create({
-          trigger: ".contact-cta",
-          start: "top 70%",
-          end: "bottom top",
-          toggleClass: "is-active",
-        });
+        /* ── Contact CTA: active class from live viewport (not ST cache) ── */
+        stopContactActiveSync = bindContactCtaActiveSync(() => disposed);
 
         /* ── Contact CTA: button scroll parallax and scaling ── */
         gsap.fromTo(
@@ -428,6 +462,7 @@ export default function GSAPAnimations() {
     return () => {
       disposed = true;
       cleanupReady();
+      stopContactActiveSync?.();
       try {
         ctx?.revert();
       } catch {
