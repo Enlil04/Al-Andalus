@@ -789,7 +789,16 @@ const LEGACY_CONTACT_CTA = new Set([
   "GO TO FORM",
   "Go to form",
   "اذهب إلى النموذج",
+  // Old CTA copy pointed at the quote form; Contact Us section now opens /contact.
+  "REQUEST A QUOTE",
+  "Request a Quote",
+  "طلب تسعيرة",
 ]);
+
+/** Contact Us section always opens /contact (CMS quote links are ignored). */
+function resolveContactCtaButtonLink(_value: unknown): string {
+  return "/contact";
+}
 
 function contactCtaFallback(locale: "en" | "ar"): ContactCtaContent {
   const siteCopy = getSiteCopy(locale);
@@ -852,14 +861,7 @@ export const fetchContactCtaContent = cache(async function fetchContactCtaConten
         cmsCta && !LEGACY_CONTACT_CTA.has(cmsCta)
           ? cmsCta
           : siteCopy.contact.cta,
-      ctaLink: (() => {
-        const link = normalizeCmsText(contactCtaGroup?.buttonLink);
-        // Empty or legacy quote-form default → Contact Us page.
-        if (!link || link === "/request-quote" || link === "/request-quote/") {
-          return "/contact";
-        }
-        return link;
-      })(),
+      ctaLink: resolveContactCtaButtonLink(contactCtaGroup?.buttonLink),
       backgroundImageUrl: getMediaUrl(contactCtaGroup?.backgroundImage),
       shortcode,
       phone: formatPhoneDisplay(rawPhone),

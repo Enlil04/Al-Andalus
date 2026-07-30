@@ -200,8 +200,8 @@ export const SiteSettings: GlobalConfig = {
       },
       admin: {
         description: {
-          en: "Homepage / site-wide Contact Us block. Layout: title, description, then Phone (number · shortcode from Contact Information), Locations, Hours, plus the quote button.",
-          ar: "كتلة اتصل بنا في الموقع. الترتيب: العنوان، الوصف، ثم الهاتف (الرقم · المختصر من معلومات التواصل) والفروع وساعات العمل، مع زر طلب التسعيرة.",
+          en: "Homepage / site-wide Contact Us block. Layout: title, description, then Phone (number · shortcode from Contact Information), Locations, Hours, plus the Contact Us button (links to /contact).",
+          ar: "كتلة اتصل بنا في الموقع. الترتيب: العنوان، الوصف، ثم الهاتف (الرقم · المختصر من معلومات التواصل) والفروع وساعات العمل، مع زر اتصل بنا (يوجّه إلى /contact).",
         },
       },
       fields: [
@@ -258,11 +258,11 @@ export const SiteSettings: GlobalConfig = {
               name: "buttonTextEn",
               type: "text",
               label: bilingualLabel("Button Text (English)", "نص الزر (إنجليزي)"),
-              defaultValue: "REQUEST A QUOTE",
+              defaultValue: "CONTACT US",
               admin: {
                 description: {
-                  en: "CTA button label (website default: REQUEST A QUOTE).",
-                  ar: "نص زر الدعوة للإجراء (الافتراضي في الموقع: REQUEST A QUOTE).",
+                  en: "CTA button label (website default: CONTACT US).",
+                  ar: "نص زر الدعوة للإجراء (الافتراضي في الموقع: CONTACT US).",
                 },
               },
             },
@@ -301,7 +301,7 @@ export const SiteSettings: GlobalConfig = {
               name: "buttonTextAr",
               type: "text",
               label: bilingualLabel("Button Text (Arabic)", "نص الزر (عربي)"),
-              defaultValue: "اطلب تسعيرة",
+              defaultValue: "اتصل بنا",
             },
           ],
         ),

@@ -316,7 +316,7 @@ export const siteCopy = {
     headline: "CONTACT US",
     description:
       "Every insurance need is unique. Whether you're protecting your vehicle, your people, or your business — our specialists are ready with expert guidance.",
-    cta: "REQUEST A QUOTE",
+    cta: "CONTACT US",
     labels: {
       shortcode: "Shortcode",
       phone: "Phone",
