@@ -798,7 +798,7 @@ function contactCtaFallback(locale: "en" | "ar"): ContactCtaContent {
     headline: siteCopy.contact.headline,
     description: siteCopy.contact.description,
     cta: siteCopy.contact.cta,
-    ctaLink: "/request-quote",
+    ctaLink: "/contact",
     backgroundImageUrl: null,
     shortcode: "7366",
     phone: formatPhoneDisplay(rawPhone),
@@ -854,9 +854,9 @@ export const fetchContactCtaContent = cache(async function fetchContactCtaConten
           : siteCopy.contact.cta,
       ctaLink: (() => {
         const link = normalizeCmsText(contactCtaGroup?.buttonLink);
-        // Legacy CMS values pointed at /contact; the live CTA opens the quote form.
-        if (!link || link === "/contact" || link === "/contact/") {
-          return "/request-quote";
+        // Empty or legacy quote-form default → Contact Us page.
+        if (!link || link === "/request-quote" || link === "/request-quote/") {
+          return "/contact";
         }
         return link;
       })(),

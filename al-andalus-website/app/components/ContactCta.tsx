@@ -26,7 +26,7 @@ export default async function ContactCta({
   headline,
   description,
   cta,
-  ctaLink = "/request-quote",
+  ctaLink = "/contact",
   backgroundImageUrl,
   shortcode,
   phone,

@@ -308,12 +308,12 @@ export const SiteSettings: GlobalConfig = {
         {
           name: "buttonLink",
           type: "text",
-          defaultValue: "/request-quote",
+          defaultValue: "/contact",
           label: { en: "Button Link", ar: "رابط الزر" },
           admin: {
             description: {
-              en: "Where the CTA goes (website default: /request-quote).",
-              ar: "وجهة الزر (الافتراضي في الموقع: /request-quote).",
+              en: "Where the CTA goes (website default: /contact).",
+              ar: "وجهة الزر (الافتراضي في الموقع: /contact).",
             },
           },
         },

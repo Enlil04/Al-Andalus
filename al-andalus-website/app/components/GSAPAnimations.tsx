@@ -8,28 +8,68 @@ import { initAllHeadlines } from "@/lib/animateHeadline";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/** Match previous GSAP power1.inOut scrub curve. */
+function contactEaseInOut(progress: number) {
+  return progress < 0.5
+    ? 2 * progress * progress
+    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+}
+
+function contactStartClip() {
+  return window.innerWidth <= 768
+    ? { top: 62, right: 28, bottom: 28, left: 28 }
+    : { top: 70, right: 27, bottom: 22, left: 57 };
+}
+
 /**
- * Keep Contact Us copy white while the navy panel is on screen.
- * Uses live getBoundingClientRect (not cached ScrollTrigger start/end) so
- * tall pages like About — where layout shifts after ST init — stay correct.
+ * Drive Contact Us clip + text color from live layout geometry.
+ * ScrollTrigger start/end cache goes stale on tall pages (About/Services)
+ * after images/layout shift — that left a full navy panel with navy text.
  */
-function syncContactCtaActiveState(section: HTMLElement) {
+function syncContactCtaMotion(section: HTMLElement) {
+  const bg = section.querySelector<HTMLElement>(".contact-cta__bg");
+  const btn = section.querySelector<HTMLElement>(".contact-cta__btn");
   const rect = section.getBoundingClientRect();
   const vh = window.innerHeight || 1;
-  // Align with clip expansion: white once the section top is well into view.
-  const expandedEnough = rect.top <= vh * 0.7;
-  // Stay white until the entire section has left through the top.
+
+  // Same range as the old scrub: top hits 90% → top hits 0.
+  const startY = vh * 0.9;
+  const endY = 0;
+  const raw = (startY - rect.top) / Math.max(1, startY - endY);
+  const progress = Math.min(1, Math.max(0, raw));
+  const eased = contactEaseInOut(progress);
+
+  if (bg) {
+    const start = contactStartClip();
+    const top = start.top * (1 - eased);
+    const right = start.right * (1 - eased);
+    const bottom = start.bottom * (1 - eased);
+    const left = start.left * (1 - eased);
+    bg.style.clipPath = `inset(${top}% ${right}% ${bottom}% ${left}%)`;
+  }
+
+  if (btn) {
+    // Parallel to old button scrub (top bottom → top top).
+    const btnRaw = (vh - rect.top) / Math.max(1, vh);
+    const btnP = Math.min(1, Math.max(0, btnRaw));
+    const btnEased = contactEaseInOut(btnP);
+    btn.style.transform = `translate3d(0, ${28 + ( -14 - 28) * btnEased}px, 0) scale(${0.95 + (1.05 - 0.95) * btnEased})`;
+    btn.style.opacity = String(btnEased);
+  }
+
+  // White as soon as navy is large enough; keep until section fully leaves.
+  const expandedEnough = progress >= 0.22;
   const stillOnScreen = rect.bottom > 0;
   section.classList.toggle("is-active", expandedEnough && stillOnScreen);
 }
 
-function bindContactCtaActiveSync(isDisposed: () => boolean): () => void {
+function bindContactCtaMotion(isDisposed: () => boolean): () => void {
   const section = document.querySelector<HTMLElement>(".contact-cta");
   if (!section) return () => {};
 
   const sync = () => {
     if (isDisposed()) return;
-    syncContactCtaActiveState(section);
+    syncContactCtaMotion(section);
   };
 
   sync();
@@ -37,16 +77,23 @@ function bindContactCtaActiveSync(isDisposed: () => boolean): () => void {
   window.addEventListener("resize", sync);
   const ro = new ResizeObserver(sync);
   ro.observe(section);
-  // Late image/layout shifts on long pages (About) invalidate early measurements.
-  const t1 = window.setTimeout(sync, 400);
-  const t2 = window.setTimeout(sync, 1200);
+  ro.observe(document.documentElement);
+  // Late image/layout shifts on long pages — remeasure after settle.
+  const timers = [400, 1200, 2500].map((ms) => window.setTimeout(sync, ms));
 
   return () => {
     window.removeEventListener(SCROLL_EVENT, sync);
     window.removeEventListener("resize", sync);
     ro.disconnect();
-    window.clearTimeout(t1);
-    window.clearTimeout(t2);
+    timers.forEach((id) => window.clearTimeout(id));
+    const bg = section.querySelector<HTMLElement>(".contact-cta__bg");
+    const btn = section.querySelector<HTMLElement>(".contact-cta__btn");
+    if (bg) bg.style.clipPath = "";
+    if (btn) {
+      btn.style.transform = "";
+      btn.style.opacity = "";
+    }
+    section.classList.remove("is-active");
   };
 }
 
@@ -54,7 +101,7 @@ export default function GSAPAnimations() {
   useLayoutEffect(() => {
     let ctx: gsap.Context | undefined;
     let disposed = false;
-    let stopContactActiveSync: (() => void) | undefined;
+    let stopContactMotion: (() => void) | undefined;
 
     const cleanupReady = waitForPageReady(() => {
       if (disposed) return;
@@ -312,46 +359,8 @@ export default function GSAPAnimations() {
           });
         }
 
-        /* ── Contact CTA: scroll background expansion (rectangle) ── */
-        const contactStartClip =
-          window.innerWidth <= 768 ? "inset(62% 28% 28% 28%)" : "inset(70% 27% 22% 57%)";
-
-        gsap.fromTo(
-          ".contact-cta__bg",
-          { clipPath: contactStartClip },
-          {
-            clipPath: "inset(0% 0% 0% 0%)",
-            ease: "power1.inOut",
-            scrollTrigger: {
-              trigger: ".contact-cta",
-              start: "top 90%",
-              // Finish expanding once the section fills the viewport
-              end: "top top",
-              scrub: 1,
-            },
-          },
-        );
-
-        /* ── Contact CTA: active class from live viewport (not ST cache) ── */
-        stopContactActiveSync = bindContactCtaActiveSync(() => disposed);
-
-        /* ── Contact CTA: button scroll parallax and scaling ── */
-        gsap.fromTo(
-          ".contact-cta__btn",
-          { scale: 0.95, y: 28, rotation: 0 },
-          {
-            scale: 1.05,
-            y: -14,
-            rotation: 0,
-            ease: "power1.out",
-            scrollTrigger: {
-              trigger: ".contact-cta",
-              start: "top bottom",
-              end: "top top",
-              scrub: 1,
-            },
-          },
-        );
+        /* ── Contact CTA: live clip + white text (no ST cache) ── */
+        stopContactMotion = bindContactCtaMotion(() => disposed);
       }
 
       /* ── Expanding Image ── */
@@ -462,7 +471,7 @@ export default function GSAPAnimations() {
     return () => {
       disposed = true;
       cleanupReady();
-      stopContactActiveSync?.();
+      stopContactMotion?.();
       try {
         ctx?.revert();
       } catch {
