@@ -375,7 +375,12 @@ html[dir="rtl"] .btn:hover .btn-arrow {
 .about-company__row.reveal,
 .about-history__row.reveal,
 .about-grid__section-title.reveal {
-  display: grid;
+  /* Keep flex rows as flex so mobile column stacking still works */
+  display: flex;
+}
+
+.about-grid__section-title.reveal {
+  display: block;
 }
 
 .reveal-clip {
@@ -2468,7 +2473,7 @@ html[dir="rtl"] .footer-new__desc {
   /* Contact CTA Mobile Layout */
   .contact-cta {
     min-height: 100vh !important;
-    padding: 4rem 1.25rem !important;
+    padding: 4rem 1rem !important;
     background-color: var(--light-100) !important;
   }
 
@@ -2478,11 +2483,11 @@ html[dir="rtl"] .footer-new__desc {
   }
 
   .contact-cta__container {
-    gap: 1.75rem !important;
+    gap: 1.5rem !important;
   }
 
   .contact-cta__title {
-    font-size: clamp(2.2rem, 9vw, 3.5rem) !important;
+    font-size: clamp(2rem, 8.5vw, 3.2rem) !important;
     color: var(--navy-900) !important;
     transition: color 0.5s ease !important;
   }
@@ -2492,7 +2497,7 @@ html[dir="rtl"] .footer-new__desc {
   }
 
   .contact-cta__desc {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
     color: var(--navy-900) !important;
     max-width: 100% !important;
     transition: color 0.5s ease !important;
@@ -2505,7 +2510,7 @@ html[dir="rtl"] .footer-new__desc {
   .contact-cta__info-row {
     flex-direction: column !important;
     flex-wrap: wrap !important;
-    gap: 1rem !important;
+    gap: 1.15rem !important;
     font-size: 1rem !important;
     white-space: normal !important;
     overflow: visible !important;
@@ -2515,14 +2520,25 @@ html[dir="rtl"] .footer-new__desc {
   }
 
   .contact-cta__info-item {
-    font-size: 1rem !important;
-    white-space: nowrap !important;
+    font-size: clamp(0.82rem, 3.6vw, 0.98rem) !important;
+    white-space: normal !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
     color: var(--navy-900) !important;
     transition: color 0.5s ease !important;
+    line-height: 1.5 !important;
   }
 
   .contact-cta.is-active .contact-cta__info-item {
     color: var(--white) !important;
+  }
+
+  .contact-cta__info-text {
+    white-space: normal !important;
+    text-align: center !important;
+    word-break: break-word !important;
   }
 
   .contact-cta__icon {
@@ -2555,9 +2571,9 @@ html[dir="rtl"] .footer-new__desc {
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    min-width: 200px !important;
+    min-width: 180px !important;
     height: auto !important;
-    padding: 0.95rem 2rem !important;
+    padding: 0.9rem 1.85rem !important;
   }
 
   .footer__top {
@@ -3643,7 +3659,8 @@ html[dir="rtl"] .faq__subtitle {
 }
 
 .about-company__label {
-  flex: 0 0 clamp(10.5rem, 18vw, 15rem);
+  flex: 0 0 auto;
+  width: clamp(10.5rem, 18vw, 15rem);
   font-size: 0.95rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.7);
@@ -3653,6 +3670,7 @@ html[dir="rtl"] .faq__subtitle {
 
 .about-company__value {
   flex: 1 1 auto;
+  min-width: 0;
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--white);
@@ -3664,6 +3682,7 @@ html[dir="rtl"] .faq__subtitle {
 
 .about-company__board {
   flex: 1 1 auto;
+  min-width: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-4) var(--space-8);
@@ -3685,21 +3704,47 @@ html[dir="rtl"] .faq__subtitle {
 }
 
 @media (max-width: 768px) {
+  .about-company {
+    padding: clamp(4.5rem, 10vh, 7rem) 0 clamp(5rem, 11vh, 8rem);
+  }
+
   .about-company__row {
-    flex-direction: column;
-    gap: var(--space-3);
-    padding: clamp(2.5rem, 5vh, 3.5rem) 0;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.65rem !important;
+    padding: 1.25rem 0 !important;
   }
 
   .about-company__label,
   .about-company__value,
-  .about-company__board {
-    flex: 1 1 auto;
-    width: 100%;
+  .about-company__board,
+  html[dir="rtl"] .about-company__label {
+    flex: 0 0 auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+    flex-basis: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .about-company__label {
+    line-height: 1.45 !important;
+  }
+
+  .about-company__value {
+    line-height: 1.55 !important;
   }
 
   .about-company__board {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    gap: 0.4rem !important;
+  }
+
+  .about-company__board-entry {
+    line-height: 1.5 !important;
   }
 }
 
@@ -5005,9 +5050,16 @@ html[dir="rtl"] .quote-contact__list-key {
   margin-left: auto;
 }
 
-/* Company snapshot: fixed label width keeps every row on the same edges. */
+/* Company snapshot: fixed label width keeps every row on the same edges (desktop). */
+@media (min-width: 769px) {
+  html[dir="rtl"] .about-company__label {
+    width: clamp(11rem, 22vw, 16rem);
+    font-size: 1.05rem;
+    text-align: start !important;
+  }
+}
+
 html[dir="rtl"] .about-company__label {
-  flex-basis: clamp(11rem, 22vw, 16rem);
   font-size: 1.05rem;
   text-align: start !important;
 }
