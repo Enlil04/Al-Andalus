@@ -13,8 +13,8 @@ export const Jobs: CollectionConfig = {
     useAsTitle: "titleEn",
     defaultColumns: ["titleEn", "titleAr", "departmentEn", "status"],
     description: {
-      en: "Job openings. Enter English and Arabic in the language tabs below.",
-      ar: "الوظائف الشاغرة. أدخل الإنجليزية والعربية من تبويبات اللغة أدناه.",
+      en: "Job openings shown on /jobs. Set Status to Closed to hide a role without deleting it. Enter English and Arabic in the language tabs below.",
+      ar: "الوظائف الشاغرة المعروضة في /jobs. اضبط الحالة إلى مغلقة لإخفاء الوظيفة دون حذفها. أدخل الإنجليزية والعربية من تبويبات اللغة أدناه.",
     },
     group: {
       en: "Careers",

@@ -52,8 +52,8 @@ export const Partners: CollectionConfig = {
       label: bilingualLabel("Logo", "الشعار"),
       admin: {
         description: mediaFieldHint(
-          "this partner's logo on the homepage and Partners page",
-          "شعار هذا الشريك في الصفحة الرئيسية وصفحة الشركاء",
+          "this partner's logo on the homepage and Partners page. Prefer a dark or full-color logo on a transparent background (PNG/SVG). Avoid white-only logos — they disappear on the white Partners page.",
+          "شعار هذا الشريك في الصفحة الرئيسية وصفحة الشركاء. يُفضّل شعار داكن أو ملون على خلفية شفافة (PNG/SVG). تجنّب الشعارات البيضاء فقط — تختفي على صفحة الشركاء البيضاء.",
           "transparent PNG/SVG, wide format, at least 800px",
           "PNG/SVG شفاف وعريض وبحجم لا يقل عن 800 بكسل",
         ),

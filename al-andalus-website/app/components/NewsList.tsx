@@ -5,6 +5,7 @@ import { useCallback, useRef, useState } from "react";
 import BlogCard from "@/app/components/ui/blog-cards";
 import { formatNewsDate } from "@/lib/cms/format";
 import type { NewsListItem } from "@/lib/cms/content";
+import { useLocale } from "./LocaleProvider";
 
 export type { NewsListItem };
 
@@ -17,6 +18,7 @@ export default function NewsList({
   items,
   itemBasePath = "/blogs",
 }: NewsListProps) {
+  const { locale } = useLocale();
   const listRef = useRef<HTMLDivElement>(null);
   const [cursor, setCursor] = useState({ x: 0, y: 0, visible: false });
 
@@ -29,7 +31,13 @@ export default function NewsList({
   }, []);
 
   if (items.length === 0) {
-    return <p className="news__empty">No recent news articles.</p>;
+    return (
+      <p className="news__empty">
+        {locale === "ar"
+          ? "لا توجد مقالات منشورة حالياً."
+          : "No recent news articles."}
+      </p>
+    );
   }
 
   return (

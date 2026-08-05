@@ -27,7 +27,13 @@ export default function NewsGrid({
   locale = "en",
 }: NewsGridProps) {
   if (items.length === 0) {
-    return <p className="news-grid__empty">No recent news articles.</p>;
+    return (
+      <p className="news-grid__empty">
+        {locale === "ar"
+          ? "لا توجد مقالات منشورة حالياً."
+          : "No recent news articles."}
+      </p>
+    );
   }
 
   const readLabel = locale === "ar" ? "اقرأ المقال" : "Read Article";

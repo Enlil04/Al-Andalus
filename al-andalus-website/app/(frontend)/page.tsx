@@ -18,10 +18,15 @@ import {
   fetchPartners,
 } from "@/lib/cms/content";
 import CmsImage from "../components/CmsImage";
+import PartnerLogo from "../components/PartnerLogo";
 import HeroBackground from "../components/HeroBackground";
 
 function getPartnerLogoUrl(partner: Record<string, unknown>): string | null {
   return getMediaUrl(partner.logo);
+}
+
+function hasPartnerName(partner: Record<string, unknown>): boolean {
+  return Boolean(String(partner.name ?? "").trim());
 }
 
 export async function generateMetadata() {
@@ -63,9 +68,13 @@ export default async function Home() {
 
   const { hero, intro, story, aboutPreview } = homepageContent;
 
-  const firstRowPartners = partners.slice(0, 2);
-  const secondRowPartners = partners.slice(2, 5);
-  const thirdRowPartners = partners.slice(5, 8);
+  const namedPartners = partners.filter(hasPartnerName);
+  // Homepage shows at most 8 partners: row of 2, then two rows of 3.
+  // Anything beyond that appears only on /partners.
+  const homepagePartners = namedPartners.slice(0, 8);
+  const firstRowPartners = homepagePartners.slice(0, 2);
+  const secondRowPartners = homepagePartners.slice(2, 5);
+  const thirdRowPartners = homepagePartners.slice(5, 8);
 
   const servicesHeadline = locale === "ar" ? "خدماتنا" : "OUR\nSERVICES";
   const viewAllServicesLabel = locale === "ar" ? "عرض جميع الخدمات" : "View all services";
@@ -384,39 +393,29 @@ export default async function Home() {
             </div>
 
             <div className="partners-grid-section__content">
-              {partners.length > 0 ? (
+              {homepagePartners.length > 0 ? (
                 <div className="partners-grid-section__row partners-grid-section__row--two">
                   {firstRowPartners.map((partner, i) => {
                     const logoUrl = getPartnerLogoUrl(partner as Record<string, unknown>);
-                    const variant =
-                      (i + 1) % 4 === 2
-                        ? "partner-grid-card--red"
-                        : (i + 1) % 4 === 3
-                          ? "partner-grid-card--gold"
-                          : "";
 
                     return (
                       <ScrollReveal key={String(partner.id)} delay={(i % 3) + 1}>
-                        <div className={`partner-grid-card ${variant}`.trim()}>
+                        <div className="partner-grid-card">
                           <span className="partner-grid-card__num">
                             {String(i + 1).padStart(2, "0")}
                           </span>
                           <div className="partner-grid-card__logo">
-                            {logoUrl ? (
-                              <CmsImage
-                                src={logoUrl}
-                                fallbackSrc="/logo.svg"
-                                alt={partner.name as string}
-                                width={150}
-                                height={80}
-                                style={{ objectFit: "contain" }}
-                              />
-                            ) : (
-                              <span className="partner-grid-card__text">
-                                {partner.name as string}
-                              </span>
-                            )}
+                            <PartnerLogo
+                              src={logoUrl}
+                              name={partner.name as string}
+                              width={150}
+                              height={80}
+                              textClassName="partner-grid-card__text"
+                            />
                           </div>
+                          <span className="partner-grid-card__name">
+                            {partner.name as string}
+                          </span>
                         </div>
                       </ScrollReveal>
                     );
@@ -428,42 +427,32 @@ export default async function Home() {
             </div>
           </div>
 
-          {partners.length > 0 && (
+          {homepagePartners.length > 0 && (
             <div className="partners-grid-section__full-width-container">
               {secondRowPartners.length > 0 && (
                 <div className="partners-grid-section__row partners-grid-section__row--three">
                   {secondRowPartners.map((partner, i) => {
                     const index = i + 2;
                     const logoUrl = getPartnerLogoUrl(partner as Record<string, unknown>);
-                    const variant =
-                      (index + 1) % 4 === 2
-                        ? "partner-grid-card--red"
-                        : (index + 1) % 4 === 3
-                          ? "partner-grid-card--gold"
-                          : "";
 
                     return (
                       <ScrollReveal key={String(partner.id)} delay={(i % 3) + 1}>
-                        <div className={`partner-grid-card ${variant}`.trim()}>
+                        <div className="partner-grid-card">
                           <span className="partner-grid-card__num">
                             {String(index + 1).padStart(2, "0")}
                           </span>
                           <div className="partner-grid-card__logo">
-                            {logoUrl ? (
-                              <CmsImage
-                                src={logoUrl}
-                                fallbackSrc="/logo.svg"
-                                alt={partner.name as string}
-                                width={150}
-                                height={80}
-                                style={{ objectFit: "contain" }}
-                              />
-                            ) : (
-                              <span className="partner-grid-card__text">
-                                {partner.name as string}
-                              </span>
-                            )}
+                            <PartnerLogo
+                              src={logoUrl}
+                              name={partner.name as string}
+                              width={150}
+                              height={80}
+                              textClassName="partner-grid-card__text"
+                            />
                           </div>
+                          <span className="partner-grid-card__name">
+                            {partner.name as string}
+                          </span>
                         </div>
                       </ScrollReveal>
                     );
@@ -476,35 +465,25 @@ export default async function Home() {
                   {thirdRowPartners.map((partner, i) => {
                     const index = i + 5;
                     const logoUrl = getPartnerLogoUrl(partner as Record<string, unknown>);
-                    const variant =
-                      (index + 1) % 4 === 2
-                        ? "partner-grid-card--red"
-                        : (index + 1) % 4 === 3
-                          ? "partner-grid-card--gold"
-                          : "";
 
                     return (
                       <ScrollReveal key={String(partner.id)} delay={(i % 3) + 1}>
-                        <div className={`partner-grid-card ${variant}`.trim()}>
+                        <div className="partner-grid-card">
                           <span className="partner-grid-card__num">
                             {String(index + 1).padStart(2, "0")}
                           </span>
                           <div className="partner-grid-card__logo">
-                            {logoUrl ? (
-                              <CmsImage
-                                src={logoUrl}
-                                fallbackSrc="/logo.svg"
-                                alt={partner.name as string}
-                                width={150}
-                                height={80}
-                                style={{ objectFit: "contain" }}
-                              />
-                            ) : (
-                              <span className="partner-grid-card__text">
-                                {partner.name as string}
-                              </span>
-                            )}
+                            <PartnerLogo
+                              src={logoUrl}
+                              name={partner.name as string}
+                              width={150}
+                              height={80}
+                              textClassName="partner-grid-card__text"
+                            />
                           </div>
+                          <span className="partner-grid-card__name">
+                            {partner.name as string}
+                          </span>
                         </div>
                       </ScrollReveal>
                     );

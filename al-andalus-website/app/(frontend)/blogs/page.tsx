@@ -51,6 +51,7 @@ export default async function BlogsPage() {
           <NewsGrid
             itemBasePath="/blogs"
             items={blogItems}
+            locale={locale}
           />
         </section>
     </PageShell>

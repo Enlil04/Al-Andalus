@@ -86,8 +86,8 @@ export const Products: CollectionConfig = {
       label: bilingualLabel("Service Image", "صورة الخدمة"),
       admin: {
         description: mediaFieldHint(
-          "the service card and service detail page image",
-          "صورة بطاقة الخدمة وصفحة تفاصيل الخدمة",
+          "the service detail page image. New services without a matching built-in photo should always include an upload here.",
+          "صورة صفحة تفاصيل الخدمة. الخدمات الجديدة التي لا تملك صورة مدمجة يجب أن تتضمن رفعاً هنا دائماً.",
           "landscape image, 1600×1000",
           "صورة أفقية 1600×1000",
         ),

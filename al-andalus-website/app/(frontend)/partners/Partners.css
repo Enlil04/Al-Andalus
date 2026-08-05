@@ -91,10 +91,16 @@
 }
 
 .partner-page-card__text {
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--navy-900);
   text-align: center;
+  line-height: 1.25;
+  padding: 0 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .partner-page-card__name {

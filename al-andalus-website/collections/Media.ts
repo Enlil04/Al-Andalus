@@ -55,7 +55,10 @@ export const Media: CollectionConfig = {
   },
   admin: {
     useAsTitle: "alt",
-    description: "الصور والفيديوهات (Images & Videos)",
+    description: {
+      en: "Public images & videos used across the site. Prefer JPEG/WebP for photos and PNG/SVG for logos. Partner logos should be dark/full-color on transparent backgrounds — white-only logos disappear on white pages.",
+      ar: "صور وفيديوهات عامة للموقع. يُفضّل JPEG/WebP للصور وPNG/SVG للشعارات. شعارات الشركاء يجب أن تكون داكنة أو ملونة على خلفية شفافة — الشعارات البيضاء فقط تختفي على الصفحات البيضاء.",
+    },
     group: {
       en: "Media",
       ar: "الوسائط",
@@ -69,7 +72,10 @@ export const Media: CollectionConfig = {
       localized: true,
       label: bilingualLabel("Alt Text", "النص البديل"),
       admin: {
-        description: bilingualFieldHint,
+        description: {
+          en: `Short description of the image for accessibility. ${bilingualFieldHint.en}`,
+          ar: `وصف قصير للصورة لإمكانية الوصول. ${bilingualFieldHint.ar}`,
+        },
       },
     },
   ],

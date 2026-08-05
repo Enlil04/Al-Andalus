@@ -81,11 +81,12 @@ export const News: CollectionConfig = {
       type: "upload",
       relationTo: "media",
       filterOptions: { mimeType: { contains: "image" } },
+      required: true,
       label: bilingualLabel("Cover Image", "صورة الغلاف"),
       admin: {
         description: mediaFieldHint(
-          "this article's card in the news list and its detail-page cover",
-          "بطاقة هذا المقال في قائمة الأخبار وغلاف صفحة المقال",
+          "Required for blog cards — without it the article shows a blank gray block. Used on the news list and article page cover.",
+          "مطلوبة لبطاقات المدونة — بدونها يظهر المقال ككتلة رمادية فارغة. تُستخدم في قائمة الأخبار وغلاف صفحة المقال.",
           "landscape image, 1600×900",
           "صورة أفقية 1600×900",
         ),

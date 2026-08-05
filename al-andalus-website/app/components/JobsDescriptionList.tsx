@@ -54,6 +54,8 @@ export default function JobsDescriptionList({
   const siteCopy = getSiteCopy(locale);
   const { listings } = siteCopy.jobsPage;
 
+  // Prefer CMS jobs when the prop is passed (including []). Only use
+  // hardcoded copy when the parent omits `jobs` entirely.
   const cmsJobs =
     jobs ??
     listings.jobs.map((job) => ({
@@ -62,12 +64,20 @@ export default function JobsDescriptionList({
       department: job.category,
     }));
 
-  const categories = [
-    locale === "ar" ? "الكل" : "ALL",
-    ...Array.from(new Set(cmsJobs.map((job) => job.department))),
-  ];
-
   const allLabel = locale === "ar" ? "الكل" : "ALL";
+  const emptyLabel =
+    locale === "ar" ? "لا توجد وظائف متاحة حالياً." : "No jobs available.";
+
+  const categories = [
+    allLabel,
+    ...Array.from(
+      new Set(
+        cmsJobs
+          .map((job) => job.department?.trim())
+          .filter((department): department is string => Boolean(department)),
+      ),
+    ),
+  ];
 
   const [activeCategory, setActiveCategory] = useState<string>(allLabel);
   const listRef = useRef<HTMLUListElement>(null);
@@ -82,6 +92,8 @@ export default function JobsDescriptionList({
     activeCategory === allLabel
       ? cmsJobs
       : cmsJobs.filter((job) => job.department === activeCategory);
+
+  const hasJobs = cmsJobs.length > 0;
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -127,36 +139,53 @@ export default function JobsDescriptionList({
         </div>
 
         <div className="jobs-description__layout about-grid__span-all">
-          <nav
-            className="jobs-description__filters"
-            aria-label={locale === "ar" ? "فئات الوظائف" : "Job categories"}
-          >
-            {categories.map((category) => (
-              <button
-                key={category}
-                type="button"
-                className={`jobs-description__filter ${
-                  activeCategory === category ? "jobs-description__filter--active" : ""
-                }`}
-                onClick={() => setActiveCategory(category)}
+          {hasJobs ? (
+            <>
+              <nav
+                className="jobs-description__filters"
+                aria-label={locale === "ar" ? "فئات الوظائف" : "Job categories"}
               >
-                {category}
-              </button>
-            ))}
-          </nav>
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    className={`jobs-description__filter ${
+                      activeCategory === category
+                        ? "jobs-description__filter--active"
+                        : ""
+                    }`}
+                    onClick={() => setActiveCategory(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </nav>
 
-          <ul ref={listRef} className="jobs-description__list" key={activeCategory}>
-            {filteredJobs.map((job) => (
-              <li key={job.slug} className="jobs-description__item">
-                <Link href={`/jobs/${job.slug}`} className="jobs-description__link w-full text-left">
-                  <span className="jobs-description__job-title">{job.title}</span>
-                  <span className="jobs-description__chevron">
-                    <ChevronIcon isRtl={locale === "ar"} />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+              <ul
+                ref={listRef}
+                className="jobs-description__list"
+                key={activeCategory}
+              >
+                {filteredJobs.map((job) => (
+                  <li key={job.slug} className="jobs-description__item">
+                    <Link
+                      href={`/jobs/${job.slug}`}
+                      className="jobs-description__link w-full text-left"
+                    >
+                      <span className="jobs-description__job-title">
+                        {job.title}
+                      </span>
+                      <span className="jobs-description__chevron">
+                        <ChevronIcon isRtl={locale === "ar"} />
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="jobs-description__empty">{emptyLabel}</p>
+          )}
         </div>
       </div>
     </section>

@@ -39,14 +39,28 @@ const smtpFromName = process.env.SMTP_FROM_NAME || "Al-Andalus Insurance";
 
 // Public origin of the deployed site (e.g. https://alandalus-iq.com).
 // Used for CSRF/CORS whitelisting of the admin panel and REST API.
+// Include both apex and www — both currently resolve on Hostinger, and
+// admin mutations fail with a generic "unknown error" if Origin is missing
+// from csrf.
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+const siteOrigins = siteUrl
+  ? Array.from(
+      new Set([
+        siteUrl,
+        siteUrl.replace("://www.", "://"),
+        siteUrl.includes("://www.")
+          ? siteUrl
+          : siteUrl.replace("://", "://www."),
+      ]),
+    )
+  : [];
 
 export default buildConfig({
   ...(siteUrl
     ? {
         serverURL: siteUrl,
-        cors: [siteUrl],
-        csrf: [siteUrl],
+        cors: siteOrigins,
+        csrf: siteOrigins,
       }
     : {}),
   admin: {
@@ -205,13 +219,10 @@ export default buildConfig({
       })(),
       authToken: process.env.DATABASE_AUTH_TOKEN || undefined,
     },
-    // Avoid silent schema push in production unless explicitly enabled.
-    // Set PAYLOAD_DATABASE_PUSH=false to skip push when the DB schema is already current.
-    push:
-      process.env.PAYLOAD_DATABASE_PUSH === "false"
-        ? false
-        : process.env.PAYLOAD_DATABASE_PUSH === "true" ||
-          process.env.NODE_ENV !== "production",
+    // Schema push is opt-in only. Auto-push in `next dev` repeatedly fails on
+    // SQLite with "index already exists" when Drizzle's snapshot is out of sync.
+    // Set PAYLOAD_DATABASE_PUSH=true only when you intentionally need a schema update.
+    push: process.env.PAYLOAD_DATABASE_PUSH === "true",
   }),
 
   secret: (() => {

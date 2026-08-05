@@ -1170,20 +1170,25 @@ export const fetchFaqs = cache(async function fetchFaqs(payload?: Payload): Prom
 
     const useArabic = currentLocale === "ar";
 
-    return docs.map((item) => {
-      const record = item as Record<string, unknown>;
-      const question = useArabic
-        ? ((record.questionAr as string) || (record.questionEn as string) || "")
-        : ((record.questionEn as string) || (record.questionAr as string) || "");
-      const answerDoc = useArabic
-        ? record.answerAr || record.answerEn
-        : record.answerEn || record.answerAr;
+    const mapped = docs
+      .map((item) => {
+        const record = item as Record<string, unknown>;
+        const question = (
+          useArabic
+            ? ((record.questionAr as string) || (record.questionEn as string) || "")
+            : ((record.questionEn as string) || (record.questionAr as string) || "")
+        ).trim();
+        const answerDoc = useArabic
+          ? record.answerAr || record.answerEn
+          : record.answerEn || record.answerAr;
+        const answer = serializeLexical(answerDoc).trim();
 
-      return {
-        question,
-        answer: serializeLexical(answerDoc),
-      };
-    });
+        return { question, answer };
+      })
+      .filter((item) => Boolean(item.question && item.answer));
+
+    // Incomplete CMS rows alone should not wipe the homepage FAQ section.
+    return mapped.length > 0 ? mapped : getFaqItems(currentLocale);
   } catch (error) {
     console.error("[cms] fetchFaqs failed — using static FAQs:", error);
     return getFaqItems(currentLocale);
@@ -1338,18 +1343,20 @@ export const fetchPublishedNews = cache(async function fetchPublishedNews(
       where: { status: { equals: "published" } },
     });
 
-    return docs.map((item) => {
-      const record = item as Record<string, unknown>;
-      return {
-        id: item.id,
-        title: pickLocaleText(record, "title", currentLocale),
-        slug: item.slug as string,
-        publishedDate: (item.publishedDate as string) ?? null,
-        category: (item.category as string) ?? null,
-        excerpt: pickLocaleText(record, "excerpt", currentLocale) || null,
-        imageUrl: getMediaUrl(item.coverImage),
-      };
-    });
+    return docs
+      .map((item) => {
+        const record = item as Record<string, unknown>;
+        return {
+          id: item.id,
+          title: pickLocaleText(record, "title", currentLocale).trim(),
+          slug: String(item.slug ?? "").trim(),
+          publishedDate: (item.publishedDate as string) ?? null,
+          category: (item.category as string) ?? null,
+          excerpt: pickLocaleText(record, "excerpt", currentLocale) || null,
+          imageUrl: getMediaUrl(item.coverImage),
+        };
+      })
+      .filter((item) => Boolean(item.title && item.slug));
   } catch (error) {
     console.error("[cms] fetchPublishedNews failed:", error);
     return [];
@@ -1423,14 +1430,16 @@ export const fetchOpenJobs = cache(async function fetchOpenJobs(
       where: { status: { equals: "open" } },
     });
 
-    return docs.map((job) => {
-      const record = job as Record<string, unknown>;
-      return {
-        slug: record.slug as string,
-        title: pickLocaleText(record, "title", currentLocale),
-        department: pickLocaleText(record, "department", currentLocale),
-      };
-    });
+    return docs
+      .map((job) => {
+        const record = job as Record<string, unknown>;
+        return {
+          slug: String(record.slug ?? "").trim(),
+          title: pickLocaleText(record, "title", currentLocale).trim(),
+          department: pickLocaleText(record, "department", currentLocale).trim(),
+        };
+      })
+      .filter((job) => Boolean(job.slug && job.title));
   } catch (error) {
     console.error("[cms] fetchOpenJobs failed — returning empty list:", error);
     return [];

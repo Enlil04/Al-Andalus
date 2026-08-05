@@ -2,8 +2,7 @@ import PageShell from "../../components/PageShell";
 import PageBanner from "../../components/PageBanner";
 import ScrollReveal from "../../components/ScrollReveal";
 import AnimatedHeadline from "../../components/AnimatedHeadline";
-import CmsImage from "../../components/CmsImage";
-import { getSiteCopy } from "@/lib/copy";
+import PartnerLogo from "../../components/PartnerLogo";
 import { getLocale } from "@/lib/locale";
 import { fetchPagesContent, fetchPartners } from "@/lib/cms/content";
 import { getMediaUrl } from "@/lib/cms/media";
@@ -11,8 +10,7 @@ import "./Partners.css";
 
 export async function generateMetadata() {
   const locale = await getLocale();
-  const siteCopy = getSiteCopy(locale);
-  
+
   // Custom metadata for Arabic
   const title = locale === "ar" 
     ? "الشركاء والعملاء | شركة الأندلس للتأمين الدولي" 
@@ -29,10 +27,13 @@ export async function generateMetadata() {
 
 export default async function PartnersPage() {
   const locale = await getLocale();
-  const [partners, pages] = await Promise.all([
+  const [partnersRaw, pages] = await Promise.all([
     fetchPartners(undefined, 100),
     fetchPagesContent(),
   ]);
+  const partners = partnersRaw.filter((partner) =>
+    Boolean(String(partner.name ?? "").trim()),
+  );
   const cms = pages.partners;
 
   const bannerTitle = cms.bannerTitle || (locale === "ar" ? "الشركاء" : "PARTNERS");
@@ -92,23 +93,16 @@ export default async function PartnersPage() {
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <div className="partner-page-card__logo">
-                        {logoUrl ? (
-                          <CmsImage
-                            src={logoUrl}
-                            fallbackSrc="/logo.svg"
-                            alt={partnerName}
-                            width={120}
-                            height={70}
-                            style={{ objectFit: "contain" }}
-                          />
-                        ) : (
-                          <span className="partner-page-card__text">
-                            {partnerName}
-                          </span>
-                        )}
+                        <PartnerLogo
+                          src={logoUrl}
+                          name={partnerName}
+                          width={120}
+                          height={70}
+                          textClassName="partner-page-card__text"
+                        />
                       </div>
                       <span className="partner-page-card__name">
-                        {partner.name as string}
+                        {partnerName}
                       </span>
                     </>
                   );

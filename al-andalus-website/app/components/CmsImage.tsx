@@ -2,7 +2,10 @@
 
 import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
-import { isCmsMediaUrl } from "@/lib/cms/media";
+import {
+  getAlternateCmsMediaUrl,
+  isCmsMediaUrl,
+} from "@/lib/cms/media";
 
 type Props = Omit<ImageProps, "src" | "alt"> & {
   src: string | null | undefined;
@@ -13,7 +16,8 @@ type Props = Omit<ImageProps, "src" | "alt"> & {
 /**
  * Renders CMS or static images. CMS uploads skip Next optimization (avoids
  * "isn't a valid image … received null" when the Hostinger volume is missing
- * the file) and fall back to a static asset on error.
+ * the file). Retries the alternate CMS path (`/api/media/file` ↔ `/media`)
+ * before falling back to a static asset.
  */
 export default function CmsImage({
   src,
@@ -23,6 +27,7 @@ export default function CmsImage({
 }: Props) {
   const initial = src || fallbackSrc;
   const [current, setCurrent] = useState(initial);
+  const [triedAlt, setTriedAlt] = useState(false);
   const unoptimized = isCmsMediaUrl(current) || props.unoptimized;
 
   return (
@@ -32,7 +37,16 @@ export default function CmsImage({
       src={current}
       unoptimized={unoptimized}
       onError={() => {
-        if (current !== fallbackSrc) setCurrent(fallbackSrc);
+        if (current === fallbackSrc) return;
+
+        const altUrl = !triedAlt ? getAlternateCmsMediaUrl(current) : null;
+        if (altUrl && altUrl !== fallbackSrc) {
+          setTriedAlt(true);
+          setCurrent(altUrl);
+          return;
+        }
+
+        setCurrent(fallbackSrc);
       }}
     />
   );

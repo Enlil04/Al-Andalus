@@ -10,6 +10,17 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  // Payload pulls in pino/sharp; keep them external for Node runtime (cPanel/Passenger).
+  serverExternalPackages: [
+    "pino",
+    "pino-pretty",
+    "thread-stream",
+    "sharp",
+    "graphql",
+    "drizzle-kit",
+    "@libsql/client",
+    "libsql",
+  ],
   // Dev-only: allow loading from other devices on the local network.
   allowedDevOrigins: [
     "192.168.0.244",
