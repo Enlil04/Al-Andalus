@@ -1,11 +1,7 @@
 import { CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
-import {
-  bilingualFieldHint,
-  bilingualLabel,
-  mediaFieldHint,
-} from "../lib/cms/labels";
+import { bilingualLabel, mediaFieldHint } from "../lib/cms/labels";
 
 export const Partners: CollectionConfig = {
   slug: "partners",
@@ -14,17 +10,17 @@ export const Partners: CollectionConfig = {
     plural: bilingualLabel("Partners", "الشركاء"),
   },
   admin: {
-    useAsTitle: "name",
-    defaultColumns: ["name", "order"],
+    useAsTitle: "nameEn",
+    defaultColumns: ["nameEn", "nameAr", "order"],
     description: {
-      en: `Partners & clients. ${bilingualFieldHint.en}`,
-      ar: `شركاء النجاح والعملاء. ${bilingualFieldHint.ar}`,
+      en: "Partners & clients. Enter English and Arabic names in the language tabs below.",
+      ar: "شركاء النجاح والعملاء. أدخل الاسم بالإنجليزية والعربية من تبويبات اللغة أدناه.",
     },
     group: {
       en: "Content",
       ar: "المحتوى",
     },
-    listSearchableFields: ["name"],
+    listSearchableFields: ["nameEn", "nameAr"],
   },
   access: {
     read: isAdminOrEditor,
@@ -34,14 +30,31 @@ export const Partners: CollectionConfig = {
   },
   fields: [
     {
-      name: "name",
-      type: "text",
-      required: true,
-      localized: true,
-      label: bilingualLabel("Partner Name", "اسم الشريك"),
-      admin: {
-        description: bilingualFieldHint,
-      },
+      type: "tabs",
+      tabs: [
+        {
+          label: { en: "English", ar: "الإنجليزية" },
+          fields: [
+            {
+              name: "nameEn",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Partner Name (English)", "اسم الشريك (إنجليزي)"),
+            },
+          ],
+        },
+        {
+          label: { en: "Arabic", ar: "العربية" },
+          fields: [
+            {
+              name: "nameAr",
+              type: "text",
+              required: true,
+              label: bilingualLabel("Partner Name (Arabic)", "اسم الشريك (عربي)"),
+            },
+          ],
+        },
+      ],
     },
     {
       name: "logo",

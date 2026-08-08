@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { getProductSeedEntries } from "@/lib/productSeed";
+import { ensureDefaultNewsCategories } from "@/lib/cms/ensureNewsCategories";
 
 function isSeedAllowed(request: Request): boolean {
   if (process.env.ALLOW_SEED !== "true") return false;
@@ -101,7 +102,7 @@ export async function GET(request: Request) {
       for (const [index, file] of files.entries()) {
         const existingPartner = await payload.find({
           collection: "partners",
-          where: { name: { equals: `Partner ${index + 1}` } },
+          where: { nameEn: { equals: `Partner ${index + 1}` } },
           overrideAccess: true,
         });
 
@@ -117,10 +118,10 @@ export async function GET(request: Request) {
 
           await payload.create({
             collection: "partners",
-            locale: "en",
             overrideAccess: true,
             data: {
-              name: `Partner ${index + 1}`,
+              nameEn: `Partner ${index + 1}`,
+              nameAr: `شريك ${index + 1}`,
               logo: mediaDoc.id,
               order: index + 1,
             },
@@ -131,6 +132,8 @@ export async function GET(request: Request) {
     }
 
     let newsCount = 0;
+    const categoryBySlug = await ensureDefaultNewsCategories(payload);
+
     const dummyNews = [
       {
         titleEn: "Al-Andalus Expands Insurance Network",
@@ -181,6 +184,11 @@ export async function GET(request: Request) {
 
     for (const news of dummyNews) {
       const slug = news.titleEn.toLowerCase().replace(/ /g, "-");
+      const categoryId = categoryBySlug.get(news.category);
+      if (!categoryId) {
+        throw new Error(`Missing news category for slug: ${news.category}`);
+      }
+
       const existing = await payload.find({
         collection: "news",
         where: { slug: { equals: slug } },
@@ -196,11 +204,7 @@ export async function GET(request: Request) {
             titleEn: news.titleEn,
             titleAr: news.titleAr,
             slug,
-            category: news.category as
-              | "company"
-              | "health"
-              | "motor"
-              | "travel",
+            category: categoryId,
             publishedDate: news.publishedDate,
             status: "published",
             excerptEn: news.excerptEn,
@@ -217,6 +221,7 @@ export async function GET(request: Request) {
           data: {
             title: news.titleEn,
             excerpt: news.excerptEn,
+            category: categoryId,
           },
         });
         await payload.update({

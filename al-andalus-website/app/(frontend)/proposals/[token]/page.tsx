@@ -34,7 +34,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
 
   const { docs } = await payload.find({
     collection: "proposals",
-    locale,
+    locale: "all",
     depth: 1,
     limit: 1,
     overrideAccess: true,
@@ -51,6 +51,17 @@ export default async function ProposalDetailPage({ params }: PageProps) {
   }
 
   const proposal = docs[0];
+  const rawTitle = proposal.title as unknown;
+  let proposalTitle = "";
+  if (rawTitle && typeof rawTitle === "object" && !Array.isArray(rawTitle)) {
+    const localized = rawTitle as Record<string, unknown>;
+    proposalTitle =
+      locale === "ar"
+        ? String(localized.ar || localized.en || "").trim()
+        : String(localized.en || localized.ar || "").trim();
+  } else {
+    proposalTitle = String(rawTitle ?? "").trim();
+  }
   const pdfDoc = proposal.pdf;
   const hasPdf = Boolean(
     pdfDoc && typeof pdfDoc !== "string" && typeof pdfDoc !== "number",
@@ -85,7 +96,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
                 <span className="proposal-view__label">{label}</span>
               </ScrollReveal>
               <AnimatedHeadline
-                title={proposal.title}
+                title={proposalTitle}
                 className="proposal-view__headline"
                 as="h2"
               />
@@ -126,7 +137,7 @@ export default async function ProposalDetailPage({ params }: PageProps) {
                 <div className="proposal-view__iframe-container">
                   <iframe
                     src={`${pdfUrl}#toolbar=0`}
-                    title={`Proposal PDF document — ${proposal.title}`}
+                    title={`Proposal PDF document — ${proposalTitle}`}
                     className="proposal-view__iframe"
                   />
                 </div>

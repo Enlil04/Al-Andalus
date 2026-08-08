@@ -15,8 +15,13 @@ const MAX_CV_BYTES = 5 * 1024 * 1024; // 5 MB
 type OpenJob = { id: string; title: string };
 
 function jobTitleFromDoc(doc: Record<string, unknown>): string {
+  for (const key of ["titleEn", "titleAr", "title"]) {
+    const value = doc[key];
+    if (typeof value === "string" && value.trim()) {
+      return value.trim().slice(0, 200);
+    }
+  }
   const title = doc.title;
-  if (typeof title === "string" && title.trim()) return title.trim().slice(0, 200);
   if (title && typeof title === "object") {
     const localized = title as Record<string, unknown>;
     for (const key of ["en", "ar"]) {
@@ -27,6 +32,10 @@ function jobTitleFromDoc(doc: Record<string, unknown>): string {
     }
   }
   return "Job opening";
+}
+
+function asRelationId(id: string): string | number {
+  return /^\d+$/.test(id) ? Number(id) : id;
 }
 
 async function resolveOpenJob(
@@ -167,20 +176,38 @@ export async function POST(request: Request) {
     });
     documentId = document.id;
 
-    await payload.create({
-      collection: "job-applications",
-      overrideAccess: true,
-      data: {
-        fullName,
-        email,
-        phone,
-        cv: document.id,
-        status: "new",
-        job: openJob.id,
-        jobTitle: openJob.title,
-        ...(coverLetter ? { coverLetter } : {}),
-      },
-    });
+    const applicationData = {
+      fullName,
+      email,
+      phone,
+      cv: document.id,
+      status: "new" as const,
+      jobTitle: openJob.title,
+      ...(coverLetter ? { coverLetter } : {}),
+    };
+
+    try {
+      await payload.create({
+        collection: "job-applications",
+        overrideAccess: true,
+        data: {
+          ...applicationData,
+          job: asRelationId(openJob.id),
+        },
+      });
+    } catch (createError) {
+      // Relationship validation can still fail under some access setups;
+      // keep the application with the denormalized job title.
+      console.error(
+        "Job application create with job relation failed; retrying without relation:",
+        createError,
+      );
+      await payload.create({
+        collection: "job-applications",
+        overrideAccess: true,
+        data: applicationData,
+      });
+    }
 
     try {
       await sendJobApplicationNotification(payload, {

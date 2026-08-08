@@ -313,6 +313,21 @@
   border-left-color: var(--brand-pink);
 }
 
+html[dir="rtl"] .request-quote__feedback {
+  padding-left: 0;
+  padding-right: var(--space-4);
+  border-left: none;
+  border-right: 2px solid transparent;
+}
+
+html[dir="rtl"] .request-quote__feedback--success {
+  border-right-color: var(--brand-yellow);
+}
+
+html[dir="rtl"] .request-quote__feedback--error {
+  border-right-color: var(--brand-pink);
+}
+
 .request-quote__feedback a {
   color: inherit;
   font-weight: 600;

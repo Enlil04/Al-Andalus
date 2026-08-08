@@ -1,7 +1,20 @@
-import { CollectionConfig } from "payload";
+import type { Access, CollectionConfig } from "payload";
 
 import { isAdminOrEditor } from "../access/roles";
 import { bilingualLabel, mediaFieldHint } from "../lib/cms/labels";
+
+/** Staff see all products; public form relationship checks only see active ones. */
+const canReadProducts: Access = ({ req: { user } }) => {
+  if (user) {
+    const role = (user as { role?: string }).role;
+    if (role === "admin" || role === "editor") return true;
+  }
+  return {
+    status: {
+      equals: "active",
+    },
+  };
+};
 
 export const Products: CollectionConfig = {
   slug: "products",
@@ -23,7 +36,7 @@ export const Products: CollectionConfig = {
     listSearchableFields: ["titleEn", "titleAr", "slug"],
   },
   access: {
-    read: isAdminOrEditor,
+    read: canReadProducts,
     create: isAdminOrEditor,
     update: isAdminOrEditor,
     delete: isAdminOrEditor,

@@ -15,7 +15,12 @@ import { Media } from "./collections/Media";
 import { Documents } from "./collections/Documents";
 import { Products } from "./collections/Products";
 import { News } from "./collections/News";
+import { NewsCategories } from "./collections/NewsCategories";
 import { Partners } from "./collections/Partners";
+import {
+  ensureDefaultNewsCategories,
+  remapLegacyNewsCategories,
+} from "./lib/cms/ensureNewsCategories";
 import { FAQs } from "./collections/FAQs";
 import { ContactMessages } from "./collections/ContactMessages";
 import { InsuranceRequests } from "./collections/InsuranceRequests";
@@ -140,6 +145,7 @@ export default buildConfig({
     Documents,
     Products,
     InsuranceRequests,
+    NewsCategories,
     News,
     Partners,
     FAQs,
@@ -148,6 +154,24 @@ export default buildConfig({
     ContactMessages,
     Proposals,
   ],
+
+  onInit: async (payload) => {
+    try {
+      const bySlug = await ensureDefaultNewsCategories(payload);
+      const remapped = await remapLegacyNewsCategories(payload, bySlug);
+      if (remapped > 0) {
+        payload.logger.info(
+          `[news-categories] Remapped ${remapped} article(s) from legacy category slugs.`,
+        );
+      }
+    } catch (error) {
+      payload.logger.error(
+        `[news-categories] Failed to seed/remap categories: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  },
 
   globals: [SiteSettings, Homepage, AboutPage, Pages],
 

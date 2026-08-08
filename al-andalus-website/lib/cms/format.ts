@@ -27,13 +27,39 @@ const CATEGORY_LABELS_AR: Record<string, string> = {
   general: "عام",
 };
 
+type NewsCategoryValue =
+  | string
+  | number
+  | null
+  | undefined
+  | {
+      slug?: string | null;
+      nameEn?: string | null;
+      nameAr?: string | null;
+    };
+
+/** Resolve a display label from a related category doc, legacy slug, or fallback. */
 export function getNewsCategoryLabel(
-  category: string | null | undefined,
+  category: NewsCategoryValue,
   locale: "en" | "ar" = "en",
 ): string {
-  if (!category) return locale === "ar" ? "عام" : "General";
-  const map = locale === "ar" ? CATEGORY_LABELS_AR : CATEGORY_LABELS_EN;
-  return map[category] ?? category;
+  if (category && typeof category === "object") {
+    const localized =
+      locale === "ar"
+        ? category.nameAr || category.nameEn
+        : category.nameEn || category.nameAr;
+    if (localized) return String(localized);
+    if (category.slug) {
+      return getNewsCategoryLabel(category.slug, locale);
+    }
+  }
+
+  if (typeof category === "string" && category.trim()) {
+    const map = locale === "ar" ? CATEGORY_LABELS_AR : CATEGORY_LABELS_EN;
+    return map[category] ?? category;
+  }
+
+  return locale === "ar" ? "عام" : "General";
 }
 
 /** Shared slugify used for job titles (CMS fallbacks and detail routes). */

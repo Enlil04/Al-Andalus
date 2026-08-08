@@ -57,6 +57,34 @@ export default function JobApplicationForm({
     requiredFieldsError: isAr ? "يرجى ملء الحقول المطلوبة." : "Please fill in the required fields.",
     invalidEmailError: isAr ? "يرجى إدخال بريد إلكتروني صالح." : "Please enter a valid email address.",
     invalidPhoneError: isAr ? "يرجى إدخال رقم هاتف صالح." : "Please enter a valid phone number.",
+    rateLimitError: isAr
+      ? "طلبات كثيرة جداً. يرجى المحاولة بعد قليل."
+      : "Too many requests. Please try again later.",
+    jobUnavailableError: isAr
+      ? "هذه الوظيفة غير متاحة حالياً."
+      : "This job opening is not available.",
+    cvTypeError: isAr
+      ? "يجب أن تكون السيرة الذاتية بصيغة PDF أو Word."
+      : "CV must be a PDF or Word document.",
+    cvSizeError: isAr
+      ? "يجب ألا يتجاوز حجم السيرة الذاتية 5 ميغابايت."
+      : "CV must be 5 MB or smaller.",
+  };
+
+  const localizeApiError = (apiError: unknown): string => {
+    if (typeof apiError !== "string" || !apiError.trim()) return copy.error;
+    const message = apiError.trim();
+    if (/too many requests/i.test(message)) return copy.rateLimitError;
+    if (/not available/i.test(message)) return copy.jobUnavailableError;
+    if (/5\s*MB|smaller/i.test(message)) return copy.cvSizeError;
+    if (/PDF or Word|invalid or unsupported|CV file/i.test(message)) {
+      return copy.cvTypeError;
+    }
+    if (/error occurred while submitting|could not submit/i.test(message)) {
+      return copy.error;
+    }
+    // Prefer locale-aware copy over raw English API strings.
+    return copy.error;
   };
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -113,7 +141,7 @@ export default function JobApplicationForm({
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(result.error || copy.error);
+        throw new Error(localizeApiError(result.error));
       }
 
       form.reset();
@@ -121,7 +149,9 @@ export default function JobApplicationForm({
       setStatus("success");
     } catch (error) {
       setStatus("error");
-      setErrorMessage(error instanceof Error ? error.message : copy.error);
+      setErrorMessage(
+        error instanceof Error ? localizeApiError(error.message) : copy.error,
+      );
     }
   };
 
@@ -256,7 +286,11 @@ export default function JobApplicationForm({
                 {status === "loading" ? copy.submitting : copy.submit}
               </button>
               {status === "error" ? (
-                <p className="request-quote__feedback request-quote__feedback--error" role="alert">
+                <p
+                  className="request-quote__feedback request-quote__feedback--error"
+                  role="alert"
+                  dir={isAr ? "rtl" : "ltr"}
+                >
                   {errorMessage}
                 </p>
               ) : null}

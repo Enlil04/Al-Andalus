@@ -2,11 +2,13 @@ import { Suspense } from "react";
 import PageShell from "../../components/PageShell";
 import PageBanner from "../../components/PageBanner";
 import RequestQuoteForm from "../../components/RequestQuoteForm";
+import RequestQuoteContact from "../../components/RequestQuoteContact";
 import { getSiteCopy } from "@/lib/copy";
 import { getLocale } from "@/lib/locale";
 import {
   fetchPagesContent,
   fetchQuoteProducts,
+  fetchSiteSettings,
 } from "@/lib/cms/content";
 
 export async function generateMetadata() {
@@ -22,9 +24,10 @@ export default async function RequestQuotePage() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
   const { requestQuotePage } = siteCopy;
-  const [products, pages] = await Promise.all([
+  const [products, pages, settings] = await Promise.all([
     fetchQuoteProducts(),
     fetchPagesContent(),
+    fetchSiteSettings(),
   ]);
   const cms = pages.requestQuote;
 
@@ -46,6 +49,16 @@ export default async function RequestQuotePage() {
             formIntro={cms.formIntro}
           />
         </Suspense>
+
+        <RequestQuoteContact
+          branches={settings.branches}
+          shortcode={settings.shortNumber}
+          phone={settings.phone}
+          phoneHref={settings.phone ? `tel:${settings.phone.replace(/\s+/g, "")}` : undefined}
+          visitLabel={cms.visitLabel}
+          visitHeadline={cms.visitHeadline}
+          visitIntro={cms.visitIntro}
+        />
     </PageShell>
   );
 }

@@ -104,33 +104,16 @@ export const News: CollectionConfig = {
     },
     {
       name: "category",
-      type: "select",
+      type: "relationship",
+      relationTo: "news-categories",
       required: true,
-      options: [
-        {
-          label: bilingualLabel("Company News", "أخبار الشركة"),
-          value: "company",
-        },
-        {
-          label: bilingualLabel("Motor Insurance", "تأمين السيارات"),
-          value: "motor",
-        },
-        {
-          label: bilingualLabel("Health Insurance", "التأمين الصحي"),
-          value: "health",
-        },
-        {
-          label: bilingualLabel("Travel Insurance", "تأمين السفر"),
-          value: "travel",
-        },
-        {
-          label: bilingualLabel("Fire Insurance", "تأمين الحريق"),
-          value: "fire",
-        },
-        { label: bilingualLabel("General", "عام"), value: "general" },
-      ],
       admin: {
         position: "sidebar",
+        allowCreate: true,
+        description: {
+          en: "Pick a category, or create a new one. Manage all categories under Blog → Blog Categories.",
+          ar: "اختر تصنيفاً أو أنشئ تصنيفاً جديداً. إدارة التصنيفات من المدونة ← تصنيفات المدونة.",
+        },
       },
       label: bilingualLabel("Category", "التصنيف"),
     },

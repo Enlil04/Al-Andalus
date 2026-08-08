@@ -1,0 +1,4 @@
+-- Prefer the Node migrator (idempotent):
+--   node scripts/migrate-news-categories.mjs [path-to-database.db]
+--
+-- This .sql file is kept as a reference only. Use the .mjs on cPanel.

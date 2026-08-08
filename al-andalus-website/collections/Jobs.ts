@@ -1,7 +1,20 @@
-import { CollectionConfig } from "payload";
+import type { Access, CollectionConfig } from "payload";
 
 import { isAdmin, isAdminOrEditor } from "../access/roles";
 import { bilingualLabel } from "../lib/cms/labels";
+
+/** Staff see all jobs; anonymous visitors (and form relationship checks) only see open ones. */
+const canReadJobs: Access = ({ req: { user } }) => {
+  if (user) {
+    const role = (user as { role?: string }).role;
+    if (role === "admin" || role === "editor") return true;
+  }
+  return {
+    status: {
+      equals: "open",
+    },
+  };
+};
 
 export const Jobs: CollectionConfig = {
   slug: "jobs",
@@ -23,7 +36,7 @@ export const Jobs: CollectionConfig = {
     listSearchableFields: ["titleEn", "titleAr", "departmentEn", "departmentAr", "locationEn", "locationAr"],
   },
   access: {
-    read: isAdminOrEditor,
+    read: canReadJobs,
     create: isAdminOrEditor,
     update: isAdminOrEditor,
     delete: isAdmin,

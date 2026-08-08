@@ -15,6 +15,7 @@ import { IMAGE_FALLBACKS } from "./fallbacks";
 import { serializeLexical } from "./lexical";
 import { getMediaUrl } from "./media";
 import { getCMSPayload } from "./payload";
+import { getNewsCategoryLabel } from "./format";
 
 const SERVICE_CATEGORIES = new Set<ServiceCategoryId>([
   "personal",
@@ -1351,12 +1352,15 @@ export const fetchPublishedNews = cache(async function fetchPublishedNews(
           title: pickLocaleText(record, "title", currentLocale).trim(),
           slug: String(item.slug ?? "").trim(),
           publishedDate: (item.publishedDate as string) ?? null,
-          category: (item.category as string) ?? null,
+          category: getNewsCategoryLabel(
+            item.category as Parameters<typeof getNewsCategoryLabel>[0],
+            currentLocale,
+          ),
           excerpt: pickLocaleText(record, "excerpt", currentLocale) || null,
           imageUrl: getMediaUrl(item.coverImage),
         };
       })
-      .filter((item) => Boolean(item.title && item.slug));
+      .filter((item) => Boolean(item.title && item.slug && item.imageUrl));
   } catch (error) {
     console.error("[cms] fetchPublishedNews failed:", error);
     return [];
@@ -1402,13 +1406,19 @@ export const fetchPartners = cache(async function fetchPartners(
     const currentLocale = await getLocale();
     const { docs } = await cms.find({
       collection: "partners",
-      locale: currentLocale,
       limit,
       sort: "order",
       depth: 1,
       overrideAccess: true,
     });
-    return docs as Record<string, unknown>[];
+
+    return docs.map((doc) => {
+      const record = doc as Record<string, unknown>;
+      return {
+        ...record,
+        name: pickLocaleText(record, "name", currentLocale),
+      };
+    }) as Record<string, unknown>[];
   } catch (error) {
     console.error("[cms] fetchPartners failed:", error);
     return [];
