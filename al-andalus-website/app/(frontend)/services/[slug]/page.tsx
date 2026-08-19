@@ -26,6 +26,7 @@ export async function generateMetadata({ params }: PageProps) {
   const title = (productDoc?.title as string) || staticService?.title;
   if (!title) {
     return {
+    alternates: { canonical: `/services/${slug}` },
       title:
         locale === "ar"
           ? "الخدمة غير موجودة | الأندلس للتأمين"

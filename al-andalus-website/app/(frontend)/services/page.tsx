@@ -13,6 +13,7 @@ export async function generateMetadata() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
   return {
+    alternates: { canonical: '/services' },
     title: siteCopy.meta.services.title,
     description: siteCopy.meta.services.description,
   };

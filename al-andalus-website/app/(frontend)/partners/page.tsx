@@ -20,6 +20,7 @@ export async function generateMetadata() {
     : "Our trusted partners and clients across Iraq — banks, corporations, government entities, and businesses that rely on Al-Andalus Insurance.";
 
   return {
+    alternates: { canonical: '/partners' },
     title,
     description,
   };

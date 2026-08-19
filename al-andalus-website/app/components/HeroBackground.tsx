@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import {
   DEFAULT_HERO_VIMEO_ID,
   getVimeoEmbedUrl,
@@ -64,6 +65,24 @@ export default function HeroBackground({
   videoUrl,
   imageUrl,
 }: HeroBackgroundProps) {
+  const [shouldLoadIframe, setShouldLoadIframe] = useState(false);
+
+  useEffect(() => {
+    if (videoUrl) return;
+
+    const handleLoad = () => {
+      // Delay iframe load to prioritize main content rendering
+      setTimeout(() => setShouldLoadIframe(true), 500);
+    };
+
+    if (document.readyState === "complete") {
+      handleLoad();
+    } else {
+      window.addEventListener("load", handleLoad);
+      return () => window.removeEventListener("load", handleLoad);
+    }
+  }, [videoUrl]);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -109,7 +128,7 @@ export default function HeroBackground({
 
   // Force Vimeo iframe playback on mobile via the Player API.
   useEffect(() => {
-    if (videoUrl) return;
+    if (videoUrl || !shouldLoadIframe) return;
 
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -153,8 +172,7 @@ export default function HeroBackground({
   }, [videoUrl, videoId]);
 
   const poster = imageUrl ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img className="hero__poster" src={imageUrl} alt="" aria-hidden="true" />
+    <Image className="hero__poster" src={imageUrl} alt="" aria-hidden="true" fill priority style={{ objectFit: "cover" }} />
   ) : null;
 
   if (videoUrl) {
@@ -179,16 +197,18 @@ export default function HeroBackground({
   return (
     <>
       {poster}
-      <iframe
-        ref={iframeRef}
-        src={getVimeoEmbedUrl(videoId)}
-        className="hero__vimeo"
-        allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-        allowFullScreen
-        title=""
-        loading="eager"
-        referrerPolicy="strict-origin-when-cross-origin"
-      />
+      {shouldLoadIframe && (
+        <iframe
+          ref={iframeRef}
+          src={getVimeoEmbedUrl(videoId)}
+          className="hero__vimeo"
+          allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+          allowFullScreen
+          title=""
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      )}
     </>
   );
 }

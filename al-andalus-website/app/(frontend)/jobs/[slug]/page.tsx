@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: PageProps) {
   const title = dbJob?.title as string | undefined;
   if (!title) {
     return {
+    alternates: { canonical: `/jobs/${slug}` },
       title:
         locale === "ar"
           ? "الوظيفة غير موجودة | الأندلس للتأمين"

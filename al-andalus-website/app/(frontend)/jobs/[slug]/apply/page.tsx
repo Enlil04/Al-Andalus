@@ -19,6 +19,7 @@ export async function generateMetadata({ params }: PageProps) {
 
   if (!title) {
     return {
+    alternates: { canonical: `/jobs/${slug}/apply` },
       title:
         locale === "ar"
           ? "الوظيفة غير موجودة | الأندلس للتأمين"

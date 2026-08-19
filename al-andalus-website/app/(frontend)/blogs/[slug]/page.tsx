@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: PageProps) {
   const post = await fetchNewsBySlug(slug);
   if (!post) {
     return {
+    alternates: { canonical: `/blogs/${slug}` },
       title:
         locale === "ar"
           ? "المقال غير موجود | الأندلس للتأمين"

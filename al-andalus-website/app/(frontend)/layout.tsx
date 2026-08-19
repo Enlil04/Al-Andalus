@@ -11,6 +11,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://alandalus-iq.com"),
   title: "Al-Andalus Insurance International | شركة الأندلس للتأمين الدولي",
   description:
     "Al-Andalus International Insurance — licensed general insurer in Iraq since 2015. Motor, health, cargo, engineering, and comprehensive coverage across Baghdad, Basrah, and Erbil.",

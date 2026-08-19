@@ -3,7 +3,7 @@ import { getCMSPayload } from "@/lib/cms/payload";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "http://localhost:8080";
+  "https://alandalus-iq.com";
 
 const staticRoutes = [
   "",

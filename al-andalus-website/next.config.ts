@@ -28,7 +28,12 @@ const nextConfig: NextConfig = {
     "192.168.142.1",
   ],
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
   },
 };
 

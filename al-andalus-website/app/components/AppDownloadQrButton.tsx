@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 
 type AppDownloadQrButtonProps = {
   qrDataUrl: string;
@@ -75,13 +76,13 @@ export default function AppDownloadQrButton({
               </h3>
               <p className="app-qr-modal__hint">{modalHint}</p>
 
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={qrDataUrl}
                 alt={modalTitle}
                 width={240}
                 height={240}
                 className="app-qr-modal__image"
+                unoptimized
               />
             </div>
           </div>,

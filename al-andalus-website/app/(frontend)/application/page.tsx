@@ -13,7 +13,8 @@ export async function generateMetadata() {
       ? "حمّل تطبيق الأندلس للتأمين — أول منصة لتأمين السيارات في العراق. أدر وثائقك ومطالباتك من هاتفك."
       : "Download the Al-Andalus Insurance app — the first motor insurance platform in Iraq. Manage your policies and claims from your phone.";
 
-  return { title, description };
+  return {
+    alternates: { canonical: '/application' }, title, description };
 }
 
 export default async function ApplicationPage() {

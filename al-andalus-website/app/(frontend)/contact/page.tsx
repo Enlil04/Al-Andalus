@@ -11,6 +11,7 @@ export async function generateMetadata() {
   const locale = await getLocale();
   const siteCopy = getSiteCopy(locale);
   return {
+    alternates: { canonical: '/contact' },
     title: siteCopy.meta.contact.title,
     description: siteCopy.meta.contact.description,
   };

@@ -7,6 +7,7 @@ import "./Privacy.css";
 export async function generateMetadata() {
   const locale = await getLocale();
   return {
+    alternates: { canonical: '/privacy' },
     title: locale === "ar" ? "سياسة الخصوصية | شركة الأندلس للتأمين الدولي" : "Privacy Policy | Al-Andalus International Insurance",
     description: locale === "ar"
       ? "سياسة الخصوصية لشركة الأندلس للتأمين الدولي. تعرف على كيفية جمعنا لبياناتك وحمايتها والتعامل معها في العراق."
