@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps) {
   const title = dbJob?.title as string | undefined;
   if (!title) {
     return {
-    alternates: { canonical: `/jobs/${slug}` },
+      robots: { index: false, follow: false },
       title:
         locale === "ar"
           ? "الوظيفة غير موجودة | الأندلس للتأمين"
@@ -31,6 +31,7 @@ export async function generateMetadata({ params }: PageProps) {
     };
   }
   return {
+    alternates: { canonical: `/jobs/${slug}` },
     title:
       locale === "ar"
         ? `${title} | وظائف الأندلس`

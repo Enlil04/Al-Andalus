@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps) {
   const post = await fetchNewsBySlug(slug);
   if (!post) {
     return {
-    alternates: { canonical: `/blogs/${slug}` },
+      robots: { index: false, follow: false },
       title:
         locale === "ar"
           ? "المقال غير موجود | الأندلس للتأمين"
@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: PageProps) {
   const title = (post.title as string) || slug;
   const excerpt = (post.excerpt as string) || "";
   return {
+    alternates: { canonical: `/blogs/${slug}` },
     title:
       locale === "ar"
         ? `${title} | أخبار الأندلس`

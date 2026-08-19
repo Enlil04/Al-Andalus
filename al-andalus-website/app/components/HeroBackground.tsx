@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import {
   DEFAULT_HERO_VIMEO_ID,
   getVimeoEmbedUrl,
   getVimeoVideoId,
 } from "@/lib/vimeo";
+import CmsImage from "@/app/components/CmsImage";
 
 type HeroBackgroundProps = {
   vimeoUrl?: string | null;
@@ -70,17 +70,21 @@ export default function HeroBackground({
   useEffect(() => {
     if (videoUrl) return;
 
+    let timeoutId: number | undefined;
     const handleLoad = () => {
-      // Delay iframe load to prioritize main content rendering
-      setTimeout(() => setShouldLoadIframe(true), 500);
+      timeoutId = window.setTimeout(() => setShouldLoadIframe(true), 500);
     };
 
     if (document.readyState === "complete") {
       handleLoad();
     } else {
       window.addEventListener("load", handleLoad);
-      return () => window.removeEventListener("load", handleLoad);
     }
+
+    return () => {
+      window.removeEventListener("load", handleLoad);
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
   }, [videoUrl]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -169,10 +173,20 @@ export default function HeroBackground({
         void player.destroy().catch(() => {});
       }
     };
-  }, [videoUrl, videoId]);
+  }, [videoUrl, videoId, shouldLoadIframe]);
 
   const poster = imageUrl ? (
-    <Image className="hero__poster" src={imageUrl} alt="" aria-hidden="true" fill priority style={{ objectFit: "cover" }} />
+    <CmsImage
+      className="hero__poster"
+      src={imageUrl}
+      fallbackSrc={imageUrl}
+      alt=""
+      aria-hidden="true"
+      fill
+      priority
+      sizes="100vw"
+      style={{ objectFit: "cover" }}
+    />
   ) : null;
 
   if (videoUrl) {

@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps) {
 
   if (!title) {
     return {
-    alternates: { canonical: `/jobs/${slug}/apply` },
+      robots: { index: false, follow: false },
       title:
         locale === "ar"
           ? "الوظيفة غير موجودة | الأندلس للتأمين"
@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   return {
+    alternates: { canonical: `/jobs/${slug}/apply` },
     title:
       locale === "ar"
         ? `التقديم — ${title} | وظائف الأندلس`

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { getSiteCopy } from "@/lib/copy";
+import CmsImage from "@/app/components/CmsImage";
 import { useLocale } from "./LocaleProvider";
 import AnimatedHeadline from "./AnimatedHeadline";
 import type { SiteSettingsContent } from "@/lib/cms/content";
@@ -83,13 +83,13 @@ export default function Footer({ socialLinks, logoUrl }: FooterProps) {
   return (
     <footer className="footer-new">
       <div className="footer-new__top-content">
-        <Image
-          src={logoUrl || "/footer-logo.png"}
+        <CmsImage
+          src={logoUrl}
+          fallbackSrc="/footer-logo.png"
           alt="Al Andalus International Insurance"
           className="footer-new__logo-img"
           width={180}
           height={60}
-          loading="lazy"
         />
         <AnimatedHeadline title={footer.title} className="footer-new__title" />
         <p className="footer-new__desc">{footer.description}</p>

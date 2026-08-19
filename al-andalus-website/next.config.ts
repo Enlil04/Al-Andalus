@@ -29,10 +29,8 @@ const nextConfig: NextConfig = {
   ],
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
+      { protocol: "https", hostname: "alandalus-iq.com" },
+      { protocol: "https", hostname: "www.alandalus-iq.com" },
     ],
   },
 };

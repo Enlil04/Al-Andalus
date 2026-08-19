@@ -2,8 +2,8 @@
 
 import { useState, useEffect, type ReactNode } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { SCROLL_EVENT, type ScrollEventDetail } from "@/lib/scrollEvents";
+import CmsImage from "@/app/components/CmsImage";
 
 import { useLocale } from "@/app/components/LocaleProvider";
 
@@ -267,7 +267,15 @@ export default function Header({ logoUrl }: { logoUrl?: string | null }) {
             : "Al Andalus International Insurance"
         }
       >
-        <Image src={logoUrl || "/1.png"} alt="" className="header__logo-img" width={180} height={60} priority />
+        <CmsImage
+          src={logoUrl}
+          fallbackSrc="/1.png"
+          alt=""
+          className="header__logo-img"
+          width={180}
+          height={60}
+          priority
+        />
         <span className="header__logo-text">
           {locale === "ar" ? "الرئيسية" : "Homepage"}
         </span>
